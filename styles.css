@@ -44,6 +44,7 @@ aside { width: 90px; background-color: var(--primary-blue); color: white; displa
 .nav-item { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; padding: 16px 5px; cursor: pointer; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.75rem; transition: all 0.2s; border-left: 4px solid transparent; }
 .nav-item:hover { color: white; }
 .nav-item.active { background-color: rgba(255,255,255,0.1); color: white; border-left: 4px solid #64B5F6; }
+.nav-item.active { background-color: transparent; color: white; border-left: 4px solid white; }
 .nav-item i { margin-bottom: 6px; }
 .spacer { flex-grow: 1; }
 .ok-logo { margin-top: auto; text-align: center; padding: 20px 10px; font-size: 0.6rem; opacity: 0.8; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }

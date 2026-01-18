@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page Specific Styles */
+        .page-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-header-flex h1 { margin-bottom: 0; }
+        
+        .filters-panel { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; background: white; padding: 20px; border: 1px solid #E5E7EB; border-radius: 8px; }
+        .filters-header { font-size: 0.95rem; font-weight: 600; color: var(--text-dark); }
+        .filters-row { display: flex; gap: 16px; flex-wrap: wrap; width: 100%; }
+        
+        /* Floating Label & Custom Select Styles */
+        .floating-group {
+            position: relative;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            height: 38px;
+            background: white;
+            min-width: 225px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .floating-group:hover { border-color: #9CA3AF; }
+        .floating-group.active { border-color: var(--primary-blue); box-shadow: 0 0 0 1px var(--primary-blue); }
+        
+        .floating-label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 4px;
+            color: #6B7280;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .floating-group.active .floating-label,
+        .floating-group.has-value .floating-label {
+            top: -2px;
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        /* Fix School Year label background to match page header */
+        #schoolYearFilter .floating-label { background-color: var(--bg-color); }
+
+        .custom-trigger {
+            width: 100%;
+            height: 100%;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            overflow: hidden;
+        }
+        .custom-trigger span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .custom-trigger i { margin-left: auto; color: #9CA3AF; flex-shrink: 0; }
+
+        /* Multi-Select Dropdown */
+        .multiselect-dropdown {
+            position: absolute; top: 105%; left: 0; width: max-content; min-width: 100%;
+            background: white; border: 1px solid #E5E7EB; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 50;
+            display: none; max-height: 250px; overflow-y: auto; padding: 4px;
+        }
+        .multiselect-dropdown.show { display: block; }
+        
+        .multiselect-option { padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: background 0.1s; white-space: nowrap; }
+        .multiselect-option:hover { background-color: #F3F4F6; }
+        .multiselect-option input[type="checkbox"] { accent-color: var(--primary-blue); width: 16px; height: 16px; cursor: pointer; }
+        
+        /* Single Select Option (for School Year) */
+        .single-option { padding: 10px 12px; cursor: pointer; border-radius: 4px; font-size: 0.9rem; }
+        .single-option:hover { background-color: #F3F4F6; color: var(--primary-blue); }
+        .single-option.selected { background-color: var(--hover-blue-bg); color: var(--primary-blue); font-weight: 600; }
+
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; padding: 24px; position: relative; }
+        
+        /* Actions Button & Menu */
+        .bulk-actions-wrapper { position: relative; }
+        .bulk-actions-btn { display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; color: var(--text-dark); transition: all 0.2s; height: 40px; }
+        .bulk-actions-btn:hover, .bulk-actions-btn.active { border-color: var(--primary-blue); color: var(--primary-blue); background-color: var(--hover-blue-bg); }
+        
+        .actions-dropdown-menu {
+            display: none; position: absolute; right: 0; top: 100%; margin-top: 4px;
+            background: white; border: 1px solid #E5E7EB; border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); width: 240px; z-index: 100; padding: 6px;
+        }
+        .actions-dropdown-menu.show { display: block; }
+
+        /* Status Cell Styling */
+        .status-cell-content { display: flex; align-items: center; white-space: nowrap; }
+        .search-box { width: 100%; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0; }
+        .status-text { font-weight: 500; font-size: 0.85rem; }
+        .separator { color: #D1D5DB; margin: 0 8px; }
+        .action-link { color: var(--primary-blue); font-weight: 600; text-decoration: none; font-size: 0.85rem; }
+        .action-link:hover { text-decoration: underline; }
+        
+        /* Taller rows to match index page */
+        #applicationsTable td { padding: 16px 8px; height: 60px; }
+        .name-link { color: var(--primary-blue); font-weight: 600; text-decoration: none; }
+        .name-link:hover { text-decoration: underline; }
+        .pagination-btn { background: none; border: none; padding: 4px; cursor: pointer; color: var(--text-light); display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.2s; }
+        .pagination-btn:hover { color: var(--primary-blue); background-color: #F3F4F6; }
+        .pagination-btn.disabled { opacity: 0.3; pointer-events: none; }
+
+        /* Status Colors */
+        .dot-initial-review { background-color: #60A5FA; } /* Light Blue */
+        .dot-approved { background-color: #1E40AF; } /* Dark Blue */
+        .dot-accepted { background-color: #15803D; } /* Dark Green */
+        .dot-returned { background-color: #FA6400; }
+
+        /* Custom Overrides */
+        .card-header-row { border-bottom: 1px solid #E5E7EB; }
+        #applicationsTable th { 
+            color: #586874; 
+            position: relative;
+        }
+
+        .th-flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Fix marker position in header */
+        #applicationsTable th .dev-marker { position: static; margin-top: 1px; }
+        
+        /* Fix tooltip position to show below and not be cut off */
+        #applicationsTable th .dev-tooltip {
+            bottom: auto; top: 100%; margin-top: 8px; margin-bottom: 0;
+        }
+        #applicationsTable th .dev-tooltip::after {
+            top: auto; bottom: 100%; border-color: transparent transparent #1F2937 transparent;
+        }
+
+        /* Dev Callout Styles */
+        .dev-marker {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 12px;
+            height: 12px;
+            background-color: #8B5CF6;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 0 2px white;
+            animation: pulse-purple 2s infinite;
+        }
+        @keyframes pulse-purple {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        .dev-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            background: #1F2937;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 30;
+        }
+        .dev-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #1F2937 transparent transparent transparent;
+        }
+        .dev-marker.active + .dev-tooltip {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="brand-logo"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
+        <a href="#" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="#" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
+        <a href="index.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <div class="spacer"></div>
+        <a href="#" class="nav-item"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
+        <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
+    </aside>
+
+    <main>
+        <div class="page-header-flex">
+            <h1>My <strong>Applications</strong></h1>
+        </div>
+        
+        <!-- Filters Panel -->
+        <div class="filters-panel">
+            <div class="filters-header">Filter Applications</div>
+            <div class="filters-row" id="filtersContainer"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header-row">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name...">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="applicationsTable">
+                    <thead>
+                        <tr>
+                            <th>Last Name</th>
+                            <th>First Name</th>
+                            <th>DOB</th>
+                            <th>Grade</th>
+                            <th>Parent</th>
+                            <th>School Year</th>
+                            <th>Type</th>
+                            <th>Submitted Date</th>
+                            <th>
+                                <div class="th-flex">
+                                    Approved Date
+                                    <div class="dev-marker" onclick="this.classList.toggle('active')"></div>
+                                    <div class="dev-tooltip">Remove Initial Year and add Approved Date</div>
+                                </div>
+                            </th>
+                            <th>LNH Award</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span>Rows per page <select id="rowsPerPageSelect"><option value="10">10</option><option value="25">25</option></select></span>
+                <span style="margin-left: 20px;" id="paginationInfo">Showing 1-10 of 25 results</span>
+                <div class="page-controls">
+                    <button class="pagination-btn" id="btnFirst"><i data-lucide="chevrons-left" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnPrev"><i data-lucide="chevron-left" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnNext"><i data-lucide="chevron-right" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnLast"><i data-lucide="chevrons-right" width="18" height="18"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const applicationsData = [
+            {
+                id: 1, lastName: "Doe", firstName: "John", dob: "05/15/2015", grade: "3rd Grade", 
+                parent: "Jane Doe", schoolYear: "2025-2026", type: "Renewal", submitted: "08/15/2025", 
+                approved: "08/20/2025", lnh: "$6,500.00", status: "Accepted", action: "View"
+            },
+            {
+                id: 2, lastName: "Smith", firstName: "Jane", dob: "02/10/2013", grade: "5th Grade", 
+                parent: "Robert Smith", schoolYear: "2025-2026", type: "Initial", submitted: "08/18/2025", 
+                approved: "-", lnh: "-", status: "Initial Review", action: "View"
+            },
+            {
+                id: 3, lastName: "Jones", firstName: "Robert", dob: "11/22/2009", grade: "10th Grade", 
+                parent: "Mary Jones", schoolYear: "2024-2025", type: "Renewal", submitted: "08/01/2024", 
+                approved: "08/05/2024", lnh: "$7,200.00", status: "Approved", action: "View"
+            },
+            {
+                id: 4, lastName: "Brown", firstName: "Alice", dob: "07/04/2017", grade: "1st Grade", 
+                parent: "Charlie Brown", schoolYear: "2025-2026", type: "Initial", submitted: "08/20/2025", 
+                approved: "-", lnh: "-", status: "Returned", action: "Edit"
+            },
+            {
+                id: 5, lastName: "Watson", firstName: "Emily", dob: "09/30/2014", grade: "4th Grade", 
+                parent: "John Watson", schoolYear: "2025-2026", type: "Renewal", submitted: "08/10/2025", 
+                approved: "08/12/2025", lnh: "$6,800.00", status: "Accepted", action: "View"
+            },
+            {
+                id: 6, lastName: "Connor", firstName: "Sarah", dob: "03/12/2011", grade: "8th Grade", 
+                parent: "Kyle Reese", schoolYear: "2025-2026", type: "Renewal", submitted: "08/22/2025", 
+                approved: "-", lnh: "-", status: "Initial Review", action: "View"
+            },
+            {
+                id: 7, lastName: "Wayne", firstName: "Bruce", dob: "01/01/2010", grade: "9th Grade", 
+                parent: "Thomas Wayne", schoolYear: "2025-2026", type: "Initial", submitted: "08/25/2025", 
+                approved: "-", lnh: "-", status: "Initial Review", action: "View"
+            }
+        ];
+
+        function getStatusDotClass(status) {
+            switch(status) {
+                case 'Initial Review': return 'dot-initial-review';
+                case 'Approved': return 'dot-approved';
+                case 'Accepted': return 'dot-accepted';
+                case 'Returned': return 'dot-returned';
+                default: return 'dot-initial-review';
+            }
+        }
+
+        function renderTable(data = applicationsData) {
+            const tbody = document.getElementById('applicationsTableBody');
+            tbody.innerHTML = '';
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 32px; color: #6B7280;">No applications found matching your criteria.</td></tr>';
+                return;
+            }
+
+            data.forEach(app => {
+                const tr = document.createElement('tr');
+                const dotClass = getStatusDotClass(app.status);
+                
+                tr.innerHTML = `
+                    <td><a href="#" class="name-link">${app.lastName}</a></td>
+                    <td><a href="#" class="name-link">${app.firstName}</a></td>
+                    <td>${app.dob}</td>
+                    <td>${app.grade}</td>
+                    <td>${app.parent}</td>
+                    <td>${app.schoolYear}</td>
+                    <td>${app.type}</td>
+                    <td>${app.submitted}</td>
+                    <td>${app.approved}</td>
+                    <td>${app.lnh}</td>
+                    <td>
+                        <div class="status-cell-content">
+                            <span class="status-dot ${dotClass}"></span>
+                            <span class="status-text">${app.status}</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // --- FILTER & SEARCH STATE ---
+        let activeFilters = {
+            status: [],
+            schoolYear: [],
+            type: [],
+            grade: [],
+        };
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentFilteredData = [...applicationsData];
+        let searchTerm = '';
+
+        function applyFilters() {
+            const term = searchTerm.toLowerCase();
+            
+            const filtered = applicationsData.filter(app => {
+                // 1. Search (First Name, Last Name)
+                const matchesSearch = 
+                    app.firstName.toLowerCase().includes(term) ||
+                    app.lastName.toLowerCase().includes(term);
+
+                if(!matchesSearch) return false;
+
+                // 2. Filters (AND between categories, OR within category)
+                if(activeFilters.status.length > 0 && !activeFilters.status.includes(app.status)) return false;
+                if(activeFilters.schoolYear.length > 0 && !activeFilters.schoolYear.includes(app.schoolYear)) return false;
+                if(activeFilters.type.length > 0 && !activeFilters.type.includes(app.type)) return false;
+                if(activeFilters.grade.length > 0 && !activeFilters.grade.includes(app.grade)) return false;
+
+                return true;
+            });
+
+            currentFilteredData = filtered;
+            currentPage = 1;
+            updateTableDisplay();
+        }
+
+        function updateTableDisplay() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = currentFilteredData.slice(start, end);
+            
+            renderTable(paginatedData);
+            
+            // Update Info
+            const total = currentFilteredData.length;
+            const showStart = total === 0 ? 0 : start + 1;
+            const showEnd = Math.min(end, total);
+            document.getElementById('paginationInfo').innerText = `Showing ${showStart}-${showEnd} of ${total} results`;
+            
+            // Reset Select All
+
+            // Update Buttons
+            const totalPages = Math.ceil(total / rowsPerPage);
+            document.getElementById('btnFirst').classList.toggle('disabled', currentPage === 1);
+            document.getElementById('btnPrev').classList.toggle('disabled', currentPage === 1);
+            document.getElementById('btnNext').classList.toggle('disabled', currentPage >= totalPages || total === 0);
+            document.getElementById('btnLast').classList.toggle('disabled', currentPage >= totalPages || total === 0);
+        }
+
+        // --- FILTER COMPONENT LOGIC ---
+        
+        function createFloatingFilter(containerId, label, dataKey, options, isMulti = true, defaultVal = null) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'floating-group';
+            if(defaultVal) wrapper.classList.add('has-value');
+
+            const labelEl = document.createElement('label');
+            labelEl.className = 'floating-label';
+            labelEl.innerText = label;
+
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-trigger';
+            trigger.innerHTML = `<span>${defaultVal || ''}</span><i data-lucide="chevron-down" width="16" height="16"></i>`;
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'multiselect-dropdown';
+
+            // Populate Options
+            options.forEach(opt => {
+                const optEl = document.createElement('div');
+                if(isMulti) {
+                    optEl.className = 'multiselect-option';
+                    optEl.innerHTML = `<input type="checkbox" value="${opt}"> ${opt}`;
+                    optEl.addEventListener('click', (e) => {
+                        // Prevent closing when clicking checkbox area
+                        if(e.target !== optEl.querySelector('input')) {
+                            const cb = optEl.querySelector('input');
+                            cb.checked = !cb.checked;
+                        }
+                        updateTriggerText();
+                        
+                        // Update State & Filter
+                        if(dataKey) {
+                            activeFilters[dataKey] = Array.from(dropdown.querySelectorAll('input:checked')).map(cb => cb.value);
+                            applyFilters();
+                        }
+                    });
+                } else {
+                    optEl.className = 'single-option';
+                    optEl.innerText = opt;
+                    if(opt === defaultVal) optEl.classList.add('selected');
+                    optEl.addEventListener('click', () => {
+                        dropdown.querySelectorAll('.single-option').forEach(o => o.classList.remove('selected'));
+                        optEl.classList.add('selected');
+                        trigger.querySelector('span').innerText = opt;
+                        wrapper.classList.add('has-value');
+                        wrapper.classList.remove('active');
+                        dropdown.classList.remove('show');
+                    });
+                }
+                dropdown.appendChild(optEl);
+            });
+
+            function updateTriggerText() {
+                const checked = Array.from(dropdown.querySelectorAll('input:checked')).map(cb => cb.value);
+                const span = trigger.querySelector('span');
+                if(checked.length > 0) {
+                    wrapper.classList.add('has-value');
+                    if(checked.length === 1) span.innerText = checked[0];
+                    else span.innerText = `${checked.length} selected`;
+                } else {
+                    wrapper.classList.remove('has-value');
+                    span.innerText = '';
+                }
+            }
+
+            // Toggle Logic
+            wrapper.addEventListener('click', (e) => {
+                if(e.target.closest('.multiselect-dropdown')) return;
+                
+                // Close others
+                document.querySelectorAll('.floating-group').forEach(g => {
+                    if(g !== wrapper) {
+                        g.classList.remove('active');
+                        g.querySelector('.multiselect-dropdown').classList.remove('show');
+                    }
+                });
+
+                wrapper.classList.toggle('active');
+                dropdown.classList.toggle('show');
+            });
+
+            wrapper.appendChild(labelEl);
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(dropdown);
+            container.appendChild(wrapper);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyFilters(); // Initial render with pagination
+            
+            // Search Listener
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                applyFilters();
+            });
+
+            // Create Filters
+            createFloatingFilter('filtersContainer', 'Status', 'status', ['Accepted', 'Approved', 'Initial Review', 'Returned']);
+            createFloatingFilter('filtersContainer', 'School Year', 'schoolYear', ['2025-2026', '2024-2025', '2023-2024']);
+            createFloatingFilter('filtersContainer', 'Type', 'type', ['Initial', 'Renewal']);
+            createFloatingFilter('filtersContainer', 'Grade', 'grade', ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', '10th Grade', '11th Grade', '12th Grade']);
+            
+            // Pagination Listeners
+            document.getElementById('rowsPerPageSelect').addEventListener('change', (e) => {
+                rowsPerPage = parseInt(e.target.value);
+                currentPage = 1;
+                updateTableDisplay();
+            });
+            
+            document.getElementById('btnFirst').addEventListener('click', () => { if(currentPage > 1) { currentPage = 1; updateTableDisplay(); }});
+            document.getElementById('btnPrev').addEventListener('click', () => { if(currentPage > 1) { currentPage--; updateTableDisplay(); }});
+            document.getElementById('btnNext').addEventListener('click', () => { 
+                const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+                if(currentPage < totalPages) { currentPage++; updateTableDisplay(); }
+            });
+            document.getElementById('btnLast').addEventListener('click', () => { 
+                const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+                if(currentPage < totalPages) { currentPage = totalPages; updateTableDisplay(); }
+            });
+
+            
+            lucide.createIcons();
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.floating-group')) {
+                    document.querySelectorAll('.floating-group').forEach(g => {
+                        g.classList.remove('active');
+                        g.querySelector('.multiselect-dropdown').classList.remove('show');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
