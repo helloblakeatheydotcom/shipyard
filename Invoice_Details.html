@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarterly Invoice Details</title>
+    <style>
+        /* --- PASTE CSS HERE (I have included it for you below) --- */
+        
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F9FAFB; /* Light gray background */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #111827;
+        }
+
+        .page-container {
+            padding: 24px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        /* --- HEADERS & NAV --- */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #374151;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.875rem;
+        }
+        
+        .back-link:hover { color: #111827; }
+
+        .page-title {
+            font-size: 1.75rem;
+            color: #374151; 
+            margin: 0 0 32px 0;
+            font-weight: 800;
+        }
+
+        .highlight-text {
+            color: #1D4ED8; /* Blue-700 */
+        }
+
+        /* --- CARD STYLES --- */
+        .invoice-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 100px; /* Space for footer */
+        }
+
+        .section-header {
+            color: #1D4ED8; /* Blue headers */
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            display: block;
+        }
+
+        .divider {
+            border: 0;
+            border-top: 1px solid #E5E7EB;
+            margin: 40px 0;
+        }
+
+        /* --- GRID LAYOUTS --- */
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50% 50% split */
+            gap: 60px; /* Space between columns */
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            column-gap: 60px;
+            row-gap: 16px;
+        }
+
+        /* --- DATA ROWS --- */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 0.9rem;
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .label {
+            color: #6B7280; /* Gray-500 */
+        }
+
+        .value {
+            color: #111827; /* Gray-900 */
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .status-approved {
+            color: #2563EB;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- FORMS --- */
+        .form-control {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.875rem;
+            background-color: #fff;
+        }
+        
+        .form-control:focus {
+            outline: 2px solid #2563EB;
+            border-color: #2563EB;
+        }
+
+        /* --- FOOTER ACTION BAR --- */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-select {
+            padding: 10px 16px;
+            border: 1px solid #1D4ED8;
+            color: #1D4ED8;
+            border-radius: 6px;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background-color: #0E7490; /* Cyan-700 match */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary:hover { background-color: #155E75; }
+
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <a href="#" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to all
+    </a>
+    
+    <h1 class="page-title">Quarterly Invoice for <span class="highlight-text">Blake Zimmerman</span>.</h1>
+
+    <div class="invoice-card">
+        
+        <div class="section-grid top-section">
+            
+            <div class="info-group">
+                <h2 class="section-header">Status</h2>
+                
+                <div class="data-row">
+                    <span class="label">Status</span>
+                    <span class="value status-approved">● Approved</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Invoice #</span>
+                    <span class="value">1115-22858</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Submitted by</span>
+                    <span class="value">Blake Zimmerman</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Submitted on</span>
+                    <span class="value">12/08/2025</span>
+                </div>
+            </div>
+
+            <div class="notes-group">
+                <label class="section-header" style="margin-bottom: 12px;">Administrator Notes</label>
+                <textarea class="form-control" placeholder="For administrators only."></textarea>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="details-section">
+            <h2 class="section-header">Details</h2>
+            <div class="details-grid">
+                <div class="data-row">
+                    <span class="label">Student Name</span>
+                    <span class="value">Blake Zimmerman</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Location</span>
+                    <span class="value">Location 0</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Student DOB</span>
+                    <span class="value">09/29/2025</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Reporting Period</span>
+                    <span class="value">Quarter 1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Application Approved</span>
+                    <span class="value">12/08/2025</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Quarter Date From</span>
+                    <span class="value">08/06/2025</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="label">Parent/Guardian Name</span>
+                    <span class="value">Blake Zimmerman</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Quarter Date To</span>
+                    <span class="value">10/09/2025</span>
+                </div>
+                 
+                <div class="data-row">
+                    <span class="label">Vendor Payee Number</span>
+                    <span class="value">12345</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">Withdrawal Date</span>
+                    <span class="value">N/A</span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-grid bottom-section">
+            
+            <div class="financials-group">
+                <h2 class="section-header">Description</h2>
+                
+                <div class="data-row financial-row">
+                    <span class="label">Quarterly Private School Tuition and Fees</span>
+                    <span class="value">$ 3237.50</span>
+                </div>
+                <div class="data-row financial-row">
+                    <span class="label">Quarterly LNH Award</span>
+                    <span class="value">$ 7863.53</span>
+                </div>
+                <div class="data-row financial-row">
+                    <span class="label">Quarterly Check Amount</span>
+                    <span class="value">$ 3237.50</span>
+                </div>
+                <div class="data-row financial-row">
+                    <span class="label">Number of Days in Private School Quarter</span>
+                    <span class="value">23</span>
+                </div>
+                 <div class="data-row financial-row">
+                    <span class="label">Number of Days Student was Present</span>
+                    <span class="value">23</span>
+                </div>
+            </div>
+
+            <div class="notes-group">
+                <label class="section-header" style="margin-bottom: 12px;">School's Notes</label>
+                <textarea class="form-control" placeholder="Please write any additional notes here"></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="action-bar">
+        <select class="action-select">
+            <option>Select Action</option>
+            <option>Print & Mark Processed</option>
+            <option>Return to School</option>
+        </select>
+        <button class="btn-primary">Save Changes</button>
+    </div>
+</div>
+
+</body>
+</html>

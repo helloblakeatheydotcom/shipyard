@@ -75,6 +75,12 @@ table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 90
 th { text-align: left; padding: 10px 8px; font-size: 0.8rem; color: var(--text-dark); font-weight: 700; border-bottom: 1px solid var(--border-color); background-color: #fff; white-space: nowrap; }
 td { padding: 10px 8px; font-size: 0.85rem; color: var(--text-dark); border-bottom: 1px solid var(--border-color); vertical-align: middle; }
 .nowrap-cell { white-space: nowrap; }
+
+/* Compact Table for Details */
+.table-compact th { padding: 6px 8px; font-size: 0.75rem; color: var(--text-light); background-color: #F9FAFB; }
+.table-compact td { padding: 6px 8px; height: auto; }
+.table-compact { min-width: auto; }
+
 tbody tr:hover td { background-color: #F9FAFB; }
 .cell-icon { width: 16px; height: 16px; margin-right: 6px; color: var(--text-light); vertical-align: text-bottom; stroke-width: 2px; }
 
@@ -196,6 +202,7 @@ tbody tr:hover td { background-color: #F9FAFB; }
 /* Form Card */
 .form-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); padding: 32px; margin-bottom: 80px; max-width: 1100px; margin-left: auto; margin-right: auto; border: 1px solid var(--border-color); }
 .section-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+.section-title.no-border { border-bottom: none; padding-bottom: 0; margin-bottom: 16px; }
 
 /* Grid System */
 .grid-container { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; row-gap: 24px; }
