@@ -435,5 +435,19 @@
         document.addEventListener('DOMContentLoaded', renderTable);
 
     </script>
+
+    <!-- Dev History Component -->
+    <div class="dev-history-trigger" onclick="document.getElementById('devHistoryPanel').classList.toggle('show')">
+        <i data-lucide="history" width="24" height="24"></i>
+    </div>
+    <div class="dev-history-panel" id="devHistoryPanel">
+        <div class="dev-history-header">
+            Page Revision History
+            <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
+        </div>
+        <ul class="dev-history-list">
+            <li class="dev-history-item"><span class="dev-history-date">Today</span><span class="dev-history-note">Updated search box hover styles.</span></li>
+        </ul>
+    </div>
 </body>
 </html>

@@ -830,5 +830,22 @@
             });
         });
     </script>
+
+    <!-- Dev History Component -->
+    <div class="dev-history-trigger" onclick="document.getElementById('devHistoryPanel').classList.toggle('show')">
+        <i data-lucide="history" width="24" height="24"></i>
+    </div>
+    <div class="dev-history-panel" id="devHistoryPanel">
+        <div class="dev-history-header">
+            Page Revision History
+            <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
+        </div>
+        <ul class="dev-history-list">
+            <li class="dev-history-item">
+                <div class="dev-history-meta"><span class="dev-history-date">10/25/2025</span><span class="dev-history-ticket">SCH-2045</span></div>
+                <span class="dev-history-note">Added "Reset Demo" button, updated Action button styling, and added Quick Filter chips.</span>
+            </li>
+        </ul>
+    </div>
 </body>
 </html>
