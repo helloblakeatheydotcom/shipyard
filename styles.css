@@ -70,7 +70,7 @@ h1 span { color: #111; font-weight: 400; }
 .search-box input:focus { outline: none; border-color: var(--primary-blue); }
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9CA3AF; width: 18px; height: 18px; }
 
-.table-wrapper { overflow-x: auto; flex-grow: 1; padding: 16px; }
+.table-wrapper { overflow-x: auto; overflow-y: scroll; flex-grow: 1; padding: 16px; }
 table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
 th { text-align: left; padding: 10px 8px; font-size: 0.8rem; color: var(--text-dark); font-weight: 700; border-bottom: 1px solid var(--border-color); background-color: #fff; white-space: nowrap; }
 td { padding: 10px 8px; font-size: 0.85rem; color: var(--text-dark); border-bottom: 1px solid var(--border-color); vertical-align: middle; }

@@ -173,6 +173,62 @@
         .dev-marker.active + .dev-tooltip {
             opacity: 1;
         }
+
+        /* Quick Filter Chips */
+        .quick-filter-chips { display: flex; gap: 12px; margin-bottom: 16px; }
+        .filter-chip { 
+            display: inline-flex; align-items: center; gap: 8px; 
+            padding: 6px 12px; border-radius: 20px; 
+            background: white; border: 1px solid #E5E7EB; 
+            font-size: 0.85rem; font-weight: 500; color: var(--text-dark); 
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
+            height: 34px; box-sizing: border-box;
+            position: relative;
+        }
+        .chip-count { 
+            background: #F3F4F6; color: #374151; 
+            font-size: 0.75rem; padding: 1px 8px; border-radius: 10px; font-weight: 600;
+        }
+        .chip-close { 
+            width: 0; opacity: 0; margin-left: 0; overflow: hidden; 
+            transition: all 0.2s ease; height: 14px; 
+        }
+        .filter-chip.active .chip-close { width: 14px; opacity: 1; margin-left: 4px; }
+
+        /* Custom Chip Colors */
+        #chip-review { border-color: #7C3AED; color: #7C3AED; }
+        #chip-review:hover { box-shadow: inset 0 0 0 1px #7C3AED; text-shadow: 0 0 0.5px #7C3AED; }
+        #chip-review.active { background-color: #7C3AED; border-color: #7C3AED; color: white; }
+        #chip-review.active .chip-count { background: rgba(255,255,255,0.2); color: white; }
+
+        #chip-payment { border-color: #2563EB; color: #2563EB; }
+        #chip-payment:hover { box-shadow: inset 0 0 0 1px #2563EB; text-shadow: 0 0 0.5px #2563EB; }
+        #chip-payment.active { background-color: #2563EB; border-color: #2563EB; color: white; }
+        #chip-payment.active .chip-count { background: rgba(255,255,255,0.2); color: white; }
+
+        /* Disabled State */
+        .filter-chip.disabled {
+            opacity: 1; cursor: not-allowed; background-color: #F3F4F6; border-color: #D1D5DB; color: #4B5563;
+        }
+        .filter-chip.disabled:hover {
+            box-shadow: none; text-shadow: none; border-width: 1px; padding: 6px 12px; font-weight: 500;
+        }
+        .filter-chip.disabled .chip-count {
+            background: #E5E7EB; color: #374151;
+        }
+
+        /* Prevent layout shift when scrollbar disappears */
+        main { overflow-y: scroll; }
+
+        /* Fix for Needs Review tooltip being clipped on the left */
+        #chip-review .dev-tooltip {
+            left: 0;
+            transform: none;
+        }
+        #chip-review .dev-tooltip::after {
+            left: 20px;
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +252,27 @@
         <div class="tabs">
             <div class="tab active">Invoices</div>
             <div class="tab">Annual Statements</div>
+        </div>
+
+        <div class="quick-filter-chips">
+            <div class="filter-chip" id="chip-review" onclick="toggleQuickFilter('needs_review')">
+                Needs Review <span class="chip-count" id="count-review">0</span>
+                <i data-lucide="x" class="chip-close"></i>
+                <div class="dev-marker" onclick="event.stopPropagation(); this.classList.toggle('active')"></div>
+                <div class="dev-tooltip">Show count of invoices in a Submitted status</div>
+            </div>
+            <div class="filter-chip" id="chip-payment" onclick="toggleQuickFilter('ready_payment')">
+                Ready to Print <span class="chip-count" id="count-payment">0</span>
+                <i data-lucide="x" class="chip-close"></i>
+                <div class="dev-marker" onclick="event.stopPropagation(); this.classList.toggle('active')"></div>
+                <div class="dev-tooltip">Shows count of invoices that have been approved but have not yet been printed.</div>
+            </div>
+            <!-- Demo Empty State -->
+            <div class="filter-chip disabled">
+                Ready to Print <span class="chip-count">0</span>
+                <div class="dev-marker" onclick="event.stopPropagation(); this.classList.toggle('active')"></div>
+                <div class="dev-tooltip">Example of empty state (0 items)</div>
+            </div>
         </div>
 
         <!-- Filters Panel -->
@@ -244,6 +321,7 @@
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
+                
             </div>
 
             <div class="pagination">
@@ -266,127 +344,127 @@
             {
                 id: "2025-10001", firstName: "John", lastName: "Doe", school: "Antioch Christian Academy", 
                 grade: "3rd Grade", period: "Quarter 1", lnh: "$1,245.32", amt: "$1,245.32", date: "10/15/2025", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: true
             },
             {
                 id: "2025-10002", firstName: "Jane", lastName: "Smith", school: "All Saints Catholic School", 
                 grade: "5th Grade", period: "Quarter 2", lnh: "$1,100.50", amt: "$0.00", date: "-", 
-                status: "Not Started", action: "Create"
+                status: "Not Started", action: "Create", printed: false
             },
             {
                 id: "2025-10003", firstName: "Robert", lastName: "Jones", school: "Cascia Hall Preparatory", 
                 grade: "10th Grade", period: "Quarter 1", lnh: "$1,523.15", amt: "$1,523.15", date: "10/20/2025", 
-                status: "Submitted", action: "View"
+                status: "Submitted", action: "View", printed: false
             },
             {
                 id: "2025-10004", firstName: "Alice", lastName: "Brown", school: "Bishop Kelley High School", 
                 grade: "1st Grade", period: "Quarter 1", lnh: "$1,210.99", amt: "$1,150.00", date: "10/12/2025", 
-                status: "Returned", action: "Edit"
+                status: "Returned", action: "Edit", printed: false
             },
             {
                 id: "2025-10005", firstName: "Charlie", lastName: "Day", school: "Artsy Learning Academy", 
                 grade: "2nd Grade", period: "Quarter 1", lnh: "$1,245.32", amt: "$0.00", date: "-", 
-                status: "Created", action: "Edit"
+                status: "Created", action: "Edit", printed: false
             },
             {
                 id: "2025-10006", firstName: "Emily", lastName: "Watson", school: "Antioch Christian Academy", 
                 grade: "4th Grade", period: "Quarter 1", lnh: "$1,350.75", amt: "$1,350.75", date: "10/16/2025", 
-                status: "Mailed", action: "View"
+                status: "Mailed", action: "View", printed: true
             },
             {
                 id: "2025-10007", firstName: "Michael", lastName: "Scott", school: "All Saints Catholic School", 
                 grade: "Kindergarten", period: "Quarter 1", lnh: "$980.25", amt: "$0.00", date: "-", 
-                status: "Not Eligible", action: "View"
+                status: "Not Eligible", action: "View", printed: false
             },
             {
                 id: "2025-10008", firstName: "Sarah", lastName: "Connor", school: "Cascia Hall Preparatory", 
                 grade: "9th Grade", period: "Quarter 2", lnh: "$1,600.44", amt: "$1,600.44", date: "01/15/2026", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: false
             },
             {
                 id: "2025-10009", firstName: "Bruce", lastName: "Wayne", school: "Bishop Kelley High School", 
                 grade: "11th Grade", period: "Quarter 1", lnh: "$1,850.12", amt: "$1,800.00", date: "10/18/2025", 
-                status: "Submitted", action: "View"
+                status: "Submitted", action: "View", printed: false
             },
             {
                 id: "2025-10010", firstName: "Peter", lastName: "Parker", school: "Artsy Learning Academy", 
                 grade: "3rd Grade", period: "Quarter 2", lnh: "$1,245.32", amt: "$0.00", date: "-", 
-                status: "Not Started", action: "Create"
+                status: "Not Started", action: "Create", printed: false
             },
             {
                 id: "2025-10011", firstName: "Clark", lastName: "Kent", school: "Antioch Christian Academy", 
                 grade: "5th Grade", period: "Quarter 1", lnh: "$1,100.50", amt: "$1,100.50", date: "10/14/2025", 
-                status: "Mailed", action: "View"
+                status: "Mailed", action: "View", printed: true
             },
             {
                 id: "2025-10012", firstName: "Diana", lastName: "Prince", school: "All Saints Catholic School", 
                 grade: "1st Grade", period: "Quarter 1", lnh: "$1,210.99", amt: "$1,210.99", date: "10/19/2025", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: false
             },
             {
                 id: "2025-10013", firstName: "Barry", lastName: "Allen", school: "Cascia Hall Preparatory", 
                 grade: "2nd Grade", period: "Quarter 1", lnh: "$1,245.32", amt: "$1,000.00", date: "10/22/2025", 
-                status: "Returned", action: "Edit"
+                status: "Returned", action: "Edit", printed: false
             },
             {
                 id: "2025-10014", firstName: "Hal", lastName: "Jordan", school: "Bishop Kelley High School", 
                 grade: "12th Grade", period: "Quarter 1", lnh: "$1,900.88", amt: "$0.00", date: "-", 
-                status: "Created", action: "Edit"
+                status: "Created", action: "Edit", printed: false
             },
             {
                 id: "2025-10015", firstName: "Arthur", lastName: "Curry", school: "Artsy Learning Academy", 
                 grade: "Kindergarten", period: "Quarter 1", lnh: "$980.25", amt: "$980.25", date: "10/11/2025", 
-                status: "Submitted", action: "View"
+                status: "Submitted", action: "View", printed: false
             },
             {
                 id: "2025-10016", firstName: "Victor", lastName: "Stone", school: "Antioch Christian Academy", 
                 grade: "6th Grade", period: "Quarter 1", lnh: "$1,150.65", amt: "$1,150.65", date: "10/13/2025", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: false
             },
             {
                 id: "2025-10017", firstName: "Oliver", lastName: "Queen", school: "All Saints Catholic School", 
                 grade: "8th Grade", period: "Quarter 2", lnh: "$1,400.33", amt: "$0.00", date: "-", 
-                status: "Not Started", action: "Create"
+                status: "Not Started", action: "Create", printed: false
             },
             {
                 id: "2025-10018", firstName: "Natasha", lastName: "Romanoff", school: "Cascia Hall Preparatory", 
                 grade: "7th Grade", period: "Quarter 1", lnh: "$1,320.45", amt: "$1,320.45", date: "10/25/2025", 
-                status: "Mailed", action: "View"
+                status: "Mailed", action: "View", printed: true
             },
             {
                 id: "2025-10019", firstName: "Tony", lastName: "Stark", school: "Bishop Kelley High School", 
                 grade: "10th Grade", period: "Quarter 1", lnh: "$1,523.15", amt: "$1,523.15", date: "10/21/2025", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: false
             },
             {
                 id: "2025-10020", firstName: "Steve", lastName: "Rogers", school: "Artsy Learning Academy", 
                 grade: "4th Grade", period: "Quarter 1", lnh: "$1,350.75", amt: "$1,300.00", date: "10/17/2025", 
-                status: "Returned", action: "Edit"
+                status: "Returned", action: "Edit", printed: false
             },
             {
                 id: "2025-10021", firstName: "Wanda", lastName: "Maximoff", school: "Antioch Christian Academy", 
                 grade: "5th Grade", period: "Quarter 1", lnh: "$1,100.50", amt: "$0.00", date: "-", 
-                status: "Created", action: "Edit"
+                status: "Created", action: "Edit", printed: false
             },
             {
                 id: "2025-10022", firstName: "Vision", lastName: "Android", school: "All Saints Catholic School", 
                 grade: "3rd Grade", period: "Quarter 1", lnh: "$1,245.32", amt: "$1,245.32", date: "10/15/2025", 
-                status: "Submitted", action: "View"
+                status: "Submitted", action: "View", printed: false
             },
             {
                 id: "2025-10023", firstName: "Sam", lastName: "Wilson", school: "Cascia Hall Preparatory", 
                 grade: "9th Grade", period: "Quarter 1", lnh: "$1,600.44", amt: "$1,600.44", date: "10/28/2025", 
-                status: "Approved", action: "View"
+                status: "Approved", action: "View", printed: false
             },
             {
                 id: "2025-10024", firstName: "Bucky", lastName: "Barnes", school: "Bishop Kelley High School", 
                 grade: "11th Grade", period: "Quarter 2", lnh: "$1,850.12", amt: "$0.00", date: "-", 
-                status: "Not Started", action: "Create"
+                status: "Not Started", action: "Create", printed: false
             },
             {
                 id: "2025-10025", firstName: "T'Challa", lastName: "King", school: "Artsy Learning Academy", 
                 grade: "12th Grade", period: "Quarter 1", lnh: "$1,900.88", amt: "$1,900.88", date: "10/30/2025", 
-                status: "Mailed", action: "View"
+                status: "Mailed", action: "View", printed: true
             }
         ];
 
@@ -415,6 +493,7 @@
             data.forEach(inv => {
                 const tr = document.createElement('tr');
                 const dotClass = getStatusDotClass(inv.status);
+                const printedIcon = inv.printed ? `<i data-lucide="printer-check" style="width:16px; height:16px; color:#9CA3AF; margin-left:6px;"></i>` : '';
                 
                 tr.innerHTML = `
                     <td><input type="checkbox"></td>
@@ -431,6 +510,7 @@
                         <div class="status-cell-content">
                             <span class="status-dot ${dotClass}"></span>
                             <span class="status-text">${inv.status}</span>
+                            ${printedIcon}
                             <span class="separator">/</span>
                             <a href="#" class="action-link">${inv.action}</a>
                         </div>
@@ -446,7 +526,8 @@
             school: [],
             grade: [],
             period: [],
-            status: []
+            status: [],
+            quickFilter: null
         };
         let currentPage = 1;
         let rowsPerPage = 10;
@@ -469,7 +550,16 @@
                 if(activeFilters.school.length > 0 && !activeFilters.school.includes(inv.school)) return false;
                 if(activeFilters.grade.length > 0 && !activeFilters.grade.includes(inv.grade)) return false;
                 if(activeFilters.period.length > 0 && !activeFilters.period.includes(inv.period)) return false;
-                if(activeFilters.status.length > 0 && !activeFilters.status.includes(inv.status)) return false;
+                
+                // Status / Quick Filter Logic
+                if (activeFilters.quickFilter === 'needs_review') {
+                    if (inv.status !== 'Submitted') return false;
+                } else if (activeFilters.quickFilter === 'ready_payment') {
+                    if (inv.status !== 'Approved' || inv.printed === true) return false;
+                } else {
+                    // Only apply manual status filter if no quick filter is active
+                    if(activeFilters.status.length > 0 && !activeFilters.status.includes(inv.status)) return false;
+                }
 
                 return true;
             });
@@ -502,6 +592,40 @@
             document.getElementById('btnPrev').classList.toggle('disabled', currentPage === 1);
             document.getElementById('btnNext').classList.toggle('disabled', currentPage >= totalPages || total === 0);
             document.getElementById('btnLast').classList.toggle('disabled', currentPage >= totalPages || total === 0);
+        }
+
+        function toggleQuickFilter(type) {
+            // Check if disabled
+            const chipId = type === 'needs_review' ? 'chip-review' : 'chip-payment';
+            if (document.getElementById(chipId).classList.contains('disabled')) return;
+
+            if (activeFilters.quickFilter === type) {
+                activeFilters.quickFilter = null;
+            } else {
+                activeFilters.quickFilter = type;
+            }
+            updateChipsUI();
+            applyFilters();
+        }
+
+        function updateChipsUI() {
+            document.getElementById('chip-review').classList.toggle('active', activeFilters.quickFilter === 'needs_review');
+            document.getElementById('chip-payment').classList.toggle('active', activeFilters.quickFilter === 'ready_payment');
+        }
+
+        function calculateCounts() {
+            const reviewCount = invoicesData.filter(i => i.status === 'Submitted').length;
+            const paymentCount = invoicesData.filter(i => i.status === 'Approved' && !i.printed).length;
+            
+            const reviewChip = document.getElementById('chip-review');
+            const paymentChip = document.getElementById('chip-payment');
+
+            document.getElementById('count-review').innerText = reviewCount;
+            document.getElementById('count-payment').innerText = paymentCount;
+
+            // Apply disabled state if count is 0
+            if (reviewCount === 0) reviewChip.classList.add('disabled'); else reviewChip.classList.remove('disabled');
+            if (paymentCount === 0) paymentChip.classList.add('disabled'); else paymentChip.classList.remove('disabled');
         }
 
         // --- FILTER COMPONENT LOGIC ---
@@ -606,6 +730,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             applyFilters(); // Initial render with pagination
+            calculateCounts();
             
             // Search Listener
             document.getElementById('searchInput').addEventListener('input', (e) => {
