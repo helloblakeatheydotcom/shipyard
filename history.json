@@ -1,0 +1,20 @@
+[
+  {
+    "id": 103,
+    "date": "10/26/2025",
+    "ticket": "SCH-2046",
+    "note": "Added printer icon to Status column for approved items."
+  },
+  {
+    "id": 102,
+    "date": "10/25/2025",
+    "ticket": "SCH-2045",
+    "note": "Updated form field hover and focus states (lighter blue background)."
+  },
+  {
+    "id": 101,
+    "date": "10/24/2025",
+    "ticket": "INIT",
+    "note": "Initial build of Invoice Details page layout."
+  }
+]
