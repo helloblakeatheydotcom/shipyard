@@ -71,6 +71,57 @@
             width: 240px; z-index: 100; padding: 6px;
         }
         .action-dropdown-menu.show { display: block; }
+
+        /* Dev Callout Styles */
+        .dev-marker {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 12px;
+            height: 12px;
+            background-color: #8B5CF6;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 0 2px white;
+            animation: pulse-purple 2s infinite;
+        }
+        @keyframes pulse-purple {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        .dev-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            background: #1F2937;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 30;
+        }
+        .dev-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #1F2937 transparent transparent transparent;
+        }
+        .dev-marker.active + .dev-tooltip {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -179,6 +230,8 @@
                     <i data-lucide="chevron-down" class="action-arrow" width="18" height="18"></i>
                 </span>
             </button>
+            <div class="dev-marker" onclick="this.classList.toggle('active')"></div>
+            <div class="dev-tooltip">Added "Print & Mark Processed" to the Select Actions menu, and the printed icon to the status field.</div>
             <div class="action-dropdown-menu" id="actionMenu">
                 <div class="dropdown-item"><span class="menu-icon"></span> Edit Status</div>
                 <div class="dropdown-item" onclick="window.open('Invoice_PDF.html?stamp=false', '_blank')"><span class="menu-icon"></span> Print Invoice</div>
@@ -206,8 +259,9 @@
             if (currentInvoice.printed) {
                 const statusContainer = document.querySelector('.status-approved > span');
                 if(statusContainer && !statusContainer.querySelector('.printed-indicator')) {
-                    const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF; margin-left:6px;"></i>`;
+                    const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF;"></i>`;
                     statusContainer.insertAdjacentHTML('beforeend', iconHtml);
+                    lucide.createIcons();
                 }
             }
             
@@ -250,7 +304,7 @@
             const statusContainer = document.querySelector('.status-approved > span');
             // Check if icon already exists to avoid duplicates
             if(statusContainer && !statusContainer.querySelector('.printed-indicator')) {
-                const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF; margin-left:6px;"></i>`;
+                const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF;"></i>`;
                 statusContainer.insertAdjacentHTML('beforeend', iconHtml);
                 lucide.createIcons();
             }
@@ -258,5 +312,23 @@
             toggleActionMenu(); // Close menu
         }
     </script>
+
+    <!-- Dev History Component -->
+    <div class="dev-history-trigger" onclick="document.getElementById('devHistoryPanel').classList.toggle('show')">
+        <i data-lucide="history" width="24" height="24"></i>
+    </div>
+    <div class="dev-history-panel" id="devHistoryPanel">
+        <div class="dev-history-header">
+            Page Revision History
+            <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
+        </div>
+        <ul class="dev-history-list">
+            <li class="dev-history-item">
+                <div class="dev-history-meta"><span class="dev-history-date">Today</span><span class="dev-history-ticket">SHIP-3121</span></div>
+                <span class="dev-history-note">Added menu item "Print & Mark Processed" to Select Action menu, and the printer-check icon to the status field once the invoice has been processed.</span>
+            </li>
+        </ul>
+    </div>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
