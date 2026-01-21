@@ -220,7 +220,7 @@
             color: #D32F2F;
             border: 2px solid #D32F2F;
             padding: 2px 6px;
-            display: inline-block;
+            display: none; /* Hidden by default */
             transform: rotate(-3deg); /* Slight tilt for stamp effect */
             position: relative;
         }
@@ -419,5 +419,15 @@
 
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const showStamp = urlParams.get('stamp') === 'true';
+            
+            if (showStamp) {
+                document.querySelector('.payment-approval').style.display = 'inline-block';
+            }
+        });
+    </script>
 </body>
 </html>

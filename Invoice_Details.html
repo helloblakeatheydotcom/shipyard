@@ -4,320 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quarterly Invoice Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* --- PASTE CSS HERE (I have included it for you below) --- */
+        /* Page specific overrides */
+        .status-approved { color: var(--primary-blue); font-weight: 600; }
+        .table-compact .detail-label { color: var(--cool-gray); font-size: 0.85rem; font-weight: 500; width: 65%; }
+        .detail-value { color: var(--text-dark); font-weight: 500; font-size: 0.9rem; text-align: right; }
         
-        * { box-sizing: border-box; }
+        /* Textarea override to match input-control but taller */
+        textarea.input-control { height: 100px; resize: vertical; font-family: 'Inter', sans-serif; }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #F9FAFB; /* Light gray background */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #111827;
+        /* Custom Overrides */
+        .form-card, .header-area { max-width: 1100px; width: 100%; }
+        .table-compact td { padding: 12px 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+        .dot-approved { background-color: #416AD6; }
+
+        /* Align notes fields with tables */
+        .notes-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--cool-gray);
+            font-weight: 500;
+            margin-bottom: 8px;
+            margin-top: 38px; /* Aligns label with the top of the table in the adjacent column */
         }
 
-        .page-container {
-            padding: 24px 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            min-height: 100vh;
+        /* Custom Action Dropdown Button */
+        .action-dropdown-wrapper {
+            position: relative;
+            margin-right: 12px;
         }
-
-        /* --- HEADERS & NAV --- */
-        .back-link {
+        .action-dropdown-btn {
             display: inline-flex;
             align-items: center;
-            color: #374151;
+            height: 38px;
+            padding: 0;
+            border: 2px solid var(--primary-blue);
+            background-color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--primary-blue);
             font-weight: 600;
-            text-decoration: none;
-            margin-bottom: 20px;
             font-size: 0.875rem;
+            transition: all 0.2s;
         }
-        
-        .back-link:hover { color: #111827; }
+        .action-dropdown-btn:hover { background-color: var(--hover-blue-bg); }
+        .action-label { padding: 0 16px; }
+        .action-divider { width: 2px; height: 20px; background-color: var(--primary-blue); opacity: 0.3; }
+        .action-arrow-wrapper { padding: 0 10px; display: flex; align-items: center; }
+        .action-arrow { transition: transform 0.2s ease; }
+        .action-dropdown-btn.active .action-arrow { transform: rotate(180deg); }
 
-        .page-title {
-            font-size: 1.75rem;
-            color: #374151; 
-            margin: 0 0 32px 0;
-            font-weight: 800;
-        }
-
-        .highlight-text {
-            color: #1D4ED8; /* Blue-700 */
-        }
-
-        /* --- CARD STYLES --- */
-        .invoice-card {
+        .action-dropdown-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 8px;
             background: white;
             border: 1px solid #E5E7EB;
             border-radius: 8px;
-            padding: 40px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 100px; /* Space for footer */
+            box-shadow: 0 -4px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 240px; z-index: 100; padding: 6px;
         }
-
-        .section-header {
-            color: #1D4ED8; /* Blue headers */
-            font-size: 1rem;
-            font-weight: 700;
-            margin: 0 0 16px 0;
-            display: block;
-        }
-
-        .divider {
-            border: 0;
-            border-top: 1px solid #E5E7EB;
-            margin: 40px 0;
-        }
-
-        /* --- GRID LAYOUTS --- */
-        .section-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 50% 50% split */
-            gap: 60px; /* Space between columns */
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; 
-            column-gap: 60px;
-            row-gap: 16px;
-        }
-
-        /* --- DATA ROWS --- */
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #F3F4F6;
-            font-size: 0.9rem;
-        }
-
-        .data-row:last-child { border-bottom: none; }
-
-        .label {
-            color: #6B7280; /* Gray-500 */
-        }
-
-        .value {
-            color: #111827; /* Gray-900 */
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .status-approved {
-            color: #2563EB;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* --- FORMS --- */
-        .form-control {
-            width: 100%;
-            height: 120px;
-            padding: 12px;
-            border: 1px solid #D1D5DB;
-            border-radius: 6px;
-            resize: vertical;
-            font-family: inherit;
-            font-size: 0.875rem;
-            background-color: #fff;
-        }
-        
-        .form-control:focus {
-            outline: 2px solid #2563EB;
-            border-color: #2563EB;
-        }
-
-        /* --- FOOTER ACTION BAR --- */
-        .action-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #E5E7EB;
-            padding: 16px 40px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 12px;
-            z-index: 100;
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .action-select {
-            padding: 10px 16px;
-            border: 1px solid #1D4ED8;
-            color: #1D4ED8;
-            border-radius: 6px;
-            background: white;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            padding: 10px 24px;
-            background-color: #0E7490; /* Cyan-700 match */
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .btn-primary:hover { background-color: #155E75; }
-
+        .action-dropdown-menu.show { display: block; }
     </style>
 </head>
 <body>
+    <aside>
+        <div class="brand-logo"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
+        <a href="#" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Finances_Invoices.html" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
+        <a href="index.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <div class="spacer"></div>
+        <a href="#" class="nav-item"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
+        <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
+    </aside>
 
-<div class="page-container">
-    <a href="#" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        Back to all
-    </a>
-    
-    <h1 class="page-title">Quarterly Invoice for <span class="highlight-text">Blake Zimmerman</span>.</h1>
-
-    <div class="invoice-card">
-        
-        <div class="section-grid top-section">
-            
-            <div class="info-group">
-                <h2 class="section-header">Status</h2>
-                
-                <div class="data-row">
-                    <span class="label">Status</span>
-                    <span class="value status-approved">● Approved</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Invoice #</span>
-                    <span class="value">1115-22858</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Submitted by</span>
-                    <span class="value">Blake Zimmerman</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Submitted on</span>
-                    <span class="value">12/08/2025</span>
-                </div>
-            </div>
-
-            <div class="notes-group">
-                <label class="section-header" style="margin-bottom: 12px;">Administrator Notes</label>
-                <textarea class="form-control" placeholder="For administrators only."></textarea>
-            </div>
+    <main>
+        <div class="header-area">
+            <a href="Finances_Invoices.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to Invoices</a>
+            <h1>Quarterly Invoice for <span>Blake Zimmerman</span></h1>
         </div>
 
-        <hr class="divider">
+        <div class="form-card">
+            <!-- Top Section: Status & Admin Notes -->
+            <div class="grid-container">
+                <div class="span-6">
+                    <div class="section-title no-border">Status</div>
+                    <table class="table-compact">
+                        <tr>
+                            <td class="detail-label">Status</td>
+                            <td class="detail-value status-approved"><span style="display: inline-flex; align-items: center; gap: 6px;"><span class="status-dot dot-approved"></span> Approved</span></td>
+                        </tr>
+                        <tr>
+                            <td class="detail-label">Invoice #</td>
+                            <td class="detail-value">1115-22858</td>
+                        </tr>
+                        <tr>
+                            <td class="detail-label">Submitted by</td>
+                            <td class="detail-value">Blake Zimmerman</td>
+                        </tr>
+                        <tr>
+                            <td class="detail-label">Submitted on</td>
+                            <td class="detail-value">12/08/2025</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="span-6">
+                    <label class="notes-label">Administrator Notes</label>
+                    <textarea class="input-control" placeholder="For administrators only."></textarea>
+                </div>
+            </div>
 
-        <div class="details-section">
-            <h2 class="section-header">Details</h2>
-            <div class="details-grid">
-                <div class="data-row">
-                    <span class="label">Student Name</span>
-                    <span class="value">Blake Zimmerman</span>
+            <!-- Middle Section: Details -->
+            <div style="margin-top: 40px;">
+                <div class="section-title no-border">Details</div>
+                <div class="grid-container">
+                    <div class="span-6">
+                        <table class="table-compact">
+                            <tr><td class="detail-label">Student Name</td><td class="detail-value">Blake Zimmerman</td></tr>
+                            <tr><td class="detail-label">Student DOB</td><td class="detail-value">09/29/2025</td></tr>
+                            <tr><td class="detail-label">Parent/Guardian Name</td><td class="detail-value">Blake Zimmerman</td></tr>
+                            <tr><td class="detail-label">Vendor Payee Number</td><td class="detail-value">12345</td></tr>
+                            <tr><td class="detail-label">Application Approved</td><td class="detail-value">12/08/2025</td></tr>
+                        </table>
+                    </div>
+                    <div class="span-6">
+                        <table class="table-compact">
+                            <tr><td class="detail-label">Location</td><td class="detail-value">Location 0</td></tr>
+                            <tr><td class="detail-label">Reporting Period</td><td class="detail-value">Quarter 1</td></tr>
+                            <tr><td class="detail-label">Quarter Date From</td><td class="detail-value">08/06/2025</td></tr>
+                            <tr><td class="detail-label">Quarter Date To</td><td class="detail-value">10/09/2025</td></tr>
+                            <tr><td class="detail-label">Withdrawal Date</td><td class="detail-value">N/A</td></tr>
+                        </table>
+                    </div>
                 </div>
-                <div class="data-row">
-                    <span class="label">Location</span>
-                    <span class="value">Location 0</span>
-                </div>
+            </div>
 
-                <div class="data-row">
-                    <span class="label">Student DOB</span>
-                    <span class="value">09/29/2025</span>
+            <!-- Bottom Section: Financials -->
+            <div style="margin-top: 40px;">
+                <div class="grid-container">
+                    <div class="span-6">
+                        <div class="section-title no-border">Description</div>
+                        <table class="table-compact">
+                            <tr><td class="detail-label">Quarterly Private School Tuition and Fees</td><td class="detail-value">$ 3,237.50</td></tr>
+                            <tr><td class="detail-label">Quarterly LNH Award</td><td class="detail-value">$ 7,863.53</td></tr>
+                            <tr><td class="detail-label">Quarterly Check Amount</td><td class="detail-value">$ 3,237.50</td></tr>
+                            <tr><td class="detail-label">Number of Days in Private School Quarter</td><td class="detail-value">23</td></tr>
+                            <tr><td class="detail-label">Number of Days Student was Present</td><td class="detail-value">23</td></tr>
+                        </table>
+                    </div>
+                    <div class="span-6">
+                        <label class="notes-label">School's Notes</label>
+                        <textarea class="input-control" placeholder="Please write any additional notes here"></textarea>
+                    </div>
                 </div>
-                <div class="data-row">
-                    <span class="label">Reporting Period</span>
-                    <span class="value">Quarter 1</span>
-                </div>
+            </div>
 
-                <div class="data-row">
-                    <span class="label">Application Approved</span>
-                    <span class="value">12/08/2025</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Quarter Date From</span>
-                    <span class="value">08/06/2025</span>
-                </div>
+        </div>
+    </main>
 
-                <div class="data-row">
-                    <span class="label">Parent/Guardian Name</span>
-                    <span class="value">Blake Zimmerman</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Quarter Date To</span>
-                    <span class="value">10/09/2025</span>
-                </div>
-                 
-                <div class="data-row">
-                    <span class="label">Vendor Payee Number</span>
-                    <span class="value">12345</span>
-                </div>
-                <div class="data-row">
-                    <span class="label">Withdrawal Date</span>
-                    <span class="value">N/A</span>
-                </div>
+    <div class="footer">
+        <div style="margin-right: auto;"></div> <!-- Spacer -->
+        <div class="action-dropdown-wrapper">
+            <button class="action-dropdown-btn" id="actionBtn">
+                <span class="action-label">Select Action</span>
+                <span class="action-divider"></span>
+                <span class="action-arrow-wrapper">
+                    <i data-lucide="chevron-down" class="action-arrow" width="18" height="18"></i>
+                </span>
+            </button>
+            <div class="action-dropdown-menu" id="actionMenu">
+                <div class="dropdown-item"><span class="menu-icon"></span> Edit Status</div>
+                <div class="dropdown-item" onclick="window.open('Invoice_PDF.html?stamp=false', '_blank')"><span class="menu-icon"></span> Print Invoice</div>
+                <div style="border-top: 1px solid #E5E7EB; margin: 4px 0;"></div>
+                <div class="dropdown-item" onclick="printAndMarkProcessed()"><i data-lucide="printer-check" class="menu-icon"></i> Print & Mark Processed</div>
             </div>
         </div>
-
-        <hr class="divider">
-
-        <div class="section-grid bottom-section">
-            
-            <div class="financials-group">
-                <h2 class="section-header">Description</h2>
-                
-                <div class="data-row financial-row">
-                    <span class="label">Quarterly Private School Tuition and Fees</span>
-                    <span class="value">$ 3237.50</span>
-                </div>
-                <div class="data-row financial-row">
-                    <span class="label">Quarterly LNH Award</span>
-                    <span class="value">$ 7863.53</span>
-                </div>
-                <div class="data-row financial-row">
-                    <span class="label">Quarterly Check Amount</span>
-                    <span class="value">$ 3237.50</span>
-                </div>
-                <div class="data-row financial-row">
-                    <span class="label">Number of Days in Private School Quarter</span>
-                    <span class="value">23</span>
-                </div>
-                 <div class="data-row financial-row">
-                    <span class="label">Number of Days Student was Present</span>
-                    <span class="value">23</span>
-                </div>
-            </div>
-
-            <div class="notes-group">
-                <label class="section-header" style="margin-bottom: 12px;">School's Notes</label>
-                <textarea class="form-control" placeholder="Please write any additional notes here"></textarea>
-            </div>
-        </div>
-
+        <button class="btn btn-primary">Save Changes</button>
     </div>
 
-    <div class="action-bar">
-        <select class="action-select">
-            <option>Select Action</option>
-            <option>Print & Mark Processed</option>
-            <option>Return to School</option>
-        </select>
-        <button class="btn-primary">Save Changes</button>
-    </div>
-</div>
+    <script>
+        lucide.createIcons();
 
+        // Load Data from LocalStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceId = urlParams.get('id');
+        let invoicesData = JSON.parse(localStorage.getItem('shipyard_invoices')) || [];
+        const currentInvoice = invoicesData.find(i => i.id === invoiceId);
+
+        if (currentInvoice) {
+            // Update Header Name
+            document.querySelector('h1 span').textContent = `${currentInvoice.firstName} ${currentInvoice.lastName}`;
+            
+            // Update Status UI if already printed
+            if (currentInvoice.printed) {
+                const statusContainer = document.querySelector('.status-approved > span');
+                if(statusContainer && !statusContainer.querySelector('.printed-indicator')) {
+                    const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF; margin-left:6px;"></i>`;
+                    statusContainer.insertAdjacentHTML('beforeend', iconHtml);
+                }
+            }
+            
+            // Update Invoice # in table (Example of mapping data)
+            const detailValues = document.querySelectorAll('.detail-value');
+            // Note: In a real app we'd map all fields, for this demo we rely on the static layout mostly matching
+        }
+
+        function toggleActionMenu() {
+            const menu = document.getElementById('actionMenu');
+            const btn = document.getElementById('actionBtn');
+            menu.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+
+        document.getElementById('actionBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleActionMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.action-dropdown-wrapper')) {
+                document.getElementById('actionMenu').classList.remove('show');
+                document.getElementById('actionBtn').classList.remove('active');
+            }
+        });
+
+        function printAndMarkProcessed() {
+            window.open('Invoice_PDF.html?stamp=true', '_blank');
+            
+            // Update Data in LocalStorage
+            if (currentInvoice) {
+                currentInvoice.printed = true;
+                const index = invoicesData.findIndex(i => i.id === invoiceId);
+                if (index !== -1) invoicesData[index] = currentInvoice;
+                localStorage.setItem('shipyard_invoices', JSON.stringify(invoicesData));
+            }
+
+            // Update UI to show printed icon
+            const statusContainer = document.querySelector('.status-approved > span');
+            // Check if icon already exists to avoid duplicates
+            if(statusContainer && !statusContainer.querySelector('.printed-indicator')) {
+                const iconHtml = `<i data-lucide="printer-check" class="printed-indicator" style="width:16px; height:16px; color:#9CA3AF; margin-left:6px;"></i>`;
+                statusContainer.insertAdjacentHTML('beforeend', iconHtml);
+                lucide.createIcons();
+            }
+            
+            toggleActionMenu(); // Close menu
+        }
+    </script>
 </body>
 </html>
