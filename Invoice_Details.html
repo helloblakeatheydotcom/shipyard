@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quarterly Invoice Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* Page specific overrides */
         .status-approved { color: var(--primary-blue); font-weight: 600; }
@@ -124,15 +124,19 @@
         }
     </style>
 </head>
-<body>
+<body class="supports-dev-mode">
     <aside>
-        <div class="brand-logo"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
-        <a href="#" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
+        <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
         <a href="Finances_Invoices.html" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
         <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
-        <a href="index.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="Admin_Schools.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
-        <a href="#" class="nav-item"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
+        <div class="dev-mode-toggle">
+            <label class="switch"><input type="checkbox" id="devModeToggle" onchange="toggleDevMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Dev Mode</span>
+        </div>
         <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
     </aside>
 
@@ -335,6 +339,18 @@
                 list.appendChild(li);
             });
         }
+    </script>
+    <script>
+        function toggleDevMode(checkbox) {
+            if(checkbox.checked) { document.body.classList.add('dev-mode'); localStorage.setItem('devMode', 'true'); }
+            else { document.body.classList.remove('dev-mode'); localStorage.setItem('devMode', 'false'); }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDev = localStorage.getItem('devMode') === 'true';
+            const toggle = document.getElementById('devModeToggle');
+            if(toggle) toggle.checked = isDev;
+            if(isDev) document.body.classList.add('dev-mode');
+        });
     </script>
     <script>lucide.createIcons();</script>
 </body>

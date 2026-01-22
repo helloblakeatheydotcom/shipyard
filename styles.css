@@ -327,3 +327,28 @@ select.input-control { appearance: none; background-image: url("data:image/svg+x
 .dev-history-note { color: #374151; line-height: 1.4; }
 
 @media print { .dev-history-trigger, .dev-history-panel { display: none !important; } }
+
+/* Dev Mode Toggle */
+.dev-mode-toggle { margin: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.6; transition: opacity 0.2s; }
+.dev-mode-toggle:hover { opacity: 1; }
+.dev-label { font-size: 0.65rem; color: white; font-weight: 500; }
+
+.switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.3); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #4ADE80; }
+input:checked + .slider:before { transform: translateX(14px); }
+
+/* Dev Mode Visibility Logic */
+body.supports-dev-mode .dev-marker,
+body.supports-dev-mode .dev-history-trigger {
+    display: none !important;
+}
+
+body.supports-dev-mode.dev-mode .dev-marker {
+    display: block !important;
+}
+body.supports-dev-mode.dev-mode .dev-history-trigger {
+    display: flex !important;
+}

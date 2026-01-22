@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Settings Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="supports-dev-mode">
     <aside>
-        <div class="brand-logo"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
-        <a href="#" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
-        <a href="#" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
+        <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Finances_Invoices.html" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
         <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
-        <a href="#" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="Admin_Schools.html" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
-        <a href="#" class="nav-item"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
+        <div class="dev-mode-toggle">
+            <label class="switch"><input type="checkbox" id="devModeToggle" onchange="toggleDevMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Dev Mode</span>
+        </div>
         <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
     </aside>
 
@@ -34,7 +38,7 @@
 
         <div class="card">
             <div class="search-container">
-                <div class="search-box"><i data-lucide="search" class="search-icon"></i><input type="text" placeholder="Search"></div>
+                <div class="search-box"><i data-lucide="search" class="search-icon"></i><input type="text" id="schoolSearchInput" placeholder="Search"></div>
             </div>
 
             <div class="table-wrapper">
@@ -114,6 +118,7 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
         
@@ -247,7 +252,7 @@
         ];
 
         // --- RENDER TABLE ---
-        function renderTable() {
+        function renderTable(data = schoolsData) {
             // "Rescue" menu before destroying table
             const menu = document.getElementById('menu-dropdown');
             document.body.appendChild(menu);
@@ -256,7 +261,7 @@
             const tbody = document.getElementById('schoolsTableBody');
             tbody.innerHTML = '';
 
-            schoolsData.forEach(school => {
+            data.forEach(school => {
                 // Determine User Column Text
                 let usersText = "No accounts";
                 if(school.users.length > 0) {
@@ -432,7 +437,16 @@
         });
 
         // Initialize Table
-        document.addEventListener('DOMContentLoaded', renderTable);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+
+            // Search Listener
+            document.getElementById('schoolSearchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = schoolsData.filter(s => s.name.toLowerCase().includes(term));
+                renderTable(filtered);
+            });
+        });
 
     </script>
 
@@ -458,6 +472,18 @@
                 list.appendChild(li);
             });
         }
+    </script>
+    <script>
+        function toggleDevMode(checkbox) {
+            if(checkbox.checked) { document.body.classList.add('dev-mode'); localStorage.setItem('devMode', 'true'); }
+            else { document.body.classList.remove('dev-mode'); localStorage.setItem('devMode', 'false'); }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDev = localStorage.getItem('devMode') === 'true';
+            const toggle = document.getElementById('devModeToggle');
+            if(toggle) toggle.checked = isDev;
+            if(isDev) document.body.classList.add('dev-mode');
+        });
     </script>
 </body>
 </html>
