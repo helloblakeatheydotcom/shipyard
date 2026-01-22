@@ -23,7 +23,7 @@ window.projectHistory = {
     "finances-invoices": [
         {
             "date": "01/21/2026",
-            "ticket": "SHIP-3124",
+            "ticket": "SHIP-3121",
             "note": "Add filter chips for flagging invoices that need to be reviewed and invoices that are ready to print."
         },
         {
