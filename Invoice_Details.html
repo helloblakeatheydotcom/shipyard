@@ -322,13 +322,20 @@
             Page Revision History
             <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
         </div>
-        <ul class="dev-history-list">
-            <li class="dev-history-item">
-                <div class="dev-history-meta"><span class="dev-history-date">Today</span><span class="dev-history-ticket">SHIP-3121</span></div>
-                <span class="dev-history-note">Added menu item "Print & Mark Processed" to Select Action menu, and the printer-check icon to the status field once the invoice has been processed.</span>
-            </li>
-        </ul>
+        <ul class="dev-history-list" id="historyList"></ul>
     </div>
+    <script src="history.js"></script>
+    <script>
+        const list = document.getElementById('historyList');
+        if (window.projectHistory && window.projectHistory['invoice-details'] && list) {
+            window.projectHistory['invoice-details'].forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'dev-history-item';
+                li.innerHTML = `<div class="dev-history-meta"><span class="dev-history-date">${item.date}</span><span class="dev-history-ticket">${item.ticket}</span></div><span class="dev-history-note">${item.note}</span>`;
+                list.appendChild(li);
+            });
+        }
+    </script>
     <script>lucide.createIcons();</script>
 </body>
 </html>

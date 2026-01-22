@@ -445,12 +445,19 @@
             Page Revision History
             <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
         </div>
-        <ul class="dev-history-list">
-            <li class="dev-history-item">
-                <div class="dev-history-meta"><span class="dev-history-date">12/02/2025</span><span class="dev-history-ticket">SHIP-3122</span></div>
-                <span class="dev-history-note">Added page for Admin to manage all schools.  User can search and sort the table, can view users at the school, inactivate/reactivate the school, add new schools, and edit existing school information.</span>
-            </li>
-        </ul>
+        <ul class="dev-history-list" id="historyList"></ul>
     </div>
+    <script src="history.js"></script>
+    <script>
+        const list = document.getElementById('historyList');
+        if (window.projectHistory && window.projectHistory['admin-schools'] && list) {
+            window.projectHistory['admin-schools'].forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'dev-history-item';
+                li.innerHTML = `<div class="dev-history-meta"><span class="dev-history-date">${item.date}</span><span class="dev-history-ticket">${item.ticket}</span></div><span class="dev-history-note">${item.note}</span>`;
+                list.appendChild(li);
+            });
+        }
+    </script>
 </body>
 </html>
