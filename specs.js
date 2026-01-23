@@ -3,7 +3,6 @@ window.PAGE_SPECS = {
         {
             targetId: "pageTitle",
             title: "Page Info",
-            label: "1",
             type: "",
             description: "",
             logic: "",
@@ -16,7 +15,6 @@ window.PAGE_SPECS = {
         {
             targetId: "tabUsers",
             title: "Users Tab",
-            label: "2",
             type: "Navigation Tab",
             description: "Tab to access User Management.",
             logic: "",
@@ -28,12 +26,11 @@ window.PAGE_SPECS = {
         {
             targetId: "tabSchools",
             title: "Schools Tab",
-            label: "3",
             type: "Navigation Tab",
             description: "Tab to access School Management.",
             logic: "",
             defaults: "Inactive by default.",
-            interaction: "Click: Switches to Schools view.",
+            interaction: "Click: Navigates to Admin_Schools.html",
             offset: { top: "-5px", right: "-15px" },
             errors: []
         }, 
