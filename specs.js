@@ -107,5 +107,63 @@ window.PAGE_SPECS = {
             offset: { top: "-3px", right: "0px" },
             errors: []
         }
+    ],
+    "admin_schools_users_modal": [
+        {
+            targetId: "usersModalHeader",
+            title: "Modal Header",
+            type: "Header",
+            description: "The title and subtitle area of the modal.",
+            logic: `
+                <ul>
+                    <li><b>Title:</b> "Users at [School Name]." (Dynamic)</li>
+                    <li><b>Subtitle:</b>"Below are the Active user accounts at [School Name]." (Dynamic)</li>
+                </ul>
+                `,
+            defaults: "",
+            interaction: "None",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "usersListContainer",
+            title: "Users List",
+            type: "List Container",
+            
+            // DESCRIPTION: The "What"
+            description: "Scrollable list of user rows.",
+            
+            // LOGIC: The "Rules" & "Data" (The heavy lifting)
+            logic: `
+                <ul>
+                    <li><b>Layout:</b> 'Name' is First Name Last Name, bold (e.g. <b>John Doe</b>). 'Last login' is right-aligned and formated as date/time relative to now.</li>
+                    <li><b>Badge:</b> Status 'Active' renders as Green Pill and 'Inactive' as Gray Pill.</li>
+                    <li><b>Contact Details:</b> Display 'Phone' and 'Email' with icons
+                    <li><b>Empty State:</b> If array is empty, show "No users found" message.</li>
+                </ul>
+            `,
+            
+            // DEFAULTS: Initial state
+            defaults: "Sorted by Last Name (ASC).",
+            
+            // INTERACTION: Triggers (Since clicking a user does nothing, this is None)
+            interaction: "None (Rows are read-only)."
+        },
+        {
+            targetId: "usersModalCloseBtn",
+            title: "Close Button",
+            type: "Button",
+            description: "Primary button in the footer.",
+            logic:  `
+                <ul>
+                    <li><b>Style:</b> Primary Button (solid blue background, white text).</li>
+                    <li><b>Position:</b> Right-aligned in the footer.</li>
+                </ul>
+            `,
+            defaults: "",
+            interaction: "Click: Closes the modal and returns focus to the schoolsTable.",
+            offset: { top: "-5px", right: "-5px" },
+            errors: []
+        }
     ]
 };

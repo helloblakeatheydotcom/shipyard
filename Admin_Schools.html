@@ -71,7 +71,7 @@
 
     <div class="modal-overlay" id="usersModal">
         <div class="modal-box">
-            <div class="modal-header">
+            <div class="modal-header" id="usersModalHeader">
                 <h2>Users at <span id="usersSchoolName"></span></h2>
             </div>
             <div class="modal-body">
@@ -79,7 +79,7 @@
                 <ul class="user-list" id="usersListContainer"></ul>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="closeModals()">Close</button>
+                <button class="btn btn-primary" id="usersModalCloseBtn" onclick="closeModals()">Close</button>
             </div>
         </div>
     </div>
@@ -393,6 +393,11 @@
             
             document.getElementById('usersModal').classList.add('show');
             document.getElementById('menu-dropdown').style.display = 'none';
+
+            if (document.body.classList.contains('spec-mode')) {
+                renderSpecMarkers();
+                renderSpecPanel();
+            }
         }
 
         function getFormattedDate() {
@@ -418,6 +423,11 @@
             document.getElementById('deactivateModal').classList.remove('show');
             document.getElementById('reactivateModal').classList.remove('show');
             document.getElementById('usersModal').classList.remove('show');
+
+            if (document.body.classList.contains('spec-mode')) {
+                renderSpecMarkers();
+                renderSpecPanel();
+            }
         }
 
         function confirmAction() {
@@ -494,12 +504,22 @@
             localStorage.setItem('specMode', isSpec);
         }
 
+        function getCurrentSpecKey() {
+            const usersModal = document.getElementById('usersModal');
+            if (usersModal && usersModal.classList.contains('show')) {
+                return 'admin_schools_users_modal';
+            }
+            return 'admin_schools';
+        }
+
         function renderSpecMarkers() {
             removeSpecMarkers(); // Clear existing
             if (!document.body.classList.contains('spec-mode')) return;
-            if (!window.PAGE_SPECS || !window.PAGE_SPECS['admin_schools']) return;
+            
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
 
-            const specs = window.PAGE_SPECS['admin_schools'];
+            const specs = window.PAGE_SPECS[specKey];
             let specCount = 0;
 
             specs.forEach((spec, index) => {
@@ -557,8 +577,10 @@
 
         function renderSpecPanel() {
             const panel = document.getElementById('specPanel');
-            if (!window.PAGE_SPECS || !window.PAGE_SPECS['admin_schools']) return;
-            const specs = window.PAGE_SPECS['admin_schools'];
+            
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+            const specs = window.PAGE_SPECS[specKey];
 
             let html = `
                 <div class="spec-panel-header">
