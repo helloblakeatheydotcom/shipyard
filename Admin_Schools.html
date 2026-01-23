@@ -8,6 +8,92 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Spec Mode Styles */
+        .spec-marker {
+            position: absolute;
+            background-color: #F97316; /* Orange-500 */
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 2000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid white;
+            transition: transform 0.2s;
+        }
+        .spec-marker:hover { transform: scale(1.1); }
+
+        .spec-slideout {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            z-index: 3000; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto; border-left: 1px solid #e5e7eb;
+        }
+        .spec-slideout.open { right: 0; }
+
+        /* Spec Panel Internal Styles */
+        .spec-header {
+            background: #f9fafb; padding: 20px; border-bottom: 1px solid #e5e7eb;
+            display: flex; justify-content: space-between; align-items: start;
+        }
+        .spec-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+        .spec-header .spec-type { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #4b5563; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
+        .spec-close-btn { cursor: pointer; color: #9CA3AF; }
+        .spec-close-btn:hover { color: #111827; }
+
+        .spec-body { padding: 24px; }
+        .spec-section { margin-bottom: 24px; }
+        .spec-label { 
+            display: block; font-size: 11px; text-transform: uppercase; 
+            letter-spacing: 0.05em; color: #6b7280; font-weight: 800; margin-bottom: 8px;
+        }
+        .spec-text { font-size: 14px; color: #374151; line-height: 1.6; }
+        
+        .spec-errors {
+            margin-top: 8px; background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 6px; padding: 12px;
+        }
+        .error-item { display: flex; font-size: 13px; margin-bottom: 8px; align-items: baseline; }
+        .error-item:last-child { margin-bottom: 0; }
+        .error-condition { font-weight: 700; color: #991b1b; width: 90px; flex-shrink: 0; font-size: 12px; }
+        .error-text { font-family: monospace; color: #b91c1c; background: rgba(255,255,255,0.5); padding: 0 4px; border-radius: 4px; }
+
+        .spec-technical { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e5e7eb; }
+        .code-snippet { font-family: monospace; background: #f3f4f6; padding: 3px 6px; border-radius: 4px; color: #d946ef; font-size: 12px; }
+
+        /* New Spec Panel List Styles */
+        .spec-panel-header {
+            position: sticky; top: 0; background: white; z-index: 10;
+            padding: 20px; border-bottom: 1px solid #e5e7eb;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .spec-panel-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; }
+        .spec-content-wrapper { padding: 24px; background-color: #f9fafb; min-height: calc(100vh - 70px); }
+        .spec-item { 
+            margin-bottom: 24px; padding: 20px; border-radius: 8px; 
+            border: 2px solid transparent; transition: all 0.3s;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            scroll-margin-top: 90px; /* Offset for sticky header */
+        }
+        .spec-item.active { 
+            border-color: #F97316; 
+            background-color: #fff7ed; 
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+        }
+        .spec-item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; }
+
+        /* Body Transition for Panel Push */
+        body { transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        body.spec-panel-open { padding-right: 400px; }
+    </style>
 </head>
 <body class="supports-dev-mode">
     <aside>
@@ -19,8 +105,8 @@
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
-            <label class="switch"><input type="checkbox" id="devModeToggle" onchange="toggleDevMode(this)"><span class="slider round"></span></label>
-            <span class="dev-label">Dev Mode</span>
+            <label class="switch"><input type="checkbox" id="specModeToggle" onchange="toggleSpecMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Spec Mode</span>
         </div>
         <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
     </aside>
@@ -28,15 +114,15 @@
     <main>
         <h1>Site <strong>Settings</strong></h1>
         <div class="tabs">
-            <div class="tab">Users</div>
-            <div class="tab active">Schools</div>
+            <div class="tab" id="tabUsers">Users</div>
+            <div class="tab active" id="tabSchools">Schools</div>
         </div>
 
         <div>
-            <button class="add-btn" onclick="window.location.href='Add_School.html'">Add School</button>
+            <button class="add-btn" id="addSchoolBtn" onclick="window.location.href='Add_School.html'">Add School</button>
         </div>
 
-        <div class="card">
+        <div class="card" id="schoolsCard">
             <div class="search-container">
                 <div class="search-box"><i data-lucide="search" class="search-icon"></i><input type="text" id="schoolSearchInput" placeholder="Search"></div>
             </div>
@@ -44,7 +130,7 @@
             <div class="table-wrapper">
                 <table id="schoolsTable">
                     <thead>
-                        <tr><th>School Name</th><th>School Phone</th><th>Contact Name</th><th>Contact Phone</th><th>Contact Email</th><th>Active Users</th><th>Status</th><th>Actions</th></tr>
+                        <tr><th>School Name</th><th>School Phone</th><th>Contact Name</th><th>Contact Phone</th><th>Contact Email</th><th><span id="activeUsersHeader">Active Users</span></th><th><span id="statusHeader">Status</span></th><th><span id="actionsHeader">Actions</span></th></tr>
                     </thead>
                     <tbody id="schoolsTableBody">
                         </tbody>
@@ -118,7 +204,11 @@
         </div>
     </div>
 
+    <!-- Spec Slide-out Panel -->
+    <div id="specPanel" class="spec-slideout"></div>
+
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="specs.js"></script>
     <script>
         lucide.createIcons();
         
@@ -474,15 +564,194 @@
         }
     </script>
     <script>
-        function toggleDevMode(checkbox) {
-            if(checkbox.checked) { document.body.classList.add('dev-mode'); localStorage.setItem('devMode', 'true'); }
-            else { document.body.classList.remove('dev-mode'); localStorage.setItem('devMode', 'false'); }
+        // --- SPEC MODE LOGIC ---
+        function toggleSpecMode(checkbox) {
+            const isSpec = checkbox.checked;
+            if (isSpec) {
+                document.body.classList.add('spec-mode');
+                renderSpecMarkers();
+                renderSpecPanel();
+            } else {
+                document.body.classList.remove('spec-mode');
+                removeSpecMarkers();
+                toggleSpecPanel(false);
+            }
+            localStorage.setItem('specMode', isSpec);
         }
+
+        function renderSpecMarkers() {
+            removeSpecMarkers(); // Clear existing
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS['admin_schools']) return;
+
+            const specs = window.PAGE_SPECS['admin_schools'];
+            specs.forEach((spec, index) => {
+                const target = document.getElementById(spec.targetId);
+                if (target) {
+                    const rect = target.getBoundingClientRect();
+                    const marker = document.createElement('div');
+                    marker.className = 'spec-marker';
+                    marker.innerText = index + 1;
+                    
+                    // Base Positioning Logic
+                    let baseTop, baseLeft;
+
+                    if (spec.type === 'Table Column') {
+                        // Right Center (Outside) - for columns
+                        baseTop = rect.top + (rect.height / 2) - 14;
+                        baseLeft = rect.right + 10;
+                    } else {
+                        // Top Right Corner (Overlapping) - for buttons, inputs, tabs, cards
+                        baseTop = rect.top - 14;
+                        baseLeft = rect.right - 14;
+                    }
+
+                    // Manual Offset Logic (CSS-style: top adds, right subtracts from left, etc.)
+                    let topOffset = '', leftOffset = '';
+                    if (spec.offset) {
+                        if (spec.offset.top) topOffset += ` + ${spec.offset.top}`;
+                        if (spec.offset.bottom) topOffset += ` - ${spec.offset.bottom}`;
+                        if (spec.offset.left) leftOffset += ` + ${spec.offset.left}`;
+                        if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
+                    }
+                    
+                    marker.style.top = `calc(${window.scrollY + baseTop}px${topOffset})`;
+                    marker.style.left = `calc(${window.scrollX + baseLeft}px${leftOffset})`;
+                    
+                    marker.onclick = (e) => {
+                        e.stopPropagation();
+                        scrollToSpec(index + 1);
+                    };
+                    document.body.appendChild(marker);
+                }
+            });
+        }
+
+        function removeSpecMarkers() {
+            document.querySelectorAll('.spec-marker').forEach(el => el.remove());
+        }
+
+        function renderSpecPanel() {
+            const panel = document.getElementById('specPanel');
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS['admin_schools']) return;
+            const specs = window.PAGE_SPECS['admin_schools'];
+
+            let html = `
+                <div class="spec-panel-header">
+                    <h3>Page Specifications (${specs.length})</h3>
+                    <i data-lucide="x" class="spec-close-btn" onclick="toggleSpecPanel(false)"></i>
+                </div>
+                <div class="spec-content-wrapper">
+            `;
+
+            specs.forEach((data, index) => {
+                const num = index + 1;
+                const createSection = (label, text) => text ? `<div class="spec-section"><span class="spec-label">${label}</span><div class="spec-text">${text}</div></div>` : '';
+                
+                html += `
+                    <div id="spec-item-${num}" class="spec-item">
+                        <div class="spec-item-header">
+                            <div>
+                                <h3 style="margin:0; font-size:16px; font-weight:700; color:#111827;">Spec #${num}: ${data.title}</h3>
+                                <span class="spec-type" style="margin-top:4px; display:inline-block;">${data.type}</span>
+                            </div>
+                        </div>
+                        <div class="spec-body" style="padding: 0;">
+                            <div class="spec-section"><span class="spec-label">Target ID</span><span class="code-snippet">${data.targetId}</span></div>
+                            ${createSection("Description", data.description)}
+                            ${createSection("Logic & Validation", data.logic)}
+                            ${createSection("Default State", data.defaults)}
+                            ${createSection("Interaction", data.interaction)}
+                            ${data.errors && data.errors.length > 0 ? `
+                                <div class="spec-section">
+                                    <span class="spec-label" style="color:#ef4444;">Error Messages</span>
+                                    <div class="spec-errors">
+                                        ${data.errors.map(err => `<div class="error-item"><span class="error-condition">${err.condition}:</span><span class="error-text">"${err.text}"</span></div>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            panel.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function toggleSpecPanel(show) {
+            const panel = document.getElementById('specPanel');
+            if (show) {
+                panel.classList.add('open');
+                document.body.classList.add('spec-panel-open');
+            } else {
+                panel.classList.remove('open');
+                document.body.classList.remove('spec-panel-open');
+            }
+            // Re-render markers after transition to ensure alignment
+            setTimeout(renderSpecMarkers, 300); 
+        }
+
+        function scrollToSpec(index) {
+            const panel = document.getElementById('specPanel');
+            if (!panel.classList.contains('open')) {
+                toggleSpecPanel(true);
+            }
+            
+            // Remove active class from all
+            panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active'));
+            
+            const target = document.getElementById(`spec-item-${index}`);
+            if (target) {
+                target.classList.add('active');
+                
+                // Manual scroll to handle sticky header offset reliably
+                const headerOffset = 90;
+                const targetPos = target.offsetTop - headerOffset;
+                smoothScrollTo(panel, targetPos, 1000); // 1000ms for slower, inertia-like scroll
+            }
+        }
+
+        function smoothScrollTo(element, target, duration) {
+            const start = element.scrollTop;
+            const change = target - start;
+            const startTime = performance.now();
+
+            function animateScroll(currentTime) {
+                const elapsed = currentTime - startTime;
+                if (elapsed < duration) {
+                    // Ease Out Quart (1 - (1-t)^4) for strong inertia feel
+                    const t = elapsed / duration;
+                    const ease = 1 - Math.pow(1 - t, 4);
+                    
+                    element.scrollTop = start + (change * ease);
+                    requestAnimationFrame(animateScroll);
+                } else {
+                    element.scrollTop = target;
+                }
+            }
+            requestAnimationFrame(animateScroll);
+        }
+
+        // Handle Resize to reposition markers
+        window.addEventListener('resize', () => {
+            if(document.body.classList.contains('spec-mode')) renderSpecMarkers();
+        });
+
+        // Handle transition end to ensure markers are perfectly placed
+        document.body.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'padding-right' && document.body.classList.contains('spec-mode')) {
+                renderSpecMarkers();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
-            const isDev = localStorage.getItem('devMode') === 'true';
-            const toggle = document.getElementById('devModeToggle');
-            if(toggle) toggle.checked = isDev;
-            if(isDev) document.body.classList.add('dev-mode');
+            const isSpec = localStorage.getItem('specMode') === 'true';
+            const toggle = document.getElementById('specModeToggle');
+            if(toggle) {
+                toggle.checked = isSpec;
+                if(isSpec) toggleSpecMode(toggle);
+            }
         });
     </script>
 </body>
