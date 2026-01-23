@@ -8,7 +8,7 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f6; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
 
-        /* --- THE PANEL STYLES --- */
+        /* --- THE PANEL STYLES (Copy this to your main CSS) --- */
         .spec-panel {
             width: 380px;
             background: white;
@@ -27,56 +27,25 @@
             align-items: center;
         }
         .spec-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: #111827; }
-        .spec-header span { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #4b5563; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
+        .spec-header span { font-size: 12px; color: #6b7280; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
 
         .spec-body { padding: 20px; }
 
-        /* Section Styling */
-        .spec-section { margin-bottom: 18px; }
+        /* The individual sections */
+        .spec-section { margin-bottom: 16px; }
         .spec-label { 
             display: block; 
             font-size: 11px; 
             text-transform: uppercase; 
             letter-spacing: 0.05em; 
             color: #6b7280; /* Gray-500 */
-            font-weight: 800; 
-            margin-bottom: 6px;
+            font-weight: 700; 
+            margin-bottom: 4px;
         }
         .spec-text { 
             font-size: 14px; 
             color: #374151; /* Gray-700 */
             line-height: 1.5; 
-        }
-
-        /* NEW: Error Section Styling */
-        .spec-errors {
-            margin-top: 8px;
-            background: #fef2f2; /* Light Red background */
-            border: 1px solid #fecaca; /* Red border */
-            border-radius: 6px;
-            padding: 10px;
-        }
-        .error-item {
-            display: flex;
-            font-size: 13px;
-            margin-bottom: 8px;
-            align-items: baseline;
-        }
-        .error-item:last-child { margin-bottom: 0; }
-
-        .error-condition {
-            font-weight: 700;
-            color: #991b1b; /* Dark Red */
-            width: 90px; /* Fixed width for alignment */
-            flex-shrink: 0;
-            font-size: 12px;
-        }
-        .error-text {
-            font-family: monospace; /* Monospace for "Copy" */
-            color: #b91c1c;
-            background: rgba(255,255,255,0.5);
-            padding: 0 4px;
-            border-radius: 4px;
         }
 
         /* Technical Data Styling */
@@ -88,9 +57,9 @@
         .code-snippet {
             font-family: monospace;
             background: #f3f4f6;
-            padding: 3px 6px;
+            padding: 2px 6px;
             border-radius: 4px;
-            color: #d946ef; /* Pink-600 */
+            color: #d946ef; /* Pink-600 for contrast */
             font-size: 12px;
         }
     </style>
@@ -101,33 +70,30 @@
 
     <script>
         // --- 1. THE DATA STRUCTURE ---
-        // Updated with your specific "Do Not Exceed" logic
+        // This is how you will write your specs in specs.js
         const sampleSpec = {
-            id: "calc-do-not-exceed",
-            title: "Do Not Exceed Limit",
-            type: "Calculated Currency",
+            id: "input-check-amt",
+            title: "Check Amount Field",
+            type: "Currency Input", // Optional nice-to-have
             
-            logic: "<b>Required field.</b> <br>Value is calculated as the <b>Lesser of:</b><br>1. The total Scholarship Award.<br>2. (Total Tuition + Fees) / 4 (Quarterly amount).",
+            // The "Lean 4" Fields
+            logic: "Required. Must be > $0. Cannot exceed 'LNH Award' value ($7,863.53).",
             
-            // NEW: The specific error messages
-            errors: [
-                { condition: "Is Empty", text: "Calculation error: Missing tuition data." },
-                { condition: "Result < 0",  text: "Limit cannot be negative. Check Tuition inputs." }
-            ],
-
-            defaults: "Read-only. Auto-populates based on Student selection. Defaults to $0.00 if no student selected.",
+            defaults: "Defaults to $0.00. Field is disabled if Invoice Status is 'Approved'.",
             
-            interaction: "Updates dynamically immediately when 'Tuition' or 'Fees' input fields change.",
+            interaction: "Recalculates 'Remaining Balance' on blur. If user types > Award, auto-corrects to Max Award.",
             
-            technical: "db.invoices.quarterly_limit"
+            technical: "db.invoices.check_amt"
         };
 
         // --- 2. THE RENDERING LOGIC ---
+        // This function takes the data object and builds HTML
         function renderPanel(data) {
             const container = document.getElementById('panel-container');
             
+            // Helper to generate HTML for a section ONLY if data exists
             const createSection = (label, text, isCode = false) => {
-                if (!text) return ''; 
+                if (!text) return ''; // If field is missing, don't render anything
                 const content = isCode ? `<span class="code-snippet">${text}</span>` : text;
                 return `
                     <div class="spec-section">
@@ -145,21 +111,6 @@
                     </div>
                     <div class="spec-body">
                         ${createSection("Logic & Validation", data.logic)}
-
-                        ${data.errors && data.errors.length > 0 ? `
-                            <div class="spec-section">
-                                <span class="spec-label" style="color:#ef4444;">Error Messages</span>
-                                <div class="spec-errors">
-                                    ${data.errors.map(err => `
-                                        <div class="error-item">
-                                            <span class="error-condition">${err.condition}:</span>
-                                            <span class="error-text">"${err.text}"</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
                         ${createSection("Default State", data.defaults)}
                         ${createSection("Interaction", data.interaction)}
                         
@@ -176,6 +127,7 @@
             container.innerHTML = html;
         }
 
+        // Run the render
         renderPanel(sampleSpec);
     </script>
 </body>

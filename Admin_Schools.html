@@ -29,6 +29,10 @@
             transition: transform 0.2s;
         }
         .spec-marker:hover { transform: scale(1.1); }
+        .spec-marker.purple-star {
+            background-color: #8B5CF6; /* Purple-500 */
+            border-color: white;
+        }
 
         .spec-slideout {
             position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
@@ -44,18 +48,66 @@
             display: flex; justify-content: space-between; align-items: start;
         }
         .spec-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px; }
-        .spec-header .spec-type { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #4b5563; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
+        .spec-type { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0369a1; background: #e0f2fe; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.025em; display: inline-block; margin-top: 0; }
         .spec-close-btn { cursor: pointer; color: #9CA3AF; }
         .spec-close-btn:hover { color: #111827; }
 
-        .spec-body { padding: 24px; }
+        .spec-body { padding: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif }
         .spec-section { margin-bottom: 24px; }
-        .spec-label { 
-            display: block; font-size: 11px; text-transform: uppercase; 
-            letter-spacing: 0.05em; color: #6b7280; font-weight: 800; margin-bottom: 8px;
-        }
-        .spec-text { font-size: 14px; color: #374151; line-height: 1.6; }
         
+
+        /* 1. The Label (Recedes slightly, acts as structure) */
+        .spec-label {
+            display: block !important;
+            text-transform: uppercase !important;
+            
+            /* 1. Use Gray-600 instead of 500 (Adds "Ink") */
+            color: #4b5563 !important;   
+            
+            /* 2. Stick to 700 (Standard Bold) */
+            /* Note: 800 often falls back to 700 on system fonts anyway */
+            font-weight: 700 !important; 
+            
+            /* 3. REDUCE letter-spacing */
+            /* Wide spacing (0.05em) spreads the black out, making it look gray/thin. */
+            /* Tighter spacing (0.02em) clumps the black together, making it look bold. */
+            letter-spacing: 0.02em !important; 
+            
+            font-size: 11px !important;
+            margin-bottom: 4px !important;
+        }
+
+        /* 2. The Content (The "Hero" - Darkest and clearest) */
+        .spec-text { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            font-size: 14px !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            
+            /* THE KEY: Almost Black. Maximum readability. */
+            color: #111827 !important;   /* Gray-900 */
+            font-weight: 400 !important;
+            line-height: 1.6 !important;
+        }
+        
+        .spec-number {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: #374151; color: white;
+            min-width: 20px; height: 20px; padding: 0 4px;
+            border-radius: 4px; margin-right: 8px;
+            font-size: 11px; font-weight: 700;
+        }
+
+        /* Fix lists inside the Spec Panel */
+        .spec-text ul {
+            margin: 4px 0 10px 0; /* Add space above/below */
+            padding-left: 20px;   /* Indent bullets slightly */
+            list-style-type: disc;
+        }
+        .spec-text li {
+            margin-bottom: 4px; /* Space between list items */
+        }
+
         .spec-errors {
             margin-top: 8px; background: #fef2f2; border: 1px solid #fecaca;
             border-radius: 6px; padding: 12px;
@@ -77,18 +129,24 @@
         .spec-panel-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; }
         .spec-content-wrapper { padding: 24px; background-color: #f9fafb; min-height: calc(100vh - 70px); }
         .spec-item { 
-            margin-bottom: 24px; padding: 20px; border-radius: 8px; 
+            margin-bottom: 24px; padding: 0; border-radius: 8px; 
             border: 2px solid transparent; transition: all 0.3s;
             background: #fff;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             scroll-margin-top: 90px; /* Offset for sticky header */
+            overflow: hidden;
+            cursor: pointer;
         }
         .spec-item.active { 
             border-color: #F97316; 
-            background-color: #fff7ed; 
-            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
         }
-        .spec-item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; }
+        .spec-item-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #e5e7eb; padding: 10px 14px; 
+            background-color: #f3f4f6; 
+        }
+        .spec-item-body { padding: 20px; }
 
         /* Body Transition for Panel Push */
         body { transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -112,7 +170,7 @@
     </aside>
 
     <main>
-        <h1>Site <strong>Settings</strong></h1>
+        <h1 id="pageTitle">Site <strong>Settings</strong></h1>
         <div class="tabs">
             <div class="tab" id="tabUsers">Users</div>
             <div class="tab active" id="tabSchools">Schools</div>
@@ -208,6 +266,7 @@
     <div id="specPanel" class="spec-slideout"></div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="history.js"></script>
     <script src="specs.js"></script>
     <script>
         lucide.createIcons();
@@ -581,16 +640,26 @@
 
         function renderSpecMarkers() {
             removeSpecMarkers(); // Clear existing
+            if (!document.body.classList.contains('spec-mode')) return;
             if (!window.PAGE_SPECS || !window.PAGE_SPECS['admin_schools']) return;
 
             const specs = window.PAGE_SPECS['admin_schools'];
+            let specCount = 0;
+
             specs.forEach((spec, index) => {
                 const target = document.getElementById(spec.targetId);
                 if (target) {
                     const rect = target.getBoundingClientRect();
                     const marker = document.createElement('div');
                     marker.className = 'spec-marker';
-                    marker.innerText = index + 1;
+                    
+                    if (spec.specialMarker === 'purple-star') {
+                        marker.classList.add('purple-star');
+                        marker.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    } else {
+                        specCount++;
+                        marker.innerText = specCount;
+                    }
                     
                     // Base Positioning Logic
                     let baseTop, baseLeft;
@@ -643,20 +712,50 @@
                 <div class="spec-content-wrapper">
             `;
 
+            let specCount = 0;
+
             specs.forEach((data, index) => {
                 const num = index + 1;
+                
+                // Custom History Content
+                let customContent = '';
+                if (data.specialMarker === 'purple-star' && window.projectHistory && window.projectHistory['admin-schools']) {
+                    const history = window.projectHistory['admin-schools'];
+                    customContent = `<div class="spec-section"><span class="spec-label">Revision History</span><div class="spec-text">`;
+                    history.forEach(h => {
+                        customContent += `<div style="margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:700; font-size:12px; color:#111827;">${h.date}</span>
+                                <span style="font-family:monospace; background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:11px; color:#6B7280;">${h.ticket}</span>
+                            </div>
+                            <div style="font-size:13px; color:#374151; line-height:1.4;">${h.note}</div>
+                        </div>`;
+                    });
+                    customContent += `</div></div>`;
+                }
+
                 const createSection = (label, text) => text ? `<div class="spec-section"><span class="spec-label">${label}</span><div class="spec-text">${text}</div></div>` : '';
                 
+                // Conditional Title and Type
+                let displayTitle;
+                if (data.specialMarker) {
+                    displayTitle = data.title;
+                } else {
+                    specCount++;
+                    displayTitle = `<span class="spec-number">${specCount}</span>${data.title}`;
+                }
+                const displayType = data.type ? `<span class="spec-type">${data.type}</span>` : '';
+
                 html += `
                     <div id="spec-item-${num}" class="spec-item">
+                    <div id="spec-item-${num}" class="spec-item" onclick="scrollToSpec(${num})">
                         <div class="spec-item-header">
-                            <div>
-                                <h3 style="margin:0; font-size:16px; font-weight:700; color:#111827;">Spec #${num}: ${data.title}</h3>
-                                <span class="spec-type" style="margin-top:4px; display:inline-block;">${data.type}</span>
-                            </div>
+                            <h3 style="margin:0; font-size:14px; font-weight:700; color:#111827; display:flex; align-items:center;">${displayTitle}</h3>
+                            ${displayType}
                         </div>
-                        <div class="spec-body" style="padding: 0;">
+                        <div class="spec-item-body">
                             <div class="spec-section"><span class="spec-label">Target ID</span><span class="code-snippet">${data.targetId}</span></div>
+                            ${customContent}
                             ${createSection("Description", data.description)}
                             ${createSection("Logic & Validation", data.logic)}
                             ${createSection("Default State", data.defaults)}
