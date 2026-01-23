@@ -72,7 +72,7 @@ window.PAGE_SPECS = {
             type: "Table Column",
             description: "Column listing active users.",
             logic: "Shows active 'Private School' users assigned to the school.",
-            defaults: "Summary view (names or count).",
+            defaults: "Display first and last name of up to 2 users and then display a count of users above 2. (names or count).",
             interaction: "None.",
             offset: { top: "-3px", right: "0px" },
             errors: []
