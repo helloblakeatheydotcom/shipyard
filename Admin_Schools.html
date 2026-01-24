@@ -105,16 +105,16 @@
 
     <div class="modal-overlay" id="reactivateModal">
         <div class="modal-box">
-            <div class="modal-header"><h2>Reactivate <span id="reactivateSchoolName"></span></h2></div>
+            <div class="modal-header" id="reactivateModalHeader"><h2>Reactivate <span id="reactivateSchoolName"></span></h2></div>
             <div class="modal-body">
-                <p>This will mark the school <strong>ACTIVE</strong> (as of <span id="reactivateDate"></span>).</p>
-                <div class="impact-grid" style="margin-top: 24px;">
+                <p id="reactivateModalSubtitle">This will mark the school <strong>ACTIVE</strong> (as of <span id="reactivateDate"></span>).</p>
+                <div class="impact-grid" id="reactivateImpactGrid" style="margin-top: 24px;">
                     <div class="impact-col"><h3>What starts</h3><ul class="impact-list"><li><strong>New applications</strong> (school can be selected)</li><li><strong>New annual statements and invoices</strong></li></ul></div>
                     <div class="impact-col"><h3>Users</h3><ul class="impact-list"><li>School users keep existing access</li><li>You can enable additional users from the Users page</li></ul></div>
                 </div>
                 <div class="impact-col"><h3>What continues</h3><ul class="impact-list"><li>Existing items remain available</li><li>Draft/Returned items can be edited and submitted</li><li>Submitted items can be processed</li></ul></div>
             </div>
-            <div class="modal-footer"><button class="btn btn-cancel" onclick="closeModals()">Cancel</button><button class="btn btn-primary" onclick="confirmAction()">Reactivate</button></div>
+            <div class="modal-footer"><button class="btn btn-cancel" id="btnReactivateCancel" onclick="closeModals()">Cancel</button><button class="btn btn-primary" id="btnReactivateConfirm" onclick="confirmAction()">Reactivate</button></div>
         </div>
     </div>
 
@@ -395,8 +395,8 @@
             document.getElementById('menu-dropdown').style.display = 'none';
 
             if (document.body.classList.contains('spec-mode')) {
-                renderSpecMarkers();
-                renderSpecPanel();
+                renderSpecMarkers('admin_schools_users_modal');
+                renderSpecPanel('admin_schools_users_modal');
             }
         }
 
@@ -412,8 +412,8 @@
             document.getElementById('menu-dropdown').style.display = 'none';
 
             if (document.body.classList.contains('spec-mode')) {
-                renderSpecMarkers();
-                renderSpecPanel();
+                renderSpecMarkers('admin_schools_deactivate_modal');
+                renderSpecPanel('admin_schools_deactivate_modal');
             }
         }
 
@@ -422,6 +422,13 @@
             document.getElementById('reactivateSchoolName').innerText = name;
             document.getElementById('reactivateModal').classList.add('show');
             document.getElementById('menu-dropdown').style.display = 'none';
+
+            if (document.body.classList.contains('spec-mode')) {
+                requestAnimationFrame(() => {
+                    renderSpecMarkers('admin_schools_reactivate_modal');
+                    renderSpecPanel('admin_schools_reactivate_modal');
+                });
+            }    
         }
 
         function closeModals() {
@@ -430,8 +437,8 @@
             document.getElementById('usersModal').classList.remove('show');
 
             if (document.body.classList.contains('spec-mode')) {
-                renderSpecMarkers();
-                renderSpecPanel();
+                renderSpecMarkers('admin_schools');
+                renderSpecPanel('admin_schools');
             }
         }
 
@@ -518,17 +525,25 @@
             if (deactivateModal && deactivateModal.classList.contains('show')) {
                 return 'admin_schools_deactivate_modal';
             }
+            const reactivateModal = document.getElementById('reactivateModal');
+            if (reactivateModal && reactivateModal.classList.contains('show')) {
+                return 'admin_schools_reactivate_modal';
+            }
             return 'admin_schools';
         }
 
-        function renderSpecMarkers() {
+        function renderSpecMarkers(overrideKey) {
             removeSpecMarkers(); // Clear existing
             if (!document.body.classList.contains('spec-mode')) return;
             
-            const specKey = getCurrentSpecKey();
+            const specKey = overrideKey || getCurrentSpecKey();
             if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
 
             const specs = window.PAGE_SPECS[specKey];
+            const main = document.querySelector('main');
+            const mainRect = main.getBoundingClientRect();
+            const isModal = specKey.includes('_modal');
+            const container = isModal ? document.body : main;
             let specCount = 0;
 
             specs.forEach((spec, index) => {
@@ -550,16 +565,25 @@
                     let baseTop, baseLeft;
 
                     if (spec.type === 'Table Column') {
-                        // Right Center (Outside) - for columns
                         baseTop = rect.top + (rect.height / 2) - 14;
                         baseLeft = rect.right + 10;
                     } else {
-                        // Top Right Corner (Overlapping) - for buttons, inputs, tabs, cards
                         baseTop = rect.top - 14;
                         baseLeft = rect.right - 14;
                     }
 
-                    // Manual Offset Logic (CSS-style: top adds, right subtracts from left, etc.)
+                    // Calculate position based on container
+                    let top, left;
+                    if (isModal) {
+                        // Fixed positioning for modals (relative to viewport/body)
+                        top = baseTop + window.scrollY;
+                        left = baseLeft + window.scrollX;
+                    } else {
+                        // Relative positioning for scrolling main content
+                        top = baseTop - mainRect.top + main.scrollTop;
+                        left = baseLeft - mainRect.left + main.scrollLeft;
+                    }
+
                     let topOffset = '', leftOffset = '';
                     if (spec.offset) {
                         if (spec.offset.top) topOffset += ` + ${spec.offset.top}`;
@@ -568,14 +592,14 @@
                         if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
                     }
                     
-                    marker.style.top = `calc(${window.scrollY + baseTop}px${topOffset})`;
-                    marker.style.left = `calc(${window.scrollX + baseLeft}px${leftOffset})`;
+                    marker.style.top = `calc(${top}px${topOffset})`;
+                    marker.style.left = `calc(${left}px${leftOffset})`;
                     
                     marker.onclick = (e) => {
                         e.stopPropagation();
                         scrollToSpec(index + 1);
                     };
-                    document.body.appendChild(marker);
+                    container.appendChild(marker);
                 }
             });
         }
@@ -584,10 +608,10 @@
             document.querySelectorAll('.spec-marker').forEach(el => el.remove());
         }
 
-        function renderSpecPanel() {
+        function renderSpecPanel(overrideKey) {
             const panel = document.getElementById('specPanel');
             
-            const specKey = getCurrentSpecKey();
+            const specKey = overrideKey || getCurrentSpecKey();
             if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
             const specs = window.PAGE_SPECS[specKey];
 

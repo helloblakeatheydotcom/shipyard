@@ -208,17 +208,16 @@ window.PAGE_SPECS = {
             type: "Static Content",
             description: "Two-column grid explaining the consequences of deactivation.",
             logic: `
-                <b>Content:</b>
-                Static, hardcoded text. Text must match design <i>exactly</i> for compliance.
+                <b>Content: </b>Static, hardcoded text.
                 <br><br>
                 <b>Layout:</b>
                 Display as a 2-column grid.
                 <ul>
-                    <li><b>Left Col:</b> "What stops" and "What continues</li>
+                    <li><b>Left Col:</b> "What stops" and "What continues"</li>
                     <li><b>Right Col:</b> "Users"</li>
                 </ul>
             `,
-    interaction: "None."
+            interaction: "None."
         },
         {
             targetId: "btnDeactivateConfirm",
@@ -236,6 +235,59 @@ window.PAGE_SPECS = {
                 <b>Cancel Click:</b> Closes the modal immediately. No data is changed.
                 <br>
                 <b>Deactivate Click:</b> Sets status to 'Inactive', closes modal, and triggers table refresh.
+            `
+        }
+    ],
+    "admin_schools_reactivate_modal": [
+        {
+            targetId: "reactivateModalHeader",
+            title: "Reactivate Header",
+            type: "Modal Header",
+            description: "Title and confirmation subtitle.",
+            logic: `
+                <b>Dynamic Text:</b>
+                <ul>
+                    <li><b>Title:</b> "Reactivate <b>[School Name]</b>"</li>
+                    <li><b>Subtitle:</b> "This will mark the school <b>ACTIVE</b> (as of [Current Date] at [Current Time])."</li>
+                </ul>
+            `,
+            defaults: "Date format: 'January 23, 2026 at 2:35 PM'",
+            interaction: "None."
+        },
+        {
+            targetId: "reactivateImpactGrid",
+            title: "Impact Details",
+            type: "Static Content",
+            description: "Two-column grid explaining the consequences of reactivation.",
+            logic: `
+                <b>Content:</b>
+                Static, hardcoded text.
+                <br><br>
+                <b>Layout:</b>
+                Display as a 2-column grid.
+                <ul>
+                    <li><b>Left Col:</b> "What starts" and "What continues"</li>
+                    <li><b>Right Col:</b> "Users"</li>
+                </ul>
+            `,
+            interaction: "None."
+        },
+        {
+            targetId: "btnReactivateConfirm",
+            title: "Action Buttons",
+            type: "Button",
+            description: "Final confirmation controls.",
+            logic: `
+                <b>Cancel Button:</b>
+                Style: Secondary (status-inactive-bg, status-inactive-text).
+                <br><br>
+                <b>Reactivate Button:</b>
+                Style: <b>Primary</b> (primary-blue background, White text).
+            `,
+            interaction: `
+                <b>Cancel Click:</b> Closes the modal immediately. No data is changed.
+                <br>
+                <b>Reactivate Click:</b> Sets status to 'Active', closes modal, and triggers table refresh.
             `
         }
     ],
@@ -260,9 +312,11 @@ window.PAGE_SPECS = {
             logic: `
                 <b>Required Fields (*):</b>
                 <ul>
-                    <li><b>School Name</b></li>
-                    <li><b>Phone Number:</b> Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
-                    <li><b>Address, City, State</b></li>
+                    <li><b>School Name:</b> <code>type="text"</code></li>
+                    <li><b>Phone Number:</b> <code>type="tel"</code>. Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Address & City:</b> <code>type="text"</code></li>
+                    <li><b>State:</b> <code>&lt;select&gt;</code> Dropdown.</li>
+                    <li><b>Zip Code:</b> <code>type="text"</code> (See logic below).</li>
                 </ul>
                 <br>
                 <b>Zip Code Logic:</b>
@@ -273,21 +327,21 @@ window.PAGE_SPECS = {
                 <br>
                 <b>Optional Fields:</b>
                 <ul>
-                    <li><b>Email Address:</b> (Validate format if entered)</li>
-                    <li><b>Website:</b> (Validate URL format if entered)</li>
+                    <li><b>Email Address:</b> <code>type="email"</code>. (Validate format if entered).</li>
+                    <li><b>Website:</b> <code>type="url"</code>. (Validate URL format if entered).</li>
                 </ul>
             `,
-            defaults: "Fields are empty on load, except for <b>State</b> which defaults to Oklahoma",
+            defaults: "Fields are empty on load, except for <b>State</b> which defaults to Oklahoma.",
             errors: [
-                    { condition: "Empty Field", text: "This field is required." },
-                    { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
-                    { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
+                { condition: "Empty Field", text: "This field is required." },
+                { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
+                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
                 <br>
                 <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
-                `
+            `
         },
        {
             targetId: "primaryContactSection",
@@ -295,22 +349,23 @@ window.PAGE_SPECS = {
             type: "Form Section",
             description: "Designated point of contact for the school.",
             logic: `
-                <b>All fields are Required (*).</b>
-                <br>
-                <b>Validation:</b>
+                <b>Required Fields (*):</b>
                 <ul>
-                    <li><b>Phone:</b> Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
-                    <li><b>Email:</b> Real-time validation (check for @ and .domain).</li>
+                    <li><b>Primary Contact Name:</b> <code>type="text"</code>.</li>
+                    <li><b>Primary Contact Phone:</b> <code>type="tel"</code>. Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Primary Contact Email:</b> <code>type="email"</code>. Validate format (check for @ and .domain).</li>
                 </ul>
             `,
-        errors: [
+            defaults: "Fields are empty on load.",
+            errors: [
                 { condition: "Empty Field", text: "This field is required." },
                 { condition: "Invalid Email", text: "Please enter a valid email address (e.g. name@domain.com)." },
                 { condition: "Phone Mask", text: "Phone Number must be 10 digits." }
-        ],
+            ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
-                <br><b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+                <br>
+                <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
             `
         },
        {
