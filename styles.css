@@ -10,11 +10,13 @@
     --status-active-text: #135D23;
     --status-inactive-bg: #E5E7EB;
     --status-inactive-text: #374151;
+    --status-inactive-hover: #D1D5DB;
     --danger-red: #DC2626;
     --danger-bg: #FEF2F2;
     --text-modal: #172B4D;
     --focus-blue: #2563EB;
     --card-bg: #FFFFFF;
+    --inset-card-bg: #F8FAFC;
     --cool-gray: #586874;
     --text-input: #231C32;
     --placeholder: #999999;
@@ -149,7 +151,7 @@ tbody tr:hover td { background-color: #F9FAFB; }
 
 /* Warning Card */
 .warning-card {
-    background-color: #F8FAFC; border: 1px solid #E2E8F0;
+    background-color: var(--inset-card-bg); border: 1px solid #E2E8F0;
     border-radius: 8px; padding: 16px 20px; margin: 24px 0;
 }
 .warning-header { display: flex; align-items: center; gap: 10px; font-weight: 700; margin-bottom: 12px; color: var(--text-modal); }
@@ -179,8 +181,8 @@ tbody tr:hover td { background-color: #F9FAFB; }
 /* Modal Footer */
 .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 0.65rem 1.5rem; border-radius: 6px; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; border: none; }
-.btn-cancel { background-color: #E5E7EB; color: #374151; }
-.btn-cancel:hover { background-color: #D1D5DB; }
+.btn-cancel { background-color: var(--status-inactive-bg); color: var(--status-inactive-text); }
+.btn-cancel:hover { background-color: var(--status-inactive-hover); }
 .btn-danger { background-color: var(--danger-red); color: white; }
 .btn-danger:hover { background-color: #B91C1C; }
 .btn-primary { background-color: var(--primary-blue); color: white; }

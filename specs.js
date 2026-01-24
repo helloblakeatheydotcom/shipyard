@@ -40,7 +40,7 @@ window.PAGE_SPECS = {
             type: "Button",
             description: "Primary button to add a new school.",
             logic: "Must pass current client_id as URL parameter.",
-            defaults: "Visible and Enabled (Active)",
+            defaults: "Visible and Enabled (Active). Primary Button (primary-blue background, white text).",
             interaction: "Click: Navigates to Add_School.html.",
             offset: { top: "-2px", right: "-2px" },
             errors: []
@@ -90,7 +90,7 @@ window.PAGE_SPECS = {
             title: "Status Column",
             type: "Table Column",
             description: "Column showing the school's operational status",
-            logic: "Active: Renders as Green Pill (bg-green-100, text-green-800). Inactive: Renders as Gray Pill (bg-gray-100, text-gray-800).",
+            logic: "Active: Renders as Green Pill (status-active-bg, status-active-text). Inactive: Renders as Gray Pill (status-inactive-bg, status-inactive-text).",
             defaults: "Sortable (future enhancement).",
             interaction: "None.",
             offset: { top: "-3px", right: "0px" },
@@ -137,7 +137,7 @@ window.PAGE_SPECS = {
             logic: `
                 <ul>
                     <li><b>Layout:</b> 'Name' is First Name Last Name, bold (e.g. <b>John Doe</b>). 'Last login' is right-aligned and formated as date/time relative to now.</li>
-                    <li><b>Badge:</b> Status 'Active' renders as Green Pill and 'Inactive' as Gray Pill.</li>
+                    <li><b>Badge:</b> Status 'Active' renders as Green Pill (status-active-bg, status-active-text) and 'Inactive' as Gray Pill (status-inactive-bg, status-inactive-text).</li>
                     <li><b>Contact Details:</b> Display 'Phone' and 'Email' with icons
                     <li><b>Empty State:</b> If array is empty, show "No users found" message.</li>
                 </ul>
@@ -156,7 +156,7 @@ window.PAGE_SPECS = {
             description: "Primary button in the footer.",
             logic:  `
                 <ul>
-                    <li><b>Style:</b> Primary Button (solid blue background, white text).</li>
+                    <li><b>Style:</b> Primary Button (primary-blue background, white text).</li>
                     <li><b>Position:</b> Right-aligned in the footer.</li>
                 </ul>
             `,
@@ -164,6 +164,79 @@ window.PAGE_SPECS = {
             interaction: "Click: Closes the modal and returns focus to the schoolsTable.",
             offset: { top: "-5px", right: "-5px" },
             errors: []
+        }
+    ],
+    "admin_schools_deactivate_modal": [
+        {
+            targetId: "deactivateModalHeader",
+            title: "Deactivate Header",
+            type: "Modal Header",
+            description: "Title and confirmation subtitle.",
+            logic: `
+                <b>Dynamic Text:</b>
+                <ul>
+                    <li><b>Title:</b> "Deactivate <b>[School Name]</b>"</li>
+                    <li><b>Subtitle:</b> "This will mark the school <b>INACTIVE</b> (as of [Current Date] at [Current Time])."</li>
+                </ul>
+            `,
+            defaults: "Date format: 'January 23, 2026 at 5:35 PM'",
+            interaction: "None."
+        },
+        {
+            targetId: "deactivateWarningCard",
+            title: "Impact Warning",
+            type: "Alert Box",
+            description: "Summary of open items preventing a clean break.",
+            logic: `
+                <b>Data Query:</b>
+                Queries the database for specific open records linked to this <code>school_id</code>:
+                <ul>
+                    <li><b>Invoices:</b> Status = 'Not Started', 'Created', 'Submitted', 'Approved', or 'Returned'</li>
+                    <li><b>Applications:</b> Status = 'Initial Review', 'Final Review', 'Returned to Parent', 'DHS Review', 'School Review', 'Approved', or 'Pending Acceptance'</li>
+                    <li><b>Statements:</b> Status = 'Not Started', 'Created', or 'Submitted'</li>
+                </ul>
+                <br>
+                <b>Visibility:</b>
+                If all counts are 0, hide this box entirely.
+            `,
+            defaults: "Background: inset-card-bg. Icon: Alert Triangle.",
+            interaction: "None."
+        },
+        {
+            targetId: "deactivateImpactGrid",
+            title: "Impact Details",
+            type: "Static Content",
+            description: "Two-column grid explaining the consequences of deactivation.",
+            logic: `
+                <b>Content:</b>
+                Static, hardcoded text. Text must match design <i>exactly</i> for compliance.
+                <br><br>
+                <b>Layout:</b>
+                Display as a 2-column grid.
+                <ul>
+                    <li><b>Left Col:</b> "What stops" and "What continues</li>
+                    <li><b>Right Col:</b> "Users"</li>
+                </ul>
+            `,
+    interaction: "None."
+        },
+        {
+            targetId: "btnDeactivateConfirm",
+            title: "Action Buttons",
+            type: "Button",
+            description: "Final confirmation controls.",
+            logic: `
+                <b>Cancel Button:</b>
+                Style: Secondary (status-inactive-bg, status-inactive-text).
+                <br><br>
+                <b>Deactivate Button:</b>
+                Style: <b>Destructive/Danger</b> (danger-red background, White text).
+            `,
+            interaction: `
+                <b>Cancel Click:</b> Closes the modal immediately. No data is changed.
+                <br>
+                <b>Deactivate Click:</b> Sets status to 'Inactive', closes modal, and triggers table refresh.
+            `
         }
     ]
 };

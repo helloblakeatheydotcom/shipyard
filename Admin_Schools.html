@@ -86,20 +86,20 @@
 
     <div class="modal-overlay" id="deactivateModal">
         <div class="modal-box">
-            <div class="modal-header"><h2>Deactivate <span id="deactivateSchoolName"></span></h2></div>
+            <div class="modal-header" id="deactivateModalHeader"><h2>Deactivate <span id="deactivateSchoolName"></span></h2></div>
             <div class="modal-body">
-                <p>This will mark the school <strong>INACTIVE</strong> (as of <span id="currentDate"></span>).</p>
-                <div class="warning-card">
+                <p id="deactivateModalSubtitle">This will mark the school <strong>INACTIVE</strong> (as of <span id="currentDate"></span>).</p>
+                <div class="warning-card" id="deactivateWarningCard">
                     <div class="warning-header"><i data-lucide="alert-triangle" width="20" height="20" color="#334155"></i> Outstanding items for this school</div>
                     <div class="warning-grid"><div>• 7 Invoices (2 pending LNH action)</div><div>• 2 Applications (1 pending LNH action)</div><div>• 2 Annual Statements</div></div>
                 </div>
-                <div class="impact-grid">
+                <div class="impact-grid" id="deactivateImpactGrid">
                     <div class="impact-col"><h3>What stops</h3><ul class="impact-list"><li><strong>New applications</strong> (school cannot be selected)</li><li><strong>New annual statements and invoices</strong></li></ul></div>
                     <div class="impact-col"><h3>Users</h3><ul class="impact-list"><li>School users keep access to records</li><li>You must manually deactivate users</li></ul></div>
                 </div>
                 <div class="impact-col"><h3>What continues</h3><ul class="impact-list"><li>Existing items remain visible</li><li>Draft/Returned items can be edited and resubmitted</li><li>Submitted items can be processed</li></ul></div>
             </div>
-            <div class="modal-footer"><button class="btn btn-cancel" onclick="closeModals()">Cancel</button><button class="btn btn-danger" onclick="confirmAction()">Deactivate</button></div>
+            <div class="modal-footer"><button class="btn btn-cancel" id="btnDeactivateCancel" onclick="closeModals()">Cancel</button><button class="btn btn-danger" id="btnDeactivateConfirm" onclick="confirmAction()">Deactivate</button></div>
         </div>
     </div>
 
@@ -410,6 +410,11 @@
             document.getElementById('deactivateSchoolName').innerText = name;
             document.getElementById('deactivateModal').classList.add('show');
             document.getElementById('menu-dropdown').style.display = 'none';
+
+            if (document.body.classList.contains('spec-mode')) {
+                renderSpecMarkers();
+                renderSpecPanel();
+            }
         }
 
         function openReactivateModal(name) {
@@ -508,6 +513,10 @@
             const usersModal = document.getElementById('usersModal');
             if (usersModal && usersModal.classList.contains('show')) {
                 return 'admin_schools_users_modal';
+            }
+            const deactivateModal = document.getElementById('deactivateModal');
+            if (deactivateModal && deactivateModal.classList.contains('show')) {
+                return 'admin_schools_deactivate_modal';
             }
             return 'admin_schools';
         }
