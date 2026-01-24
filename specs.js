@@ -238,5 +238,109 @@ window.PAGE_SPECS = {
                 <b>Deactivate Click:</b> Sets status to 'Inactive', closes modal, and triggers table refresh.
             `
         }
+    ],
+    "add_school": [
+        {
+            targetId: "pageTitle",
+            title: "Page Info",
+            type: "Page Header",
+            description: "Header containing the page title and breadcrumb navigation.",
+            logic: "",
+            defaults: "",
+            interaction: "",
+            offset: { top: "0px", right: "0px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "schoolInfoSection", 
+            title: "School Information",
+            type: "Form Section",
+            description: "General demographic data for the school.",
+            logic: `
+                <b>Required Fields (*):</b>
+                <ul>
+                    <li><b>School Name</b></li>
+                    <li><b>Phone Number:</b> Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Address, City, State</b></li>
+                </ul>
+                <br>
+                <b>Zip Code Logic:</b>
+                <ul>
+                    <li><b>Conditional Mask:</b> Accept 5 digits. If user types a 6th digit, automatically insert hyphen (format as <code>xxxxx-xxxx</code>).</li>
+                    <li><b>Validation:</b> Error if length is not exactly 5 or 9 digits.</li>
+                </ul>
+                <br>
+                <b>Optional Fields:</b>
+                <ul>
+                    <li><b>Email Address:</b> (Validate format if entered)</li>
+                    <li><b>Website:</b> (Validate URL format if entered)</li>
+                </ul>
+            `,
+            defaults: "Fields are empty on load, except for <b>State</b> which defaults to Oklahoma",
+            errors: [
+                    { condition: "Empty Field", text: "This field is required." },
+                    { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
+                    { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
+            ],
+            interaction: `
+                <b>Navigation:</b> Tab key moves focus in order.
+                <br>
+                <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+                `
+        },
+       {
+            targetId: "primaryContactSection",
+            title: "Primary Contact",
+            type: "Form Section",
+            description: "Designated point of contact for the school.",
+            logic: `
+                <b>All fields are Required (*).</b>
+                <br>
+                <b>Validation:</b>
+                <ul>
+                    <li><b>Phone:</b> Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Email:</b> Real-time validation (check for @ and .domain).</li>
+                </ul>
+            `,
+        errors: [
+                { condition: "Empty Field", text: "This field is required." },
+                { condition: "Invalid Email", text: "Please enter a valid email address (e.g. name@domain.com)." },
+                { condition: "Phone Mask", text: "Phone Number must be 10 digits." }
+        ],
+            interaction: `
+                <b>Navigation:</b> Tab key moves focus in order.
+                <br><b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+            `
+        },
+       {
+            targetId: "fileUploadArea",
+            title: "Affidavit Upload",
+            type: "File Uploader",
+            description: "Drag-and-drop zone for the Private School Affidavit.",
+            logic: `
+                <b>Constraints:</b>
+                <ul>
+                    <li><b>File Types:</b> PDF, JPG, PNG only.</li>
+                    <li><b>Max Size:</b> 10MB.</li>
+                    <li><b>Multiple Files:</b> No (Single file only).</li>
+                </ul>
+                <br>
+                <b>Success State:</b>
+                Replace "Click to upload" text with the filename and a "Remove" (X) icon.
+            `,
+            errors: [
+                    { condition: "Wrong File Type", text: "Only PDF, JPG, and PNG files are allowed." },
+                    { condition: "File Too Large", text: "File size must be under 10MB." },
+                    { condition: "Upload Failure", text: "Network error. Please try again." }
+            ],
+            interaction: `
+                    <b>Validation Trigger:</b> Run checks <b>Immediately</b> upon file selection or drop.
+                    <br>
+                    <b>Click:</b> Opens system file browser.
+                    <br>
+                    <b>Drag & Drop:</b> Highlights border on hover.
+            `
+        }
     ]
 };
