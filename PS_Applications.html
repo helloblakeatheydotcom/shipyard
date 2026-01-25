@@ -209,14 +209,14 @@
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
-            <label class="switch"><input type="checkbox" id="devModeToggle" onchange="toggleDevMode(this)"><span class="slider round"></span></label>
-            <span class="dev-label">Dev Mode</span>
+            <label class="switch"><input type="checkbox" id="specModeToggle" onchange="toggleSpecMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Spec Mode</span>
         </div>
         <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
     </aside>
 
     <main>
-        <div class="page-header-flex">
+        <div class="page-header-flex" id="pageTitle">
             <h1>My <strong>Applications</strong></h1>
         </div>
         
@@ -226,7 +226,7 @@
             <div class="filters-row" id="filtersContainer"></div>
         </div>
 
-        <div class="card">
+        <div class="card" id="applicationsCard">
             <div class="card-header-row">
                 <div class="search-box">
                     <i data-lucide="search" class="search-icon"></i>
@@ -239,22 +239,16 @@
                     <thead>
                         <tr>
                             <th>Last Name</th>
-                            <th>First Name</th>
+                            <th><span id="th-firstName">First Name</span></th>
                             <th>DOB</th>
                             <th>Grade</th>
                             <th>Parent</th>
                             <th>School Year</th>
                             <th>Type</th>
                             <th>Submitted Date</th>
-                            <th>
-                                <div class="th-flex">
-                                    Approved Date
-                                    <div class="dev-marker" onclick="this.classList.toggle('active')"></div>
-                                    <div class="dev-tooltip">Remove Initial Year and add Approved Date</div>
-                                </div>
-                            </th>
+                            <th><span id="th-approvedDate">Approved Date</span></th>
                             <th>LNH Award</th>
-                            <th>Status</th>
+                            <th><span id="th-status">Status</span></th>
                         </tr>
                     </thead>
                     <tbody id="applicationsTableBody">
@@ -263,10 +257,10 @@
                 </table>
             </div>
 
-            <div class="pagination">
+            <div class="pagination" id="paginationContainer">
                 <span>Rows per page <select id="rowsPerPageSelect"><option value="10">10</option><option value="25">25</option></select></span>
                 <span style="margin-left: 20px;" id="paginationInfo">Showing 1-10 of 25 results</span>
-                <div class="page-controls">
+                <div class="page-controls" id="paginationControls">
                     <button class="pagination-btn" id="btnFirst"><i data-lucide="chevrons-left" width="18" height="18"></i></button>
                     <button class="pagination-btn" id="btnPrev"><i data-lucide="chevron-left" width="18" height="18"></i></button>
                     <button class="pagination-btn" id="btnNext"><i data-lucide="chevron-right" width="18" height="18"></i></button>
@@ -276,6 +270,10 @@
         </div>
     </main>
 
+    <!-- Spec Slide-out Panel -->
+    <div id="specPanel" class="spec-slideout"></div>
+
+    <script src="specs.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
@@ -565,40 +563,174 @@
         });
     </script>
 
-    <!-- Dev History Component -->
-    <div class="dev-history-trigger" onclick="document.getElementById('devHistoryPanel').classList.toggle('show')">
-        <i data-lucide="history" width="24" height="24"></i>
-    </div>
-    <div class="dev-history-panel" id="devHistoryPanel">
-        <div class="dev-history-header">
-            Page Revision History
-            <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
-        </div>
-        <ul class="dev-history-list" id="historyList"></ul>
-    </div>
     <script src="history.js"></script>
     <script>
-        const list = document.getElementById('historyList');
-        if (window.projectHistory && window.projectHistory['ps-applications'] && list) {
-            window.projectHistory['ps-applications'].forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'dev-history-item';
-                li.innerHTML = `<div class="dev-history-meta"><span class="dev-history-date">${item.date}</span><span class="dev-history-ticket">${item.ticket}</span></div><span class="dev-history-note">${item.note}</span>`;
-                list.appendChild(li);
+        // --- SPEC MODE LOGIC ---
+        function toggleSpecMode(checkbox) {
+            const isSpec = checkbox.checked;
+            if (isSpec) {
+                document.body.classList.add('spec-mode');
+                renderSpecMarkers();
+                renderSpecPanel();
+            } else {
+                document.body.classList.remove('spec-mode');
+                removeSpecMarkers();
+                toggleSpecPanel(false);
+            }
+            localStorage.setItem('specMode', isSpec);
+        }
+
+        function getCurrentSpecKey() {
+            return 'ps_applications';
+        }
+
+        function renderSpecMarkers() {
+            removeSpecMarkers(); // Clear existing
+            if (!document.body.classList.contains('spec-mode')) return;
+            
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+
+            const specs = window.PAGE_SPECS[specKey];
+            const main = document.querySelector('main');
+            const mainRect = main.getBoundingClientRect();
+            let specCount = 0;
+
+            specs.forEach((spec, index) => {
+                const target = document.getElementById(spec.targetId);
+                if (target) {
+                    const rect = target.getBoundingClientRect();
+                    const marker = document.createElement('div');
+                    marker.className = 'spec-marker';
+                    
+                    if (spec.specialMarker === 'purple-star') {
+                        marker.classList.add('purple-star');
+                        marker.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    } else {
+                        if (spec.status === 'updated') marker.classList.add('updated');
+                        specCount++;
+                        marker.innerText = specCount;
+                    }
+                    
+                    // Base Positioning Logic
+                    let baseTop, baseLeft;
+
+                    if (spec.type === 'Table Column') {
+                        baseTop = rect.top + (rect.height / 2) - 14;
+                        baseLeft = rect.right + 5;
+                    } else {
+                        baseTop = rect.top - 14;
+                        baseLeft = rect.right - 14;
+                    }
+
+                    let topOffset = '', leftOffset = '';
+                    if (spec.offset) {
+                        if (spec.offset.top) topOffset += ` + ${spec.offset.top}`;
+                        if (spec.offset.bottom) topOffset += ` - ${spec.offset.bottom}`;
+                        if (spec.offset.left) leftOffset += ` + ${spec.offset.left}`;
+                        if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
+                    }
+                    
+                    // Determine container and position
+                    const isInsideMain = main.contains(target);
+                    const container = isInsideMain ? main : document.body;
+                    
+                    let finalTop, finalLeft;
+                    
+                    if (isInsideMain) {
+                        // Relative to scrolling main
+                        finalTop = baseTop - mainRect.top + main.scrollTop;
+                        finalLeft = baseLeft - mainRect.left + main.scrollLeft;
+                    } else {
+                        // Fixed/Absolute relative to viewport (body doesn't scroll)
+                        finalTop = baseTop;
+                        finalLeft = baseLeft;
+                    }
+
+                    marker.style.top = `calc(${finalTop}px${topOffset})`;
+                    marker.style.left = `calc(${finalLeft}px${leftOffset})`;
+                    
+                    marker.onclick = (e) => {
+                        e.stopPropagation();
+                        scrollToSpec(index + 1);
+                    };
+                    container.appendChild(marker);
+                }
             });
         }
-    </script>
-    <script>
-        function toggleDevMode(checkbox) {
-            if(checkbox.checked) { document.body.classList.add('dev-mode'); localStorage.setItem('devMode', 'true'); }
-            else { document.body.classList.remove('dev-mode'); localStorage.setItem('devMode', 'false'); }
+
+        function removeSpecMarkers() {
+            document.querySelectorAll('.spec-marker').forEach(el => el.remove());
         }
+
+        function renderSpecPanel() {
+            const panel = document.getElementById('specPanel');
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+            const specs = window.PAGE_SPECS[specKey];
+
+            let html = `<div class="spec-panel-header"><h3>Page Specifications (${specs.length})</h3><i data-lucide="x" class="spec-close-btn" onclick="toggleSpecPanel(false)"></i></div><div class="spec-content-wrapper">`;
+            let specCount = 0;
+            specs.forEach((data, index) => {
+                const num = index + 1;
+                let customContent = '';
+                if (data.specialMarker === 'purple-star' && window.projectHistory && window.projectHistory['ps-applications']) {
+                    const history = window.projectHistory['ps-applications'];
+                    customContent = `<div class="spec-section"><span class="spec-label">Revision History</span><div class="spec-text">`;
+                    history.forEach(h => { customContent += `<div style="margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="font-weight:700; font-size:12px; color:#111827;">${h.date}</span><span style="font-family:monospace; background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:11px; color:#6B7280;">${h.ticket}</span></div><div style="font-size:13px; color:#374151; line-height:1.4;">${h.note}</div></div>`; });
+                    customContent += `</div></div>`;
+                }
+                const createSection = (label, text) => text ? `<div class="spec-section"><span class="spec-label">${label}</span><div class="spec-text">${text}</div></div>` : '';
+                let displayTitle = data.specialMarker ? data.title : `<span class="spec-number">${++specCount}</span>${data.title}`;
+                const displayType = data.type ? `<span class="spec-type">${data.type}</span>` : '';
+                html += `<div id="spec-item-${num}" class="spec-item" onclick="scrollToSpec(${num})"><div class="spec-item-header"><h3 style="margin:0; font-size:14px; font-weight:700; color:#111827; display:flex; align-items:center;">${displayTitle}</h3>${displayType}</div><div class="spec-item-body"><div class="spec-section"><span class="spec-label">Target ID</span><span class="code-snippet">${data.targetId}</span></div>${customContent}${createSection("Description", data.description)}${createSection("Logic & Validation", data.logic)}${createSection("Default State", data.defaults)}${createSection("Interaction", data.interaction)}</div></div>`;
+            });
+            html += `</div>`;
+            panel.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function toggleSpecPanel(show) { const panel = document.getElementById('specPanel'); if (show) { panel.classList.add('open'); document.body.classList.add('spec-panel-open'); } else { panel.classList.remove('open'); document.body.classList.remove('spec-panel-open'); } setTimeout(renderSpecMarkers, 300); }
+        
+        function scrollToSpec(index) { 
+            const panel = document.getElementById('specPanel'); 
+            if (!panel.classList.contains('open')) toggleSpecPanel(true); 
+            panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active')); 
+            const target = document.getElementById(`spec-item-${index}`); 
+            if (target) { 
+                target.classList.add('active'); 
+                const headerOffset = 90;
+                const targetPos = target.offsetTop - headerOffset;
+                smoothScrollTo(panel, targetPos, 1000);
+            } 
+        }
+
+        function smoothScrollTo(element, target, duration) {
+            const start = element.scrollTop;
+            const change = target - start;
+            const startTime = performance.now();
+            function animateScroll(currentTime) {
+                const elapsed = currentTime - startTime;
+                if (elapsed < duration) {
+                    const t = elapsed / duration;
+                    const ease = 1 - Math.pow(1 - t, 4);
+                    element.scrollTop = start + (change * ease);
+                    requestAnimationFrame(animateScroll);
+                } else {
+                    element.scrollTop = target;
+                }
+            }
+            requestAnimationFrame(animateScroll);
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            const isDev = localStorage.getItem('devMode') === 'true';
-            const toggle = document.getElementById('devModeToggle');
-            if(toggle) toggle.checked = isDev;
-            if(isDev) document.body.classList.add('dev-mode');
+            const isSpec = localStorage.getItem('specMode') === 'true';
+            const toggle = document.getElementById('specModeToggle');
+            if(toggle) { toggle.checked = isSpec; if(isSpec) toggleSpecMode(toggle); }
         });
+        
+        window.addEventListener('resize', () => { if(document.body.classList.contains('spec-mode')) renderSpecMarkers(); });
+        document.body.addEventListener('transitionend', (e) => { if (e.propertyName === 'padding-right' && document.body.classList.contains('spec-mode')) renderSpecMarkers(); });
     </script>
 </body>
 </html>

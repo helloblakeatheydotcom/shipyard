@@ -82,7 +82,7 @@ window.PAGE_SPECS = {
             `,
             defaults: "Display first and last name of up to 2 users and then display a count of users above 2. (names or count).",
             interaction: "None.",
-            offset: { top: "-3px", right: "0px" },
+            offset: { top: "-3px", left: "105px" },
             errors: []
         },
         {
@@ -93,7 +93,7 @@ window.PAGE_SPECS = {
             logic: "Active: Renders as Green Pill (status-active-bg, status-active-text). Inactive: Renders as Gray Pill (status-inactive-bg, status-inactive-text).",
             defaults: "Sortable (future enhancement).",
             interaction: "None.",
-            offset: { top: "-3px", right: "0px" },
+            offset: { top: "-3px", left: "60px" },
             errors: []
         },
         {
@@ -104,7 +104,7 @@ window.PAGE_SPECS = {
             logic: "Menu Items: 'Edit School', 'View Users'. Conditional: If Status is 'Active', show 'Deactivate School'. If Status is 'Inactive', show 'Reactivate School'. ",
             defaults: "Always visible.",
             interaction: "Click: Toggles the visibility of the dropdown menu. Clicking outside closes it.",
-            offset: { top: "-3px", right: "0px" },
+            offset: { top: "-3px", left: "70px" },
             errors: []
         }
     ],
@@ -695,6 +695,153 @@ window.PAGE_SPECS = {
                  { condition: "Validation Failed", text: "Please correct the highlighted errors." },
                  { condition: "Network Error", text: "Could not save changes. Please try again." }
             ]
+        }
+    ],
+    "ps_applications": [
+        {
+            targetId: "pageTitle",
+            title: "Page Info",
+            type: "Page Header",
+            description: "Header containing the page title.",
+            logic: "",
+            defaults: "",
+            interaction: "",
+            offset: { top: "0px", right: "0px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "filtersContainer",
+            title: "Filter Bar",
+            type: "Filter Group",
+            description: "Multi-parameter filtering tools.",
+            logic: `
+                <b>Filter Logic (AND):</b>
+                Results must match ALL selected filters.
+                <br>
+                <b>Dropdowns:</b>
+                <ul>
+                    <li><b>Status:</b> (e.g., Accepted, Returned, Review).</li>
+                    <li><b>School Year:</b> Default to current academic year.</li>
+                    <li><b>Type:</b> (Initial vs. Renewal).</li>
+                    <li><b>Grade:</b> (K-12).</li>
+                </ul>
+            `,
+            defaults: "All dropdowns default to 'All' (except School Year).",
+            interaction: "<b>Selection:</b> Automatically refreshes the table results (no 'Apply' button needed).",
+            offset: { top: "-55px", left: "13px" },
+            errors: []
+        },
+        {
+            targetId: "searchInput",
+            title: "Search Field",
+            type: "Text Input",
+            description: "Keyword search for students.",
+            logic: `
+                <b>Scope:</b>
+                Search matches against: <b>First Name</b>, <b>Last Name</b>, or <b>Parent Name</b>.
+                <br>
+                <b>Behavior:</b>
+                Case-insensitive, partial match.
+            `,
+            defaults: "Placeholder: 'Search by name...'",
+            interaction: "<b>Typing:</b> Updates table after 300ms delay (Debounce).",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "applicationsCard",
+            title: "Applications Table",
+            type: "Data Table",
+            description: "Primary list of applications.",
+            logic: `
+                <b>General Behavior:</b>
+                <ul>
+                    <li><b>Sorting:</b> Click headers to toggle ASC/DESC. Default: <b>Submitted Date (DESC)</b>.</li>
+                    <li><b>Empty State:</b> If no results, show "No applications found matching your criteria."</li>
+                    <li><b>Zebra Striping:</b> Alternating row background colors (white / <b>bg-color</b>).</li>
+                </ul>
+            `,
+            defaults: "Shows 10 rows by default.",
+            interaction: "None (see specific columns).",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "th-firstName",
+            title: "Student Name Link",
+            type: "Table Column",
+            description: "Navigation link to the full application.",
+            logic: `
+                <b>Style:</b>
+                Text Link (<b>primary-blue</b>). Bold font weight.
+            `,
+            defaults: "",
+            interaction: "<b>Click:</b> Navigates to <code>Application_Detail.html?id=[app_id]</code>.",
+            offset: { top: "-5px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "th-approvedDate",
+            title: "Approved Date",
+            type: "Table Column",
+            status: "updated",
+            description: "Date when the application was fully processed and approved.",           
+            logic: `
+                <div style="background: #eef2ff; padding: 8px; border-left: 3px solid var(--primary-blue); margin-bottom: 12px; font-size: 13px;">
+                    <b>UPDATED 01/25/26:</b>
+                    <br>
+                    Added this column.
+                    <br>
+                    <i>(Replaces the "Initial Year" column, which has been deprecated).</i>
+                </div>
+
+                <b>Format:</b> Date (MM/DD/YYYY).
+                <br>
+                <b>Sorting:</b> Enabled.
+                <br>
+                <b>Empty State:</b> Display as dash (<code>-</code>) if status is not yet 'Approved'.
+            `,
+            defaults: "",
+            interaction: "Click header to sort.",
+            offset: { top: "-3px", right: "-3px" },
+            errors: []
+        },
+        {
+            targetId: "th-status",
+            title: "Status Indicator",
+            type: "Table Column",
+            description: "Current workflow state of the application.",
+            logic: `
+                <b>Visual Mapping:</b>
+                <ul>
+                    <li><b>Accepted:</b> Green Dot + Text (<b>success-green</b>).</li>
+                    <li><b>Approved:</b> Blue Dot + Text (<b>focus-blue</b>).</li>
+                    <li><b>Initial/Final/School Review:</b> Blue Dot + Text (<b>focus-blue</b>).</li>
+                    <li><b>Returned:</b> Orange Dot + Text (Warning Color).</li>
+                </ul>
+            `,
+            defaults: "Read-only.",
+            interaction: "None.",
+            offset: { top: "-3px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "paginationControls",
+            title: "Pagination",
+            type: "Table Footer",
+            description: "Navigation controls for large datasets.",
+            logic: `
+                <b>Rows Per Page:</b>
+                Dropdown options: 10, 25, 50.
+                <br>
+                <b>Counter:</b>
+                "Showing [Start]-[End] of [Total] results".
+            `,
+            defaults: "Page 1, 10 rows.",
+            interaction: "<b>Click:</b> Loads next/prev set of data.",
+            offset: { top: "0px", right: "-10px" },
+            errors: []
         }
     ]
 };

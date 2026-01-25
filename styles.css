@@ -383,6 +383,10 @@ body.supports-dev-mode.dev-mode .dev-history-trigger {
     background-color: #8B5CF6; /* Purple-500 */
     border-color: white;
 }
+.spec-marker.updated {
+    background-color: #0ea5e9;
+    box-shadow: 0 0 0 2px #0ea5e9;
+}
 
 .spec-slideout {
     position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
