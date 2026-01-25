@@ -335,18 +335,30 @@
                         if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
                     }
                     
-                    // Calculate position relative to the scrolling container (main)
-                    const relativeTop = baseTop - mainRect.top + main.scrollTop;
-                    const relativeLeft = baseLeft - mainRect.left + main.scrollLeft;
+                    // Determine container and position
+                    const isInsideMain = main.contains(target);
+                    const container = isInsideMain ? main : document.body;
+                    
+                    let finalTop, finalLeft;
+                    
+                    if (isInsideMain) {
+                        // Relative to scrolling main
+                        finalTop = baseTop - mainRect.top + main.scrollTop;
+                        finalLeft = baseLeft - mainRect.left + main.scrollLeft;
+                    } else {
+                        // Fixed/Absolute relative to viewport (body doesn't scroll)
+                        finalTop = baseTop;
+                        finalLeft = baseLeft;
+                    }
 
-                    marker.style.top = `calc(${relativeTop}px${topOffset})`;
-                    marker.style.left = `calc(${relativeLeft}px${leftOffset})`;
+                    marker.style.top = `calc(${finalTop}px${topOffset})`;
+                    marker.style.left = `calc(${finalLeft}px${leftOffset})`;
                     
                     marker.onclick = (e) => {
                         e.stopPropagation();
                         scrollToSpec(index + 1);
                     };
-                    main.appendChild(marker);
+                    container.appendChild(marker);
                 }
             });
         }

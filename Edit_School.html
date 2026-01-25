@@ -19,8 +19,8 @@
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
-            <label class="switch"><input type="checkbox" id="devModeToggle" onchange="toggleDevMode(this)"><span class="slider round"></span></label>
-            <span class="dev-label">Dev Mode</span>
+            <label class="switch"><input type="checkbox" id="specModeToggle" onchange="toggleSpecMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Spec Mode</span>
         </div>
         <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
     </aside>
@@ -28,19 +28,19 @@
     <main>
         <div class="header-area">
             <a href="Admin_Schools.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to all Schools</a>
-            <h1>Edit <span>School</span></h1>
+            <h1 id="pageTitle">Edit <span>School</span></h1>
             <div class="page-tabs">
-                <div class="tab-item active" onclick="switchTab('details', this)">School Details</div>
-                <div class="tab-item" onclick="switchTab('users', this)">Users</div>
-                <div class="tab-item">Documents</div>
-                <div class="tab-item">History</div>
+                <div class="tab-item active">School Details</div>
             </div>
         </div>
 
         <div id="tab-details" class="tab-content active">
             <div class="form-card">
-                <div class="section-title">School Information</div>
-                <div class="grid-container">
+                <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>School Information</span>
+                    <span style="background-color: #F3F4F6; color: #374151; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; border: 1px solid #E5E7EB;">ID: 8492</span>
+                </div>
+                <div class="grid-container" id="schoolInfoSection">
                     <div class="form-group span-7"><label class="label">School Name <span class="req">*</span></label><div class="input-wrapper"><input type="text" class="input-control required-field" value="Xavier's School for Gifted Children"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">This field is required.</div></div>
                     <div class="span-5"></div>
                     <div class="form-group span-3"><label class="label">Phone Number <span class="req">*</span></label><div class="input-wrapper"><input type="text" class="input-control required-field" id="phoneInput" value="(555) 000-0000"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">This field is required.</div></div>
@@ -58,7 +58,7 @@
                 </div>
                 
                 <div class="section-title" style="margin-top: 50px;">Primary Contact</div>
-                <div class="grid-container">
+                <div class="grid-container" id="primaryContactSection">
                     <div class="form-group span-7"><label class="label">Primary Contact Name <span class="req">*</span></label><div class="input-wrapper"><input type="text" class="input-control required-field" value="Martha White"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">This field is required.</div></div>
                     <div class="span-5"></div>
                     <div class="form-group span-3"><label class="label">Primary Contact Phone <span class="req">*</span></label><div class="input-wrapper"><input type="text" class="input-control required-field" id="contactPhone" value="(555) 000-0000"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">This field is required.</div></div>
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="section-title" style="margin-top: 50px;">Quarter Information</div>
-                <div class="grid-container">
+                <div class="grid-container" id="quarterInfoSection">
                     <div class="quarter-card span-6">
                         <div class="quarter-header">Quarter 1</div>
                         <div class="quarter-grid">
@@ -103,7 +103,7 @@
                     </div>
                 </div>
 
-                <div class="section-title" style="margin-top: 50px;">Tuition and Fees</div>
+                <div class="section-title" style="margin-top: 50px;" id="tuitionFeesHeader">Tuition and Fees</div>
                 <div class="info-alert" id="tuitionInfo">
                     <i data-lucide="info" width="20" height="20" style="flex-shrink:0; margin-top:2px;"></i>
                     <div>
@@ -115,27 +115,19 @@
                     <i data-lucide="x" width="16" height="16" class="info-close" onclick="document.getElementById('tuitionInfo').style.display='none'"></i>
                 </div>
 
-                <div id="gradeGroupsContainer"></div>
+                <div id="gradeGroupContainer"></div>
 
-                <div class="add-group-area" onclick="addNewGradeGroup()">
+                <div class="add-group-area" id="addGradeGroupBtn" onclick="addNewGradeGroup()">
                     <i data-lucide="plus-circle" width="20" height="20"></i>
                     Add new grade level group
                 </div>
 
                 <div class="section-title" style="margin-top: 50px;">Documents</div>
-                <div class="grid-container">
+                <div class="grid-container" id="fileUploadArea">
                     <div class="form-group span-7"><label class="label">Private School Affidavit File Upload</label><div class="upload-area"><i data-lucide="cloud-upload" style="color: #9CA3AF;" width="32" height="32"></i><div class="upload-text"><a href="#" class="upload-link">Click to upload</a> or drag and drop</div></div></div>
                     <div class="span-5"></div>
                 </div>
             </div> 
-        </div>
-
-        <div id="tab-users" class="tab-content">
-            <div style="text-align:center; padding:100px; color:#6B7280;">
-                <i data-lucide="users" width="48" height="48" style="margin-bottom:16px; opacity:0.5;"></i>
-                <h3>Users Design Pending</h3>
-                <p>This tab is currently empty and ready for your new design.</p>
-            </div>
         </div>
 
     </main>
@@ -147,6 +139,10 @@
         </button>
     </div>
 
+    <!-- Spec Slide-out Panel -->
+    <div id="specPanel" class="spec-slideout"></div>
+
+    <script src="specs.js"></script>
     <script>
         lucide.createIcons();
 
@@ -154,22 +150,6 @@
         let groupCount = 0;
         const gradesList = [{id:'PKH',name:'Pre-K Half-day'},{id:'PKF',name:'Pre-K Full-day'},{id:'K',name:'Kindergarten'},{id:'1',name:'1st Grade'},{id:'2',name:'2nd Grade'},{id:'3',name:'3rd Grade'},{id:'4',name:'4th Grade'},{id:'5',name:'5th Grade'},{id:'6',name:'6th Grade'},{id:'7',name:'7th Grade'},{id:'8',name:'8th Grade'},{id:'9',name:'9th Grade'},{id:'10',name:'10th Grade'},{id:'11',name:'11th Grade'},{id:'12',name:'12th Grade'} ];
         let globalSelectedGrades = new Set(); 
-
-        // --- TAB LOGIC ---
-        function switchTab(tabId, tabElement) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            tabElement.classList.add('active');
-            
-            // Hide Footer if on Users tab (optional, based on design)
-            if(tabId === 'users') {
-                document.querySelector('.footer').style.display = 'none';
-            } else {
-                document.querySelector('.footer').style.display = 'flex';
-            }
-        }
 
         // --- FORMATTING ---
         const formatPhoneNumber = (value) => {
@@ -288,7 +268,7 @@
 
         function addNewGradeGroup(preselectGrades = []) {
             groupCount++;
-            const container = document.getElementById('gradeGroupsContainer');
+            const container = document.getElementById('gradeGroupContainer');
             const newGroup = document.createElement('div'); newGroup.className = 'grade-group-card'; newGroup.id = `group-${groupCount}`;
             
             const header = `<div class="group-header"><div class="group-title">Grade Group ${groupCount}</div></div>`;
@@ -417,15 +397,233 @@
         }
     </script>
     <script>
-        function toggleDevMode(checkbox) {
-            if(checkbox.checked) { document.body.classList.add('dev-mode'); localStorage.setItem('devMode', 'true'); }
-            else { document.body.classList.remove('dev-mode'); localStorage.setItem('devMode', 'false'); }
+        // --- SPEC MODE LOGIC ---
+        function toggleSpecMode(checkbox) {
+            const isSpec = checkbox.checked;
+            if (isSpec) {
+                document.body.classList.add('spec-mode');
+                renderSpecMarkers();
+                renderSpecPanel();
+            } else {
+                document.body.classList.remove('spec-mode');
+                removeSpecMarkers();
+                toggleSpecPanel(false);
+            }
+            localStorage.setItem('specMode', isSpec);
         }
+
+        function getCurrentSpecKey() {
+            return 'edit_school';
+        }
+
+        function renderSpecMarkers() {
+            removeSpecMarkers(); // Clear existing
+            if (!document.body.classList.contains('spec-mode')) return;
+            
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+
+            const specs = window.PAGE_SPECS[specKey];
+            const main = document.querySelector('main');
+            const mainRect = main.getBoundingClientRect();
+            let specCount = 0;
+
+            specs.forEach((spec, index) => {
+                const target = document.getElementById(spec.targetId);
+                if (target) {
+                    const rect = target.getBoundingClientRect();
+                    const marker = document.createElement('div');
+                    marker.className = 'spec-marker';
+                    
+                    if (spec.specialMarker === 'purple-star') {
+                        marker.classList.add('purple-star');
+                        marker.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    } else {
+                        specCount++;
+                        marker.innerText = specCount;
+                    }
+                    
+                    // Base Positioning Logic
+                    let baseTop = rect.top - 14;
+                    let baseLeft = rect.right - 14;
+
+                    let topOffset = '', leftOffset = '';
+                    if (spec.offset) {
+                        if (spec.offset.top) topOffset += ` + ${spec.offset.top}`;
+                        if (spec.offset.bottom) topOffset += ` - ${spec.offset.bottom}`;
+                        if (spec.offset.left) leftOffset += ` + ${spec.offset.left}`;
+                        if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
+                    }
+                    
+                    // Determine container and position
+                    const isInsideMain = main.contains(target);
+                    const container = isInsideMain ? main : document.body;
+                    
+                    let finalTop, finalLeft;
+                    
+                    if (isInsideMain) {
+                        // Relative to scrolling main
+                        finalTop = baseTop - mainRect.top + main.scrollTop;
+                        finalLeft = baseLeft - mainRect.left + main.scrollLeft;
+                    } else {
+                        // Fixed/Absolute relative to viewport (body doesn't scroll)
+                        finalTop = baseTop;
+                        finalLeft = baseLeft;
+                    }
+
+                    marker.style.top = `calc(${finalTop}px${topOffset})`;
+                    marker.style.left = `calc(${finalLeft}px${leftOffset})`;
+                    
+                    marker.onclick = (e) => {
+                        e.stopPropagation();
+                        scrollToSpec(index + 1);
+                    };
+                    container.appendChild(marker);
+                }
+            });
+        }
+
+        function removeSpecMarkers() {
+            document.querySelectorAll('.spec-marker').forEach(el => el.remove());
+        }
+
+        function renderSpecPanel() {
+            const panel = document.getElementById('specPanel');
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+            const specs = window.PAGE_SPECS[specKey];
+
+            let html = `
+                <div class="spec-panel-header">
+                    <h3>Page Specifications (${specs.length})</h3>
+                    <i data-lucide="x" class="spec-close-btn" onclick="toggleSpecPanel(false)"></i>
+                </div>
+                <div class="spec-content-wrapper">
+            `;
+
+            let specCount = 0;
+
+            specs.forEach((data, index) => {
+                const num = index + 1;
+                
+                // Custom History Content for Edit School
+                let customContent = '';
+                if (data.specialMarker === 'purple-star' && window.projectHistory && window.projectHistory['edit-school']) {
+                    const history = window.projectHistory['edit-school'];
+                    customContent = `<div class="spec-section"><span class="spec-label">Revision History</span><div class="spec-text">`;
+                    history.forEach(h => {
+                        customContent += `<div style="margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:700; font-size:12px; color:#111827;">${h.date}</span>
+                                <span style="font-family:monospace; background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:11px; color:#6B7280;">${h.ticket}</span>
+                            </div>
+                            <div style="font-size:13px; color:#374151; line-height:1.4;">${h.note}</div>
+                        </div>`;
+                    });
+                    customContent += `</div></div>`;
+                }
+
+                const createSection = (label, text) => text ? `<div class="spec-section"><span class="spec-label">${label}</span><div class="spec-text">${text}</div></div>` : '';
+                
+                let displayTitle;
+                if (data.specialMarker) {
+                    displayTitle = data.title;
+                } else {
+                    specCount++;
+                    displayTitle = `<span class="spec-number">${specCount}</span>${data.title}`;
+                }
+                const displayType = data.type ? `<span class="spec-type">${data.type}</span>` : '';
+
+                html += `
+                    <div id="spec-item-${num}" class="spec-item" onclick="scrollToSpec(${num})">
+                        <div class="spec-item-header">
+                            <h3 style="margin:0; font-size:14px; font-weight:700; color:#111827; display:flex; align-items:center;">${displayTitle}</h3>
+                            ${displayType}
+                        </div>
+                        <div class="spec-item-body">
+                            <div class="spec-section"><span class="spec-label">Target ID</span><span class="code-snippet">${data.targetId}</span></div>
+                            ${customContent}
+                            ${createSection("Description", data.description)}
+                            ${createSection("Logic & Validation", data.logic)}
+                            ${createSection("Default State", data.defaults)}
+                            ${createSection("Interaction", data.interaction)}
+                            ${data.errors && data.errors.length > 0 ? `
+                                <div class="spec-section">
+                                    <span class="spec-label" style="color:#ef4444;">Error Messages</span>
+                                    <div class="spec-errors">
+                                        ${data.errors.map(err => `<div class="error-item"><span class="error-condition">${err.condition}:</span><span class="error-text">"${err.text}"</span></div>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            panel.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function toggleSpecPanel(show) {
+            const panel = document.getElementById('specPanel');
+            if (show) {
+                panel.classList.add('open');
+                document.body.classList.add('spec-panel-open');
+            } else {
+                panel.classList.remove('open');
+                document.body.classList.remove('spec-panel-open');
+            }
+            setTimeout(renderSpecMarkers, 300); 
+        }
+
+        function scrollToSpec(index) {
+            const panel = document.getElementById('specPanel');
+            if (!panel.classList.contains('open')) {
+                toggleSpecPanel(true);
+            }
+            panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(`spec-item-${index}`);
+            if (target) {
+                target.classList.add('active');
+                const headerOffset = 90;
+                const targetPos = target.offsetTop - headerOffset;
+                smoothScrollTo(panel, targetPos, 1000);
+            }
+        }
+
+        function smoothScrollTo(element, target, duration) {
+            const start = element.scrollTop;
+            const change = target - start;
+            const startTime = performance.now();
+            function animateScroll(currentTime) {
+                const elapsed = currentTime - startTime;
+                if (elapsed < duration) {
+                    const t = elapsed / duration;
+                    const ease = 1 - Math.pow(1 - t, 4);
+                    element.scrollTop = start + (change * ease);
+                    requestAnimationFrame(animateScroll);
+                } else {
+                    element.scrollTop = target;
+                }
+            }
+            requestAnimationFrame(animateScroll);
+        }
+
+        window.addEventListener('resize', () => {
+            if(document.body.classList.contains('spec-mode')) renderSpecMarkers();
+        });
+
+        document.body.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'padding-right' && document.body.classList.contains('spec-mode')) {
+                renderSpecMarkers();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
-            const isDev = localStorage.getItem('devMode') === 'true';
-            const toggle = document.getElementById('devModeToggle');
-            if(toggle) toggle.checked = isDev;
-            if(isDev) document.body.classList.add('dev-mode');
+            const isSpec = localStorage.getItem('specMode') === 'true';
+            const toggle = document.getElementById('specModeToggle');
+            if(toggle) { toggle.checked = isSpec; if(isSpec) toggleSpecMode(toggle); }
         });
     </script>
     <script>lucide.createIcons();</script>

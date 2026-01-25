@@ -396,6 +396,236 @@ window.PAGE_SPECS = {
                     <br>
                     <b>Drag & Drop:</b> Highlights border on hover.
             `
+        },
+        {
+            targetId: "saveBtn",
+            title: "Add School Button",
+            type: "Button",
+            description: "Submits the form to create a new school.",
+            logic: "Validates all required fields. If valid, saves and redirects.",
+            defaults: "Enabled.",
+            interaction: "Click: Triggers validation and save process.",
+            offset: { top: "-5px", right: "-5px" },
+            errors: []
+        }
+    ],
+    "edit_school": [
+        {
+            targetId: "pageTitle",
+            title: "Page Info",
+            type: "Page Header",
+            description: "Header containing the page title and breadcrumb navigation.",
+            logic: "",
+            defaults: "",
+            interaction: "",
+            offset: { top: "0px", right: "0px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "schoolInfoSection", 
+            title: "School Information",
+            type: "Form Section",
+            description: "General demographic data for the school. Section header includes the school id styled as a badge.",
+            logic: `
+                <b>Required Fields (*):</b>
+                <ul>
+                    <li><b>School Name:</b> <code>type="text"</code></li>
+                    <li><b>Phone Number:</b> <code>type="tel"</code>. Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Address & City:</b> <code>type="text"</code></li>
+                    <li><b>State:</b> <code>&lt;select&gt;</code> Dropdown.</li>
+                    <li><b>Zip Code:</b> <code>type="text"</code> (See logic below).</li>
+                </ul>
+                <br>
+                <b>Zip Code Logic:</b>
+                <ul>
+                    <li><b>Conditional Mask:</b> Accept 5 digits. If user types a 6th digit, automatically insert hyphen (format as <code>xxxxx-xxxx</code>).</li>
+                    <li><b>Validation:</b> Error if length is not exactly 5 or 9 digits.</li>
+                </ul>
+                <br>
+                <b>Optional Fields:</b>
+                <ul>
+                    <li><b>Email Address:</b> <code>type="email"</code>. (Validate format if entered).</li>
+                    <li><b>Website:</b> <code>type="url"</code>. (Validate URL format if entered).</li>
+                </ul>
+            `,
+            defaults: "Pre-filled with school data.",
+            errors: [
+                { condition: "Empty Field", text: "This field is required." },
+                { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
+                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
+            ],
+            interaction: `
+                <b>Navigation:</b> Tab key moves focus in order.
+                <br>
+                <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+            `
+        },
+       {
+            targetId: "primaryContactSection",
+            title: "Primary Contact",
+            type: "Form Section",
+            description: "Designated point of contact for the school.",
+            logic: `
+                <b>Required Fields (*):</b>
+                <ul>
+                    <li><b>Primary Contact Name:</b> <code>type="text"</code>.</li>
+                    <li><b>Primary Contact Phone:</b> <code>type="tel"</code>. Enforce <code>(xxx) xxx-xxxx</code> mask.</li>
+                    <li><b>Primary Contact Email:</b> <code>type="email"</code>. Validate format (check for @ and .domain).</li>
+                </ul>
+            `,
+            defaults: "Pre-filled with school data.",
+            errors: [
+                { condition: "Empty Field", text: "This field is required." },
+                { condition: "Invalid Email", text: "Please enter a valid email address (e.g. name@domain.com)." },
+                { condition: "Phone Mask", text: "Phone Number must be 10 digits." }
+            ],
+            interaction: `
+                <b>Navigation:</b> Tab key moves focus in order.
+                <br>
+                <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+            `
+        },
+        {
+            targetId: "quarterInfoSection",
+            title: "Quarter Information",
+            type: "Form Section",
+            description: "Academic calendar definition used to calculate invoices.",
+            logic: `
+                <b>Grid Layout:</b>
+                2x2 Grid (Q1, Q2, Q3, Q4). All fields are <b>Required (*)</b>.
+                <br><br>
+                <b>Field Definitions (Per Quarter):</b>
+                <ul>
+                    <li><b>Start Date:</b> <code>type="date"</code>.</li>
+                    <li><b>End Date:</b> <code>type="date"</code>. Must be <i>after</i> Start Date.</li>
+                    <li><b>Days:</b> <code>type="number"</code>. Total school days in period.</li>
+                </ul>
+                <br>
+                <b>Validation Logic:</b>
+                <ul>
+                    <li><b>Sequential Check:</b> Q2 Start must be after Q1 End, etc.</li>
+                    <li><b>Business Rule:</b> "Days" must be a positive integer (greater than 0).</li>
+                </ul>
+            `,
+            defaults: "Pre-filled with saved data (if available).",
+            errors: [
+                { condition: "Empty Field", text: "All dates and day counts are required." },
+                { condition: "Invalid Date Range", text: "End Date must be after Start Date." },
+                { condition: "Invalid Day Count", text: "Days must be a positive number." }
+            ],
+            interaction: `
+                <b>Navigation:</b> Tab key moves focus in order (Start -> End -> Days -> Next Quarter).
+                <br>
+                <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
+            `
+        },
+        {
+            targetId: "tuitionFeesHeader",
+            title: "Tuition & Fees Instructions",
+            type: "Static Section",
+            description: "Header and instructions for the fee schedule.",
+            logic: `
+                <b>Content:</b>
+                Static instructional text.
+                <br>
+                <b>Business Context:</b>
+                Data entered here populates the "Annual Statements" module automatically.
+            `,
+            defaults: "Always visible.",
+            interaction: "None.",
+            errors: []
+        },
+        {
+            targetId: "gradeGroupContainer",
+            title: "Grade Level Group",
+            type: "Repeater Widget",
+            description: "A grouped set of fees applicable to specific grade levels.",
+            logic: `
+                <b>Group Definitions:</b>
+                <ul>
+                    <li><b>Grade(s):</b> <code>&lt;select&gt;</code> Dropdown (Multi-select supported). Required.</li>
+                </ul>
+                <br>
+                <b>Fee Rows (Repeater):</b>
+                <ul>
+                    <li><b>Description:</b> <code>type="text"</code> (e.g., "Annual Tuition"). Required.</li>
+                    <li><b>Amount:</b> <code>type="text"</code> with Currency Mask. Required.</li>
+                </ul>
+                <br>
+                <b>Dynamic Actions:</b>
+                <ul>
+                    <li><b>+ Add new fee:</b> Appends a new Description/Amount row to this group.</li>
+                    <li><b>Delete Group:</b> Removes this entire Grade Group card (requires confirmation).</li>
+                </ul>
+            `,
+            defaults: "One empty fee row by default.",
+            errors: [
+                { condition: "Missing Grade", text: "Please select at least one grade." },
+                { condition: "Invalid Amount", text: "Amount must be a valid currency value." },
+                { condition: "Empty Row", text: "Description and Amount are required." }
+            ],
+            interaction: `
+                <b>Masking:</b> Auto-format Amount field as currency (<code>$ 0.00</code>) on type.
+                <br>
+                <b>Validation Trigger:</b> Validate fields <b>On Blur</b>.
+            `
+        },
+        {
+            targetId: "addGradeGroupBtn",
+            title: "Add Grade Group",
+            type: "Button",
+            description: "Action to create a new fee category.",
+            logic: `
+                <b>Action:</b>
+                Appends a new "Grade Level Group" card to the bottom of the list.
+                <br>
+                <b>State:</b>
+                New card initializes with empty Grade dropdown and one empty Fee row.
+            `,
+            defaults: "Always visible at bottom of section.",
+            interaction: "Click: Adds new group and scrolls view to it.",
+            errors: []
+        },
+       {
+            targetId: "fileUploadArea",
+            title: "Affidavit Upload",
+            type: "File Uploader",
+            description: "Drag-and-drop zone for the Private School Affidavit.",
+            logic: `
+                <b>Constraints:</b>
+                <ul>
+                    <li><b>File Types:</b> PDF, JPG, PNG only.</li>
+                    <li><b>Max Size:</b> 10MB.</li>
+                    <li><b>Multiple Files:</b> No (Single file only).</li>
+                </ul>
+                <br>
+                <b>Success State:</b>
+                Replace "Click to upload" text with the filename and a "Remove" (X) icon.
+            `,
+            errors: [
+                    { condition: "Wrong File Type", text: "Only PDF, JPG, and PNG files are allowed." },
+                    { condition: "File Too Large", text: "File size must be under 10MB." },
+                    { condition: "Upload Failure", text: "Network error. Please try again." }
+            ],
+            interaction: `
+                    <b>Validation Trigger:</b> Run checks <b>Immediately</b> upon file selection or drop.
+                    <br>
+                    <b>Click:</b> Opens system file browser.
+                    <br>
+                    <b>Drag & Drop:</b> Highlights border on hover.
+            `
+        },
+        {
+            targetId: "saveBtn",
+            title: "Save Changes Button",
+            type: "Button",
+            description: "Primary action to update the school record.",
+            logic: "Validates all sections. If valid, saves changes.",
+            defaults: "Enabled.",
+            interaction: "Click: Triggers validation and save.",
+            offset: { top: "-5px", right: "-5px" },
+            errors: []
         }
     ]
 };

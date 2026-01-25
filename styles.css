@@ -248,7 +248,7 @@ select.input-control { appearance: none; background-image: url("data:image/svg+x
 .upload-link { color: var(--primary-blue); font-weight: 500; text-decoration: none; }
 
 /* Footer (Forms) */
-.footer { position: fixed; bottom: 0; left: 90px; right: 0; background: white; padding: 16px 40px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; z-index: 40; }
+.footer { position: fixed; bottom: 0; left: 90px; right: 0; background: white; padding: 16px 40px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; z-index: 40; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .spinner { width: 16px; height: 16px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: none; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -482,3 +482,4 @@ body.supports-dev-mode.dev-mode .dev-history-trigger {
 /* Body Transition for Panel Push */
 body { transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 body.spec-panel-open { padding-right: 400px; }
+body.spec-panel-open .footer { right: 400px; }
