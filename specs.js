@@ -335,13 +335,16 @@ window.PAGE_SPECS = {
             errors: [
                 { condition: "Empty Field", text: "This field is required." },
                 { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
-                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
+                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." },
+                { condition: "Invalid Email", text: "Please enter a valid email address."},
+                { condition: "Invalid Website", text: "Please enter a valid website URL."}
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
                 <br>
                 <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
-            `
+            `,
+            offset: { top: "-45px", right: "0px" }
         },
        {
             targetId: "primaryContactSection",
@@ -359,14 +362,15 @@ window.PAGE_SPECS = {
             defaults: "Fields are empty on load.",
             errors: [
                 { condition: "Empty Field", text: "This field is required." },
-                { condition: "Invalid Email", text: "Please enter a valid email address (e.g. name@domain.com)." },
-                { condition: "Phone Mask", text: "Phone Number must be 10 digits." }
+                { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
+                { condition: "Invalid Email", text: "Please enter a valid email address." }
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
                 <br>
                 <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
-            `
+            `,
+            offset: { top: "-45px", right: "0px" }
         },
        {
             targetId: "fileUploadArea",
@@ -395,16 +399,37 @@ window.PAGE_SPECS = {
                     <b>Click:</b> Opens system file browser.
                     <br>
                     <b>Drag & Drop:</b> Highlights border on hover.
-            `
+            `,
+            offset: { top: "-45px", right: "0px" }
+        },
+        {
+            targetId: "cancelBtn",
+            title: "Cancel Button",
+            type: "Button",
+            description: "Action to discard unsaved changes.",
+            logic: `
+                <b>Style:</b>
+                Secondary (<b>status-inactive-bg</b> background, <b>status-inactive-text</b> text).
+            `,
+            defaults: "Always visible.",
+            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_Schools.html). No data is saved.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
         },
         {
             targetId: "saveBtn",
             title: "Add School Button",
             type: "Button",
-            description: "Submits the form to create a new school.",
-            logic: "Validates all required fields. If valid, saves and redirects.",
+            description: "Primary action to commit updates to the database to create a new school.",
+            logic: `
+                <b>Style:</b>
+                Primary (<b>primary-blue</b> background, white text).
+                <br><br>
+                <b>Validation:</b>
+                On click, validate all required fields on the page.  If valid, saves, creates school record in the database and redirects.
+            `,
             defaults: "Enabled.",
-            interaction: "Click: Triggers validation and save process.",
+            interaction: "<b>Click:</b> Triggers validation and save process.",
             offset: { top: "-5px", right: "-5px" },
             errors: []
         }
@@ -453,13 +478,16 @@ window.PAGE_SPECS = {
             errors: [
                 { condition: "Empty Field", text: "This field is required." },
                 { condition: "Phone Mask", text: "Phone Number must be 10 digits." },
-                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." }
+                { condition: "Invalid Zip", text: "Zip Code must be 5 or 9 digits." },
+                { condition: "Invalide Email", text: "Please enter a valid email address."},
+                { condition: "Invalide Website", text: "Please enter a valid website URL."}
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
                 <br>
                 <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
-            `
+            `,
+            offset: { top: "-45px", right: "150px" }
         },
        {
             targetId: "primaryContactSection",
@@ -477,14 +505,15 @@ window.PAGE_SPECS = {
             defaults: "Pre-filled with school data.",
             errors: [
                 { condition: "Empty Field", text: "This field is required." },
-                { condition: "Invalid Email", text: "Please enter a valid email address (e.g. name@domain.com)." },
+                { condition: "Invalid Email", text: "Please enter a valid email address." },
                 { condition: "Phone Mask", text: "Phone Number must be 10 digits." }
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order.
                 <br>
                 <b>Validation Trigger:</b> Validate individual fields <b>On Blur</b>.
-            `
+            `,
+            offset: { top: "-45px", right: "0px" }
         },
         {
             targetId: "quarterInfoSection",
@@ -510,9 +539,10 @@ window.PAGE_SPECS = {
             `,
             defaults: "Pre-filled with saved data (if available).",
             errors: [
-                { condition: "Empty Field", text: "All dates and day counts are required." },
+                { condition: "Empty Field", text: "Required." },
                 { condition: "Invalid Date Range", text: "End Date must be after Start Date." },
-                { condition: "Invalid Day Count", text: "Days must be a positive number." }
+                { condition: "Invalid Date Range", text: "Must be after previous quarter."},
+                { condition: "Invalid Day Count", text: "Days must be a positive integer." }
             ],
             interaction: `
                 <b>Navigation:</b> Tab key moves focus in order (Start -> End -> Days -> Next Quarter).
@@ -551,19 +581,25 @@ window.PAGE_SPECS = {
                 <ul>
                     <li><b>Description:</b> <code>type="text"</code> (e.g., "Annual Tuition"). Required.</li>
                     <li><b>Amount:</b> <code>type="text"</code> with Currency Mask. Required.</li>
+                    <li><b>Trashcan Button:</b> <code>type="button""</code>. Only displays on added rows.<br><b>Style:</b> Default Neutral (<b>text-light</b>), Hover Destructive (<b>danger-red</b>).</li>
                 </ul>
                 <br>
                 <b>Dynamic Actions:</b>
                 <ul>
-                    <li><b>+ Add new fee:</b> Appends a new Description/Amount row to this group.</li>
-                    <li><b>Delete Group:</b> Removes this entire Grade Group card (requires confirmation).</li>
+                    <li><b>+ Add new fee:</b>
+                        <br>Style: Text Link (transparent background, <b>primary-blue</b> text).
+                        <br>Behavior: Appends a new Description/Amount row to this group.
+                    </li>
+                    <li><b>Delete Group:</b>
+                        <br>Style: Destructive (<b>danger-red</b> background, white text).
+                        <br>Behavior: Removes this entire Grade Group card (requires confirmation).
+                    </li>
                 </ul>
             `,
-            defaults: "One empty fee row by default.",
+            defaults: "One empty row by default. Description is prefilled with 'Annual Tuition', Description is read-only and the row cannot be deleted.",
             errors: [
                 { condition: "Missing Grade", text: "Please select at least one grade." },
-                { condition: "Invalid Amount", text: "Amount must be a valid currency value." },
-                { condition: "Empty Row", text: "Description and Amount are required." }
+                { condition: "Empty Field", text: "This field is required." }
             ],
             interaction: `
                 <b>Masking:</b> Auto-format Amount field as currency (<code>$ 0.00</code>) on type.
@@ -576,9 +612,12 @@ window.PAGE_SPECS = {
             title: "Add Grade Group",
             type: "Button",
             description: "Action to create a new fee category.",
-            logic: `
+            logic:`
                 <b>Action:</b>
                 Appends a new "Grade Level Group" card to the bottom of the list.
+                <br>
+                <b>Style:</b>
+                Tertiary/Ghost (<b>add-group-bg </b>background, <b>primary-blue</b> text).
                 <br>
                 <b>State:</b>
                 New card initializes with empty Grade dropdown and one empty Fee row.
@@ -617,15 +656,45 @@ window.PAGE_SPECS = {
             `
         },
         {
+            targetId: "cancelBtn",
+            title: "Cancel Button",
+            type: "Button",
+            description: "Action to discard unsaved changes.",
+            logic: `
+                <b>Style:</b>
+                Secondary (<b>status-inactive-bg</b> background, <b>status-inactive-text</b> text).
+            `,
+            defaults: "Always visible.",
+            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_Schools.html). No data is saved.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
             targetId: "saveBtn",
             title: "Save Changes Button",
             type: "Button",
-            description: "Primary action to update the school record.",
-            logic: "Validates all sections. If valid, saves changes.",
-            defaults: "Enabled.",
-            interaction: "Click: Triggers validation and save.",
-            offset: { top: "-5px", right: "-5px" },
-            errors: []
+            description: "Primary action to commit updates to the database.",
+            logic: `
+                <b>Style:</b>
+                Primary (<b>primary-blue</b> background, white text).
+                <br><br>
+                <b>Validation:</b>
+                On click, validate all required fields on the page.
+            `,
+            defaults: "Enabled. Always visible.",
+            interaction: `
+                <b>Click:</b>
+                <ol>
+                    <li><b>Validate:</b> Check fields (School Info, Contact, Quarter Info).</li>
+                    <li><b>If Invalid:</b> Highlight errors and scroll to top-most error.</li>
+                    <li><b>If Valid:</b> Submit update request. Show "Saved Successfully" toast. Stay on page.</li>
+                </ol>
+            `,
+            offset: { top: "0px", right: "0px" },
+            errors: [
+                 { condition: "Validation Failed", text: "Please correct the highlighted errors." },
+                 { condition: "Network Error", text: "Could not save changes. Please try again." }
+            ]
         }
     ]
 };

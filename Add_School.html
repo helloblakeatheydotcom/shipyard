@@ -10,6 +10,7 @@
 </head>
 <body class="supports-dev-mode">
     <div class="toast" id="successToast"><i data-lucide="check-circle" width="20" height="20"></i>School has been created successfully.</div>
+    <div class="toast error" id="errorToast"><i data-lucide="circle-alert" width="20" height="20"></i>Please fix the errors below.</div>
     <aside>
         <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
         <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
@@ -39,7 +40,7 @@
                 <div class="form-group span-7">
                     <label class="label">School Name <span class="req">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" class="input-control required-field" value="Xavier's School for Gifted Children">
+                        <input type="text" class="input-control required-field" value="">
                         <i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i>
                     </div>
                     <div class="error-msg">This field is required.</div>
@@ -56,10 +57,10 @@
                 </div>
                 <div class="span-9"></div> 
 
-                <div class="form-group span-7"><label class="label">Email Address</label><input type="email" class="input-control" placeholder="admin@school.edu"></div>
+                <div class="form-group span-7"><label class="label">Email Address</label><div class="input-wrapper"><input type="email" class="input-control" id="schoolEmail" placeholder="admin@school.edu"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">Please enter a valid email address.</div></div>
                 <div class="span-5"></div>
 
-                <div class="form-group span-7"><label class="label">Website</label><input type="text" class="input-control" placeholder="www.school.edu"></div>
+                <div class="form-group span-7"><label class="label">Website</label><div class="input-wrapper"><input type="text" class="input-control" id="schoolWebsite" placeholder="www.school.edu"><i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i></div><div class="error-msg">Please enter a valid URL.</div></div>
                 <div class="span-5"></div>
 
                 <div class="form-group span-7">
@@ -126,7 +127,7 @@
                 <div class="form-group span-7">
                     <label class="label">Primary Contact Email <span class="req">*</span></label>
                     <div class="input-wrapper">
-                        <input type="email" class="input-control required-field" placeholder="john.doe@school.edu">
+                        <input type="email" class="input-control required-field" id="contactEmail" placeholder="john.doe@school.edu">
                         <i data-lucide="circle-alert" class="error-icon" width="18" height="18"></i>
                     </div>
                     <div class="error-msg">This field is required.</div>
@@ -150,6 +151,7 @@
     </main>
 
     <div class="footer">
+        <button class="btn btn-cancel" id="cancelBtn" onclick="window.location.href='Admin_Schools.html'" style="margin-right: 12px;">Cancel</button>
         <button class="btn btn-primary" id="saveBtn" onclick="saveSchool()">
             <span class="spinner" id="btnSpinner"></span>
             <span id="btnText">Add School</span>
@@ -163,6 +165,12 @@
     <script>
         lucide.createIcons();
         
+        function updateSpecMarkers() {
+            if (document.body.classList.contains('spec-mode') && typeof renderSpecMarkers === 'function') {
+                setTimeout(renderSpecMarkers, 100);
+            }
+        }
+
         // Phone Formatting
         const formatPhoneNumber = (value) => {
             if (!value) return value;
@@ -185,7 +193,10 @@
         ['phoneInput', 'contactPhone'].forEach(id => {
             document.getElementById(id).addEventListener('input', (e) => { 
                 e.target.value = formatPhoneNumber(e.target.value); 
-                if(e.target.value.trim() !== "") e.target.closest('.form-group').classList.remove('has-error');
+                if(e.target.value.trim() !== "") {
+                    e.target.closest('.form-group').classList.remove('has-error');
+                    updateSpecMarkers();
+                }
             });
         });
 
@@ -193,17 +204,37 @@
         if(zipInput) {
             zipInput.addEventListener('input', (e) => {
                 e.target.value = formatZipCode(e.target.value);
-                if(e.target.value.trim() !== "") e.target.closest('.form-group').classList.remove('has-error');
+                if(e.target.value.trim() !== "") {
+                    e.target.closest('.form-group').classList.remove('has-error');
+                    updateSpecMarkers();
+                }
             });
         }
         
         document.querySelectorAll('.required-field').forEach(input => {
             input.addEventListener('input', (e) => {
-                if(e.target.value.trim() !== "") e.target.closest('.form-group').classList.remove('has-error');
+                if(e.target.value.trim() !== "") {
+                    e.target.closest('.form-group').classList.remove('has-error');
+                    updateSpecMarkers();
+                }
             });
             input.addEventListener('blur', (e) => {
-                if(e.target.value.trim() === "") e.target.closest('.form-group').classList.add('has-error');
+                if(e.target.value.trim() === "") {
+                    e.target.closest('.form-group').classList.add('has-error');
+                    updateSpecMarkers();
+                }
             });
+        });
+
+        // Optional fields validation listeners
+        ['schoolEmail', 'schoolWebsite'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('input', (e) => {
+                    e.target.closest('.form-group').classList.remove('has-error');
+                    updateSpecMarkers();
+                });
+            }
         });
 
         function saveSchool() {
@@ -224,7 +255,45 @@
                 }
             });
             
+            // Format Validation
+            const validateFormat = (id, regex, msg) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                const val = el.value.trim();
+                
+                if(val) {
+                    if(!regex.test(val)) {
+                        isValid = false;
+                        el.closest('.form-group').classList.add('has-error');
+                        const errDiv = el.closest('.form-group').querySelector('.error-msg');
+                        if(errDiv) errDiv.textContent = msg;
+                    } else {
+                        el.closest('.form-group').classList.remove('has-error');
+                    }
+                } else if (!el.classList.contains('required-field')) {
+                    el.closest('.form-group').classList.remove('has-error');
+                }
+            };
+
+            const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+            validateFormat('phoneInput', phoneRegex, "Phone number must be 10 digits.");
+            validateFormat('contactPhone', phoneRegex, "Phone number must be 10 digits.");
+
+            const zipRegex = /^\d{5}(-\d{4})?$/;
+            validateFormat('zipInput', zipRegex, "Zip code must be 5 or 9 digits.");
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            validateFormat('schoolEmail', emailRegex, "Please enter a valid email address.");
+            validateFormat('contactEmail', emailRegex, "Please enter a valid email address.");
+
+            const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            validateFormat('schoolWebsite', urlRegex, "Please enter a valid website URL.");
+
             if(!isValid) {
+                updateSpecMarkers();
+                const errToast = document.getElementById('errorToast');
+                errToast.classList.add('show');
+                setTimeout(() => { errToast.classList.remove('show'); }, 3000);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
