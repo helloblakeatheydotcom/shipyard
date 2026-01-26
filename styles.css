@@ -1,32 +1,59 @@
 :root {
-    --primary-blue: #014E8D; 
-    --active-blue: #023b6d; 
-    --hover-blue-bg: #F8FAFF; 
-    --bg-color: #F4F7FA;
-    --text-dark: #231C32; 
-    --text-light: #6B7280;
-    --border-color: #F1F1F1; 
-    --status-active-bg: #D4FBDC;
-    --status-active-text: #135D23;
-    --status-inactive-bg: #E5E7EB;
-    --status-inactive-text: #374151;
-    --status-inactive-hover: #D1D5DB;
-    --danger-red: #DC2626;
-    --danger-bg: #FEF2F2;
-    --text-modal: #172B4D;
+    /* --- Core Brand Colors --- */
+    --primary-blue: #014E8D;
+    --active-blue: #023b6d;
+    --hover-blue-bg: #F8FAFF;
     --focus-blue: #2563EB;
+    
+    /* --- Layout & Text --- */
+    --bg-color: #F4F7FA;
     --card-bg: #FFFFFF;
     --inset-card-bg: #F8FAFC;
-    --cool-gray: #586874;
+    --border-color: #F1F1F1;
+    --text-dark: #231C32;
+    --text-modal: #172B4D;
+    --text-light: #6B7280;
     --text-input: #231C32;
     --placeholder: #999999;
+    --cool-gray: #586874; /* Matches 'Not Started' status */
+
+    /* --- Forms --- */
     --input-border: #D1D5DB;
+    --add-group-bg: #F0F9FF;
+
+    /* --- Semantic Colors (Alerts/Messages) --- */
+    --danger-red: #DC2626;
+    --danger-bg: #FEF2F2;
     --error-red: #DC2626;
     --success-green: #059669;
     --success-bg: #D1FAE5;
     --info-bg: #EFF6FF;
     --info-text: #1E40AF;
-    --add-group-bg:#F0F9FF;
+
+    /* --- Status Pills (Backgrounds/Text) --- */
+    --status-active-bg: #D4FBDC;
+    --status-active-text: #135D23;
+    --status-inactive-bg: #E5E7EB;
+    --status-inactive-text: #374151;
+    --status-inactive-hover: #D1D5DB;
+
+    /* --- Status Dot Palette (New) --- */
+    /* Naming by color allows reuse across different contexts */
+    --status-blue-bright: #0091FF;  /* Created, Final Review */
+    --status-blue-royal: #416AD6;   /* Approved */
+    --status-blue-sky: #7AC5FF;     /* Initial Review */
+    
+    --status-green: #35A24D;        /* Mailed, Accepted, Statement Submitted */
+    --status-green-mint: #97E0A7;   /* Pending Acceptance */
+    
+    --status-orange: #FA6400;       /* Returned */
+    --status-gold: #FFCA39;         /* Declined */
+    
+    --status-purple: #B600FF;       /* Invoice Submitted, School Review */
+    --status-lavender: #E6B5FF;     /* Withdrawn */
+    --status-pink: #F35DB6;         /* DHS Review */
+    
+    --status-red: #D53838;          /* Not Eligible, Denied */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -386,6 +413,10 @@ body.supports-dev-mode.dev-mode .dev-history-trigger {
 .spec-marker.updated {
     background-color: #0ea5e9;
     box-shadow: 0 0 0 2px #0ea5e9;
+}
+.spec-marker.new {
+    background-color: #15803d;
+    box-shadow: 0 0 0 2px #15803d;
 }
 
 .spec-slideout {

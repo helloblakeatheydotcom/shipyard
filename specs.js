@@ -19,7 +19,7 @@ window.PAGE_SPECS = {
             description: "Tab to access User Management.",
             logic: "",
             defaults: "Selected by default when navigating to the Settings page.",
-            interaction: "Click: Navigates to Admin_Users.html.",
+            interaction: "<b>Click:</b> Navigates to Admin_Users.html.",
             offset: { top: "-4px", right: "-12px" },
             errors: []
         },
@@ -30,7 +30,7 @@ window.PAGE_SPECS = {
             description: "Tab to access School Management.",
             logic: "",
             defaults: "Inactive by default.",
-            interaction: "Click: Navigates to Admin_Schools.html",
+            interaction: "<b>Click:</b> Navigates to Admin_Schools.html",
             offset: { top: "-5px", right: "-15px" },
             errors: []
         }, 
@@ -41,7 +41,7 @@ window.PAGE_SPECS = {
             description: "Primary button to add a new school.",
             logic: "Must pass current client_id as URL parameter.",
             defaults: "Visible and Enabled (Active). Primary Button (primary-blue background, white text).",
-            interaction: "Click: Navigates to Add_School.html.",
+            interaction: "<b>Click:</b> Navigates to Add_School.html.",
             offset: { top: "-2px", right: "-2px" },
             errors: []
         },        
@@ -52,7 +52,7 @@ window.PAGE_SPECS = {
             description: "Main table displaying all schools in the system.",
             logic: "Includes pagination controls and column sorting.",
             defaults: "Sorted by School Name (ASC). Default 10 rows per page.",
-            interaction: "Click Header: Sorts table. Pagination buttons: Change page.",
+            interaction: "<b>Click Header:</b> Sorts table. Pagination buttons: Change page.",
             offset: { top: "0px", right: "0px" },
             errors: []
         },
@@ -103,7 +103,7 @@ window.PAGE_SPECS = {
             description: "Kebab menu for administrative actions.",
             logic: "Menu Items: 'Edit School', 'View Users'. Conditional: If Status is 'Active', show 'Deactivate School'. If Status is 'Inactive', show 'Reactivate School'. ",
             defaults: "Always visible.",
-            interaction: "Click: Toggles the visibility of the dropdown menu. Clicking outside closes it.",
+            interaction: "<b>Click:</b>Click: Toggles the visibility of the dropdown menu. Clicking outside closes it.",
             offset: { top: "-3px", left: "70px" },
             errors: []
         }
@@ -161,7 +161,7 @@ window.PAGE_SPECS = {
                 </ul>
             `,
             defaults: "",
-            interaction: "Click: Closes the modal and returns focus to the schoolsTable.",
+            interaction: "<b>Click:</b> Closes the modal and returns focus to the schoolsTable.",
             offset: { top: "-5px", right: "-5px" },
             errors: []
         }
@@ -623,7 +623,7 @@ window.PAGE_SPECS = {
                 New card initializes with empty Grade dropdown and one empty Fee row.
             `,
             defaults: "Always visible at bottom of section.",
-            interaction: "Click: Adds new group and scrolls view to it.",
+            interaction: "<b>Click:</b> Adds new group and scrolls view to it.",
             errors: []
         },
        {
@@ -841,6 +841,340 @@ window.PAGE_SPECS = {
             defaults: "Page 1, 10 rows.",
             interaction: "<b>Click:</b> Loads next/prev set of data.",
             offset: { top: "0px", right: "-10px" },
+            errors: []
+        }
+    ],
+    "finances_invoices": [
+        {
+            targetId: "pageHeaderSpan",
+            title: "Page Info",
+            type: "Page Header",
+            description: "Header containing the page title.",
+            logic: "",
+            defaults: "",
+            interaction: "",
+            offset: { top: "0px", right: "-50px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "schoolYearSpan",
+            title: "School Year Selector",
+            type: "Dropdown",
+            description: "Sets the global fiscal year context for all financial data on the page.",
+            logic: "Defaults to current academic year (e.g., 2025-2026). Changing this refreshes the table and recalculates summary chips.",
+            defaults: "Current Academic Year (e.g., 2025-2026).",
+            interaction: "<b>Change:</b> Triggers data refresh.",
+            offset: { top: "0px", right: "-23px" },
+            errors: []
+        },
+        {
+            targetId: "chip-payment-disabled",
+            title: "Quick Filters",
+            type: "Filter Chips",
+            status: "new",
+            description: "One-click filters for high-priority workflow states.",
+            logic: `
+                <div style="background: #f0fdf4; padding: 8px; border-left: 3px solid #15803d; margin-bottom: 12px; font-size: 13px;">
+                    <b style="color: #15803d;">NEW 01/26/26:</b>
+                    <br>
+                    Added new filter chips to highlight high-priority workflow states.
+                </div>
+                <b>Filter Logic (Exclusive):</b>
+                <ul>
+                    <li><b>Needs Review:</b> Count/Show invoices where <code>status == 'Submitted'</code>.</li>
+                    <li><b>Ready to Print:</b> Count/Show invoices where <code>status == 'Approved'</code> AND <code>printed == false</code>.</li>
+                </ul>
+                <br>
+                <b>Visual States:</b>
+                <ul>
+                    <li><b>Active:</b> Solid background color (Purple/Blue).</li>
+                    <li><b>Inactive:</b> White background with colored border.</li>
+                    <li><b>Disabled:</b> Gray background if count is 0.</li>
+                </ul>
+            `,
+            defaults: "No filters active.",
+            interaction: "<b>Click:</b> Toggles filter on/off. Clicking 'Needs Review' while 'Ready to Print' is active switches selection.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "filtersPanelSpan",
+            title: "Filter Bar",
+            type: "Filter Group",
+            description: "Multi-parameter filtering tools.",
+            logic: `
+                <b>Filter Logic (AND):</b>
+                Results must match ALL selected filters.
+                <br>
+                <b>Dropdowns:</b>
+                <ul>
+                    <li><b>Private School:</b> List of all private schools in system.</li>
+                    <li><b>Grade:</b> PreK-12.</li>
+                    <li><b>Period:</b> e.g., Quarter 1, Quarter 2,...</li>
+                    <li><b>Invoice Status:</b> e.g., Submitted, Returned, Approved.</li>
+                </ul>
+            `,
+            defaults: "All dropdowns default to 'All'.",
+            interaction: "<b>Selection:</b> Automatically refreshes the table results (no 'Apply' button needed).",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "tableCardSpan",
+            title: "Invoices Table",
+            type: "Data Table",
+            description: "Main data display.",
+            logic: "Sortable columns. Checkbox selection.",
+            defaults: "Sorted by Last Name, First Name, Period (ASC).",
+            interaction: "<b>Click Row:</b> Navigates to details.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "searchSpan",
+            title: "Search Field",
+            type: "Text Input",
+            status: "updated",
+            description: "Keyword search for specific invoices.",
+            logic: `
+            <div style="background: #eef2ff; padding: 8px; border-left: 3px solid var(--primary-blue); margin-bottom: 12px; font-size: 13px;">
+                <b>UPDATED 01/26/26:</b>
+                <br>
+                Added ability to search by Invoice Number.
+            </div>
+            <b>Scope:</b>
+            Matches against:
+            <ul>
+                <li><b>Invoice #:</b> Exact or partial match.</li>
+                <li><b>Student Name:</b> First or Last name (partial).</li>
+            </ul>
+            `,
+            defaults: "Placeholder: 'Search by name or invoice #...'",
+            interaction: "<b>Typing:</b> Updates results after 300ms debounce.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "actionsBtnSpan",
+            title: "Bulk Actions",
+            type: "Dropdown Button",
+            description: "Actions applied to currently checked rows in the table.",
+            logic: `
+                <b>State:</b>
+                Enabled only when >= 1 checkbox is selected in the table.
+                <br><br>
+                <b>Menu Items:</b>
+                <ul>
+                    <li><b>Print Selected:</b> Generates concatenated PDF of selected invoices.</li>
+                    <li><b>Update Selected:</b> Opens bulk status update modal.</li>
+                </ul>
+            `,
+            defaults: "Active state (blue border) when menu is open.",
+            interaction: "<b>Click:</b> Toggles dropdown menu visibility.",
+            offset: { top: "0px", right: "160px" },
+            errors: []
+        },
+        {
+            targetId: "statusHeaderSpan",
+            title: "Status Column",
+            type: "Table Column",
+            status: "updated",
+            description: "Displays current status and processing indicators.",
+            logic: `
+                <div style="background: #eef2ff; padding: 8px; border-left: 3px solid var(--primary-blue); margin-bottom: 12px; font-size: 13px;">
+                    <b>UPDATED 01/26/26:</b>
+                    <br>
+                    Added "Printed" icon logic.
+                </div>
+                <b>Display Rules:</b>
+                <ul>
+                    <li><b>Status Dot:</b> Color-coded circle based on status (e.g., <b>var(--status-green)</b> for 'Mailed', <b>var(--status-blue-royal)</b> for 'Approved').</li>
+                    <li><b>Printed Icon:</b> If <code>invoice.printed === true</code>, display <i data-lucide="printer-check" style="width:12px; height:12px; display:inline-block;"></i> icon to the right of the text.</li>
+                </ul>
+            `,
+            defaults: "Sortable.",
+            interaction: "<b>Click Link:</b> 'Edit' (if editable) or 'View' (if locked) navigates to <code>Invoice_Details.html</code>.",
+            offset: { top: "7px", right: "-35px" },
+            errors: []
+        },
+        {
+            targetId: "paginationControls",
+            title: "Pagination Controls",
+            type: "Footer Control",
+            description: "Navigation for large data sets.",
+            logic: `
+                <b>Rows Per Page:</b>
+                Dropdown (10, 25). Defaults to 10.
+                <br>
+                <b>Info Text:</b>
+                "Showing [Start]-[End] of [Total] results."
+            `,
+            defaults: "",
+            interaction: "<b>Click Arrows:</b> Navigates pages. Buttons disabled if at start/end of list.",
+            offset: { top: "-5px", right: "-5px" },
+            errors: []
+        }
+    ],
+    "invoice_details": [
+        {
+            targetId: "pageTitle",
+            title: "Page Context",
+            type: "Page Header",
+            description: "Navigation and context for the specific invoice.",
+            logic: `
+                <b>Dynamic Title:</b> "Quarterly Invoice for [Student Name]".
+                <br>
+                <b>Back Link:</b> Returns to <code>Finances_Invoices.html</code> preserving filter state if possible.
+            `,
+            defaults: "",
+            interaction: "",
+            offset: { top: "0px", right: "0px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "statusSection",
+            title: "Status & Metadata",
+            type: "Data Section",
+            status: "updated",
+            description: "Current workflow status and submission metadata.",
+            logic: `
+                <div style="background: #eef2ff; padding: 8px; border-left: 3px solid var(--primary-blue); margin-bottom: 12px; font-size: 13px;">
+                    <b>UPDATED 01/26/26:</b>
+                    <br>
+                    Added "Printed" icon logic to the Status row.
+                </div>
+                <b>Status Display:</b>
+                <ul>
+                    <li><b>Text:</b> Current status (e.g., Approved, Submitted).</li>
+                    <li><b>Indicator:</b> Color-coded dot (<b>focus-blue</b> for Approved).</li>
+                    <li><b>Printer Icon:</b> IF <code>printed === true</code>, display <i data-lucide="printer-check" style="width:12px; height:12px; display:inline-block;"></i> icon next to status text.</li>
+                </ul>
+                <br>
+                <b>Metadata:</b>
+                Read-only fields (Invoice #, Submitted By, Submitted On).
+            `,
+            defaults: "Read-only.",
+            interaction: "None.",
+            offset: { top: "-10px", right: "-10px" },
+            errors: []
+        },
+        {
+            targetId: "adminNotes",
+            title: "Administrator Notes",
+            type: "Text Area",
+            description: "Internal notes field for Scholarship Administrators.",
+            logic: `
+                <b>Permissions:</b>
+                Editable <b>ONLY</b> by Admin users. Read-only for School users.
+                <br>
+                <b>Persistence:</b>
+                Saves when the "Save Changes" footer button is clicked.
+            `,
+            defaults: "Placeholder: 'For administrators only.'",
+            interaction: "Typing enabled for Admins.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "detailsSection",
+            title: "Student & Period Details",
+            type: "Data Grid",
+            description: "Core demographic and timeline information.",
+            logic: `
+                <b>Data Sources:</b>
+                <ul>
+                    <li><b>Student Info:</b> Pulls from Student Record (Name, DOB, Parent, Vendor #).</li>
+                    <li><b>Location:</b> Pulls from School Record.</li>
+                    <li><b>Reporting Period:</b> The specific Quarter (Q1-Q4) this invoice covers.</li>
+                    <li><b>Quarter Dates (From/To):</b> Sourced from <b>School Settings (Edit_School.html)</b> > Quarter Info.</li>
+                </ul>
+            `,
+            defaults: "All fields Read-only.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "financialsSection",
+            title: "Financial Description",
+            type: "Data Grid",
+            description: "Line item breakdown of the invoice amounts and attendance.",
+            logic: `
+                <b>Data Sources:</b>
+                <ul>
+                    <li><b>Tuition & Fees:</b> Calculated/Sourced from the <b>Annual Statement</b> (divided by 4).</li>
+                    <li><b>LNH Award:</b> Student's total scholarship award amount (divided by 4).</li>
+                    <li><b>Check Amount:</b> <b>User Input</b> (Entered by Private School at submission). Cannot exceed lesser of Tuition or Award.</li>
+                    <li><b>Days in Quarter:</b> Sourced from <b>School Settings</b>.</li>
+                    <li><b>Days Present:</b> <b>User Input</b> (Entered by Private School). Used for attendance verification.</li>
+                </ul>
+            `,
+            defaults: "All fields Read-only in this view.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "schoolNotes",
+            title: "School's Notes",
+            type: "Text Area",
+            description: "Notes provided by the private school during submission.",
+            logic: `
+                <b>Permissions:</b>
+                Read-only for Admin users. (Entered by School Users).
+            `,
+            defaults: "Displays text if present.",
+            interaction: "None (Disabled/Read-only).",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "actionBtn",
+            title: "Action Menu",
+            type: "Dropdown Menu",
+            status: "updated",
+            description: "Workflow actions available for this invoice.",
+            logic: `
+                <div style="background: #eef2ff; padding: 8px; border-left: 3px solid var(--primary-blue); margin-bottom: 12px; font-size: 13px;">
+                    <b>UPDATED 01/26/26:</b>
+                    <br>
+                    Added "Print & Mark Processed" option.
+                </div>
+                <b>Menu Options:</b>
+                <ul>
+                    <li><b>Edit Status:</b> Manually change workflow state.</li>
+                    <li><b>Print Invoice:</b> Opens PDF (view only).</li>
+                    <li><b>Print & Mark Processed:</b>
+                        <ul>
+                            <li>Opens PDF in new tab.</li>
+                            <li>Sets <code>printed = true</code> in database.</li>
+                            <li>Refreshes UI to show Printer Icon in Status section.</li>
+                        </ul>
+                    </li>
+                </ul>
+            `,
+            defaults: "Collapsed.",
+            interaction: "<b>Click:</b> Toggles menu visibility.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "saveBtn",
+            title: "Save Button",
+            type: "Button",
+            description: "Persists administrative changes.",
+            logic: `
+                <b>Scope:</b>
+                Primarily saves the <b>Administrator Notes</b> field, as other data is read-only in this view.
+                <br>
+                <b>Style:</b>
+                Primary (<b>primary-blue</b> background).
+            `,
+            defaults: "Enabled.",
+            interaction: "<b>Click:</b> Saves data and displays success toast.",
+            offset: { top: "0px", right: "0px" },
             errors: []
         }
     ]
