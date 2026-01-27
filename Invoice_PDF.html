@@ -310,17 +310,84 @@
         .dev-history-ticket { font-family: monospace; background: #F3F4F6; padding: 2px 6px; border-radius: 4px; color: #4B5563; font-size: 0.7rem; border: 1px solid #E5E7EB; }
         .dev-history-note { color: #374151; line-height: 1.4; }
         @media print { .dev-history-trigger, .dev-history-panel { display: none !important; } }
+
+        /* --- SPEC MODE STYLES --- */
+        .spec-marker {
+            position: absolute;
+            background-color: #F97316;
+            color: white;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+            cursor: pointer; z-index: 2000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid white;
+            transition: transform 0.2s;
+        }
+        .spec-marker:hover { transform: scale(1.1); }
+        .spec-marker.purple-star { background-color: #8B5CF6; border-color: white; }
+        .spec-marker.updated { background-color: #0ea5e9; box-shadow: 0 0 0 2px #0ea5e9; }
+        .spec-marker.new { background-color: #15803d; box-shadow: 0 0 0 2px #15803d; }
+        
+        .spec-slideout {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            z-index: 3000; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto; border-left: 1px solid #e5e7eb;
+        }
+        .spec-slideout.open { right: 0; }
+        
+        /* Spec Panel Internal Styles */
+        .spec-panel-header { position: sticky; top: 0; background: white; z-index: 10; padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .spec-panel-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; }
+        .spec-content-wrapper { padding: 24px; background-color: #f9fafb; min-height: calc(100vh - 70px); }
+        .spec-item { margin-bottom: 24px; padding: 0; border-radius: 8px; border: 2px solid transparent; transition: all 0.3s; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); scroll-margin-top: 90px; overflow: hidden; cursor: pointer; }
+        .spec-item.active { border-color: #F97316; box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
+        .spec-item-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding: 10px 14px; background-color: #f3f4f6; }
+        .spec-item-body { padding: 20px; }
+        .spec-section { margin-bottom: 24px; }
+        .spec-label { display: block !important; text-transform: uppercase !important; color: #4b5563 !important; font-weight: 700 !important; letter-spacing: 0.02em !important; font-size: 11px !important; margin-bottom: 4px !important; }
+        .spec-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; font-size: 14px !important; color: #111827 !important; font-weight: 400 !important; line-height: 1.6 !important; }
+        .spec-number { display: inline-flex; align-items: center; justify-content: center; background-color: #374151; color: white; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 4px; margin-right: 8px; font-size: 11px; font-weight: 700; }
+        .spec-type { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0369a1; background: #e0f2fe; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.025em; display: inline-block; margin-top: 0; }
+        .code-snippet { font-family: monospace; background: #f3f4f6; padding: 3px 6px; border-radius: 4px; color: #d946ef; font-size: 12px; }
+        
+        /* Controls */
+        .controls-container {
+            position: fixed; bottom: 24px; left: 24px;
+            background: white; padding: 16px; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; gap: 12px;
+            z-index: 9999; border: 1px solid #E5E7EB;
+        }
+        .control-item { display: flex; align-items: center; gap: 10px; }
+        .control-label { font-size: 13px; font-weight: 600; color: #374151; }
+        
+        /* Switch */
+        .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4ADE80; }
+        input:checked + .slider:before { transform: translateX(14px); }
+        
+        @media print { .controls-container, .spec-marker, .spec-slideout { display: none !important; } }
+        
+        /* Body shift for spec panel */
+        body { transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        body.spec-panel-open { padding-right: 400px; }
     </style>
 </head>
 <body>
 
     <div class="paper">
-        <div class="header-section">
+        <div class="header-section" id="pageHeader">
             <h1 class="header-title">Lindsey Nicole Henry (LNH) Scholarship</h1>
             <h2 class="header-subtitle">Quarterly Invoice</h2>
         </div>
 
-        <div class="info-grid">
+        <div class="info-grid" id="topSection">
             <div class="label">Invoice #</div>
             <div class="value">1115-22858</div>
             <div class="label">Attn:</div>
@@ -354,7 +421,7 @@
         </div>
 
         <div class="section-header">Private School Information:</div>
-        <div class="school-grid">
+        <div class="school-grid" id="schoolSection">
             <div class="label">School Name</div>
             <div class="value">Empowered Solutions</div>
             <div class="label">Address</div>
@@ -380,7 +447,7 @@
         </div>
 
         <div class="section-header">Student Information:</div>
-        <div class="info-grid" style="grid-template-columns: 160px 1fr 130px 1fr;">
+        <div class="info-grid" style="grid-template-columns: 160px 1fr 130px 1fr;" id="studentSection">
              <div class="label">Full Name</div><div class="value">Blake Zimmerman</div>
              <div class="label">Reporting Period</div><div class="value">Quarter 1</div>
              
@@ -394,7 +461,7 @@
              <div class="label">Withdrawal Date</div><div class="value">N/A</div>
         </div>
 
-        <table>
+        <table id="descTable">
             <thead>
                 <tr>
                     <th class="desc-col">Description</th>
@@ -423,10 +490,8 @@
                     </td>
                     <td class="cost-col">
                         $ 3237.50
-                        <div class="payment-approval">
+                        <div class="payment-approval" id="approvalStamp">
                             Pay 12/22/2025 SE
-                            <div class="dev-marker" onclick="this.classList.toggle('active')"></div>
-                            <div class="dev-tooltip">Add approval stamp when invoice is Approved. Include Approval date and user initials.</div>
                         </div>
                     </td>
                 </tr>
@@ -445,7 +510,7 @@
             </div>
         </div>
 
-        <div class="admin-notes">
+        <div class="admin-notes" id="adminNotes">
             <span class="admin-label">Administrator Notes:</span>
         </div>
 
@@ -453,40 +518,149 @@
 
     </div>
 
+    <!-- Page Controls -->
+    <div class="controls-container">
+        <div class="control-item">
+            <label class="switch"><input type="checkbox" id="specModeToggle" onchange="toggleSpecMode(this)"><span class="slider round"></span></label>
+            <span class="control-label">Spec Mode</span>
+        </div>
+        <div class="control-item">
+            <label class="switch"><input type="checkbox" id="stampToggle" onchange="toggleStamp(this)"><span class="slider round"></span></label>
+            <span class="control-label">Show Stamp</span>
+        </div>
+    </div>
+
+    <!-- Spec Slide-out Panel -->
+    <div id="specPanel" class="spec-slideout"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const showStamp = urlParams.get('stamp') === 'true';
+            const toggle = document.getElementById('stampToggle');
             
-            if (showStamp) {
-                document.querySelector('.payment-approval').style.display = 'inline-block';
-            }
+            if (showStamp) { toggle.checked = true; toggleStamp(toggle); }
             lucide.createIcons();
+            
+            // Init Spec Mode if saved
+            const isSpec = localStorage.getItem('specMode') === 'true';
+            const specToggle = document.getElementById('specModeToggle');
+            if(specToggle) { specToggle.checked = isSpec; if(isSpec) toggleSpecMode(specToggle); }
         });
+
+        function toggleStamp(checkbox) {
+            const stamp = document.getElementById('approvalStamp');
+            stamp.style.display = checkbox.checked ? 'inline-block' : 'none';
+        }
     </script>
 
-    <!-- Dev History Component -->
-    <div class="dev-history-trigger" onclick="document.getElementById('devHistoryPanel').classList.toggle('show')">
-        <i data-lucide="history" width="24" height="24"></i>
-    </div>
-    <div class="dev-history-panel" id="devHistoryPanel">
-        <div class="dev-history-header">
-            Page Revision History
-            <i data-lucide="x" width="16" height="16" style="cursor:pointer;" onclick="document.getElementById('devHistoryPanel').classList.remove('show')"></i>
-        </div>
-        <ul class="dev-history-list" id="historyList"></ul>
-    </div>
     <script src="history.js"></script>
+    <script src="specs.js"></script>
     <script>
-        const list = document.getElementById('historyList');
-        if (window.projectHistory && window.projectHistory['invoice-pdf'] && list) {
-            window.projectHistory['invoice-pdf'].forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'dev-history-item';
-                li.innerHTML = `<div class="dev-history-meta"><span class="dev-history-date">${item.date}</span><span class="dev-history-ticket">${item.ticket}</span></div><span class="dev-history-note">${item.note}</span>`;
-                list.appendChild(li);
+        // --- SPEC MODE LOGIC ---
+        function toggleSpecMode(checkbox) {
+            const isSpec = checkbox.checked;
+            if (isSpec) {
+                document.body.classList.add('spec-mode');
+                renderSpecMarkers();
+                renderSpecPanel();
+            } else {
+                document.body.classList.remove('spec-mode');
+                removeSpecMarkers();
+                toggleSpecPanel(false);
+            }
+            localStorage.setItem('specMode', isSpec);
+        }
+
+        function getCurrentSpecKey() { return 'invoice_pdf'; }
+
+        function renderSpecMarkers() {
+            removeSpecMarkers();
+            if (!document.body.classList.contains('spec-mode')) return;
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+            const specs = window.PAGE_SPECS[specKey];
+            const container = document.querySelector('.paper'); // Position relative to paper
+            let specCount = 0;
+
+            specs.forEach((spec, index) => {
+                const target = document.getElementById(spec.targetId);
+                if (target) {
+                    const rect = target.getBoundingClientRect();
+                    const paperRect = container.getBoundingClientRect();
+                    const marker = document.createElement('div');
+                    marker.className = 'spec-marker';
+                    if (spec.status === 'updated') marker.classList.add('updated');
+                    if (spec.status === 'new') marker.classList.add('new');
+                    if (spec.specialMarker === 'purple-star') {
+                        marker.classList.add('purple-star');
+                        marker.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    } else {
+                        specCount++;
+                        marker.innerText = specCount;
+                    }
+                    // Position relative to paper
+                    const baseTop = rect.top - paperRect.top - 14;
+                    const baseLeft = rect.right - paperRect.left - 14;
+
+                    let topOffset = '', leftOffset = '';
+                    if (spec.offset) {
+                        if (spec.offset.top) topOffset += ` + ${spec.offset.top}`;
+                        if (spec.offset.bottom) topOffset += ` - ${spec.offset.bottom}`;
+                        if (spec.offset.left) leftOffset += ` + ${spec.offset.left}`;
+                        if (spec.offset.right) leftOffset += ` - ${spec.offset.right}`;
+                    }
+
+                    marker.style.top = `calc(${baseTop}px${topOffset})`;
+                    marker.style.left = `calc(${baseLeft}px${leftOffset})`;
+                    marker.onclick = (e) => { e.stopPropagation(); scrollToSpec(index + 1); };
+                    container.appendChild(marker);
+                }
             });
         }
+
+        function removeSpecMarkers() { document.querySelectorAll('.spec-marker').forEach(el => el.remove()); }
+
+        function renderSpecPanel() {
+            const panel = document.getElementById('specPanel');
+            const specKey = getCurrentSpecKey();
+            if (!window.PAGE_SPECS || !window.PAGE_SPECS[specKey]) return;
+            const specs = window.PAGE_SPECS[specKey];
+            let html = `<div class="spec-panel-header"><h3>Page Specifications (${specs.length})</h3><i data-lucide="x" class="spec-close-btn" onclick="toggleSpecPanel(false)"></i></div><div class="spec-content-wrapper">`;
+            let specCount = 0;
+            specs.forEach((data, index) => {
+                const num = index + 1;
+                
+                // Custom History Content
+                let customContent = '';
+                if (data.specialMarker === 'purple-star' && window.projectHistory && window.projectHistory['invoice-pdf']) {
+                    const history = window.projectHistory['invoice-pdf'];
+                    customContent = `<div class="spec-section"><span class="spec-label">Revision History</span><div class="spec-text">`;
+                    history.forEach(h => {
+                        customContent += `<div style="margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:700; font-size:12px; color:#111827;">${h.date}</span>
+                                <span style="font-family:monospace; background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:11px; color:#6B7280;">${h.ticket}</span>
+                            </div>
+                            <div style="font-size:13px; color:#374151; line-height:1.4;">${h.note}</div>
+                        </div>`;
+                    });
+                    customContent += `</div></div>`;
+                }
+
+                let displayTitle = data.specialMarker ? data.title : `<span class="spec-number">${++specCount}</span>${data.title}`;
+                const displayType = data.type ? `<span class="spec-type">${data.type}</span>` : '';
+                const createSection = (label, text) => text ? `<div class="spec-section"><span class="spec-label">${label}</span><div class="spec-text">${text}</div></div>` : '';
+                html += `<div id="spec-item-${num}" class="spec-item" onclick="scrollToSpec(${num})"><div class="spec-item-header"><h3 style="margin:0; font-size:14px; font-weight:700; color:#111827; display:flex; align-items:center;">${displayTitle}</h3>${displayType}</div><div class="spec-item-body"><div class="spec-section"><span class="spec-label">Target ID</span><span class="code-snippet">${data.targetId}</span></div>${customContent}${createSection("Description", data.description)}${createSection("Logic & Validation", data.logic)}${createSection("Default State", data.defaults)}${createSection("Interaction", data.interaction)}</div></div>`;
+            });
+            html += `</div>`;
+            panel.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function toggleSpecPanel(show) { const panel = document.getElementById('specPanel'); if (show) { panel.classList.add('open'); document.body.classList.add('spec-panel-open'); } else { panel.classList.remove('open'); document.body.classList.remove('spec-panel-open'); } setTimeout(renderSpecMarkers, 300); }
+        function scrollToSpec(index) { const panel = document.getElementById('specPanel'); if (!panel.classList.contains('open')) toggleSpecPanel(true); panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active')); const target = document.getElementById(`spec-item-${index}`); if (target) { target.classList.add('active'); target.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
+        window.addEventListener('resize', () => { if(document.body.classList.contains('spec-mode')) renderSpecMarkers(); });
     </script>
 </body>
 </html>

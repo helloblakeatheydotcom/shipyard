@@ -1057,7 +1057,7 @@ window.PAGE_SPECS = {
             `,
             defaults: "Read-only.",
             interaction: "None.",
-            offset: { top: "-10px", right: "-10px" },
+            offset: { top: "55px", right: "135px" },
             errors: []
         },
         {
@@ -1093,7 +1093,7 @@ window.PAGE_SPECS = {
             `,
             defaults: "All fields Read-only.",
             interaction: "None.",
-            offset: { top: "0px", right: "0px" },
+            offset: { top: "13px", right: "930px" },
             errors: []
         },
         {
@@ -1113,7 +1113,7 @@ window.PAGE_SPECS = {
             `,
             defaults: "All fields Read-only in this view.",
             interaction: "None.",
-            offset: { top: "0px", right: "0px" },
+            offset: { top: "15px", right: "900px" },
             errors: []
         },
         {
@@ -1127,7 +1127,7 @@ window.PAGE_SPECS = {
             `,
             defaults: "Displays text if present.",
             interaction: "None (Disabled/Read-only).",
-            offset: { top: "0px", right: "0px" },
+            offset: { top: "6px", right: "0px" },
             errors: []
         },
         {
@@ -1174,6 +1174,146 @@ window.PAGE_SPECS = {
             `,
             defaults: "Enabled.",
             interaction: "<b>Click:</b> Saves data and displays success toast.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        }
+    ],
+    "invoice_pdf": [
+        {
+            targetId: "pageHeader",
+            title: "Page Info",
+            type: "PDF Header",
+            description: "PDF View of the Quarterly Invoice.",
+            logic: `
+                <b>Print View:</b>
+                This page is optimized for printing (8.5" x 11"). All headers and footers from the web app are removed.
+            `,
+            defaults: "Static text.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: [],
+            specialMarker: "purple-star"
+        },
+        {
+            targetId: "topSection",
+            title: "Invoice Meta Data",
+            type: "Data Grid",
+            description: "Processing details and Vendor information.",
+            logic: `
+                <b>Data Mapping:</b>
+                <ul>
+                    <li><b>Invoice #:</b> Format <code>[SchoolID]-[RandomID]</code>.</li>
+                    <li><b>Invoice Date:</b> Date invoice was generated.</li>
+                    <li><b>Vendor Name/Payee:</b> Parent/Guardian Name & ID.</li>
+                    <li><b>Location:</b> Location code for vendor.</li>
+                    <li><b>Attn:</b> Configurable System Admin Name (e.g., Stacy Eden).</li>
+                    <li><b>OTC Checkboxes:</b> Used for manual processing. Unchecked by default.</li>
+                </ul>
+            `,
+            defaults: "Read-only.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "schoolSection",
+            title: "Private School Info",
+            type: "Data Grid",
+            description: "Demographics of the school submitting the invoice.",
+            logic: `
+                <b>Source:</b>
+                Pulls directly from the <b>School Settings</b> record at the time of invoice approval.
+                <br>
+                <b>Layout:</b>
+                2-column grid layout for address and contact details.
+            `,
+            defaults: "Read-only.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "studentSection",
+            title: "Student Information",
+            type: "Data Grid",
+            description: "Student demographics and specific reporting period dates.",
+            logic: `
+                <b>Date Logic:</b>
+                <ul>
+                    <li><b>Reporting Period:</b> The specific Quarter (e.g., Quarter 1).</li>
+                    <li><b>Quarter Dates:</b> Start/End dates defined in School Settings for that quarter.</li>
+                    <li><b>Withdrawal Date:</b> "N/A" unless student withdrew during the quarter.</li>
+                </ul>
+            `,
+            defaults: "Read-only.",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "descTable",
+            title: "Cost Breakdown",
+            type: "Data Table",
+            description: "Calculation of the final check amount.",
+            logic: `
+                <b>Calculation Rules:</b>
+                <ul>
+                    <li><b>Tuition:</b> Annual Tuition + Fees / 4.</li>
+                    <li><b>Scholarship:</b> Annual LNH Award / 4.</li>
+                    <li><b>Check Amount:</b> The amount entered by the school.</li>
+                </ul>
+                <b>Note:</b>Parent/Guardian must endorse the check to the school.
+                <br><br>
+                <b>Days in Quarter and Days Student Present:</b> The days in quarter pull from school information page, and days student was present is entered by the school.
+            `,
+            defaults: "Currency formatted (USD).",
+            interaction: "None.",
+            offset: { top: "0px", right: "0px" },
+            errors: []
+        },
+        {
+            targetId: "approvalStamp",
+            title: "Approval Stamp",
+            type: "Status Indicator",
+            status: "new", // Triggers the visual ring
+            description: "Visual confirmation of payment authorization.",
+            logic: `
+                <div style="background: #ecfdf5; padding: 8px; border-left: 3px solid var(--success-green); margin-bottom: 12px; font-size: 13px;">
+                    <b style="color: var(--success-green);">NEW FEATURE:</b>
+                    <br>
+                    Digital stamp applied when invoice status is moved to <b>"Approved"</b>.
+                </div>
+                <b>Display Conditions:</b>
+                <ul>
+                    <li>Visible ONLY when <code>status == 'Approved' or 'Mailed'</code>.</li>
+                    <li>Hidden for 'Submitted', 'Returned', or 'Created' statuses.</li>
+                </ul>
+                <br>
+                <b>Format:</b>
+                "Pay [Approval Date] [Admin Initials]"
+                <br>
+                <b>Style:</b>
+                Red text, Red border, rotated -3 degrees.
+            `,
+            defaults: "Hidden by default.",
+            interaction: "None.",
+            offset: { top: "0px", right: "-12px" },
+            errors: []
+        },
+        {
+            targetId: "adminNotes",
+            title: "Administrator Notes",
+            type: "Text Block",
+            description: "Internal notes appended to the invoice.",
+            logic: `
+                <b>Source:</b>
+                Pulls from the "Administrator Notes" field on the Invoice Details screen.
+                <br>
+                <b>Display:</b>
+                If empty, displays the label with empty space for handwritten notes.
+            `,
+            defaults: "",
+            interaction: "None.",
             offset: { top: "0px", right: "0px" },
             errors: []
         }
