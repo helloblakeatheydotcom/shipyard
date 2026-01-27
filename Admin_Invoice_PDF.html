@@ -659,7 +659,38 @@
         }
 
         function toggleSpecPanel(show) { const panel = document.getElementById('specPanel'); if (show) { panel.classList.add('open'); document.body.classList.add('spec-panel-open'); } else { panel.classList.remove('open'); document.body.classList.remove('spec-panel-open'); } setTimeout(renderSpecMarkers, 300); }
-        function scrollToSpec(index) { const panel = document.getElementById('specPanel'); if (!panel.classList.contains('open')) toggleSpecPanel(true); panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active')); const target = document.getElementById(`spec-item-${index}`); if (target) { target.classList.add('active'); target.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
+        
+        function scrollToSpec(index) { 
+            const panel = document.getElementById('specPanel'); 
+            if (!panel.classList.contains('open')) toggleSpecPanel(true); 
+            panel.querySelectorAll('.spec-item').forEach(el => el.classList.remove('active')); 
+            const target = document.getElementById(`spec-item-${index}`); 
+            if (target) { 
+                target.classList.add('active'); 
+                const headerOffset = 90;
+                const targetPos = target.offsetTop - headerOffset;
+                smoothScrollTo(panel, targetPos, 1000);
+            } 
+        }
+
+        function smoothScrollTo(element, target, duration) {
+            const start = element.scrollTop;
+            const change = target - start;
+            const startTime = performance.now();
+            function animateScroll(currentTime) {
+                const elapsed = currentTime - startTime;
+                if (elapsed < duration) {
+                    const t = elapsed / duration;
+                    const ease = 1 - Math.pow(1 - t, 4);
+                    element.scrollTop = start + (change * ease);
+                    requestAnimationFrame(animateScroll);
+                } else {
+                    element.scrollTop = target;
+                }
+            }
+            requestAnimationFrame(animateScroll);
+        }
+
         window.addEventListener('resize', () => { if(document.body.classList.contains('spec-mode')) renderSpecMarkers(); });
     </script>
 </body>

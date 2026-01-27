@@ -594,6 +594,10 @@ window.PAGE_SPECS = {
                         <br>Style: Destructive (<b>danger-red</b> background, white text).
                         <br>Behavior: Removes this entire Grade Group card (requires confirmation).
                     </li>
+                    <li><b>Trashcan Delete:</b>
+                        <br>Style: Destructive (<b>danger-red</b> background, <b>danger-red</b> text).
+                        <br>Behavior: Removes the fee line.
+                    </li>
                 </ul>
             `,
             defaults: "One empty row by default. Description is prefilled with 'Annual Tuition', Description is read-only and the row cannot be deleted.",
