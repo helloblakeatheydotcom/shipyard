@@ -9,13 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+<style>
+    @view-transition {navigation: auto;}
+</style>
+
 <body class="supports-dev-mode">
     <aside>
         <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
-        <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
-        <a href="Finances_Invoices.html" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="PS_Application_List.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Admin_Invoice_List.html" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
         <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
-        <a href="Admin_Schools.html" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="Admin_School_List.html" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
@@ -33,7 +37,7 @@
         </div>
 
         <div>
-            <button class="add-btn" id="addSchoolBtn" onclick="window.location.href='Add_School.html'">Add School</button>
+            <button class="btn btn-primary" style="margin-bottom: 24px;" id="addSchoolBtn" onclick="window.location.href='Admin_School_Create.html'">Add School</button>
         </div>
 
         <div class="card" id="schoolsCard">
@@ -60,7 +64,7 @@
     </main>
 
     <div class="dropdown-menu" id="menu-dropdown">
-        <div class="dropdown-item" onclick="window.location.href='Edit_School.html'">
+        <div class="dropdown-item" onclick="window.location.href='Admin_School_Edit.html'">
             <i data-lucide="pencil" class="menu-icon"></i> Edit School
         </div>
         

@@ -30,7 +30,7 @@ window.PAGE_SPECS = {
             description: "Tab to access School Management.",
             logic: "",
             defaults: "Inactive by default.",
-            interaction: "<b>Click:</b> Navigates to Admin_Schools.html",
+            interaction: "<b>Click:</b> Navigates to Admin_School_List.html",
             offset: { top: "-5px", right: "-15px" },
             errors: []
         }, 
@@ -41,7 +41,7 @@ window.PAGE_SPECS = {
             description: "Primary button to add a new school.",
             logic: "Must pass current client_id as URL parameter.",
             defaults: "Visible and Enabled (Active). Primary Button (primary-blue background, white text).",
-            interaction: "<b>Click:</b> Navigates to Add_School.html.",
+            interaction: "<b>Click:</b> Navigates to Admin_School_Create.html.",
             offset: { top: "-2px", right: "-2px" },
             errors: []
         },        
@@ -412,7 +412,7 @@ window.PAGE_SPECS = {
                 Secondary (<b>status-inactive-bg</b> background, <b>status-inactive-text</b> text).
             `,
             defaults: "Always visible.",
-            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_Schools.html). No data is saved.",
+            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_School_List.html). No data is saved.",
             offset: { top: "0px", right: "0px" },
             errors: []
         },
@@ -591,7 +591,7 @@ window.PAGE_SPECS = {
                         <br>Behavior: Appends a new Description/Amount row to this group.
                     </li>
                     <li><b>Delete Group:</b>
-                        <br>Style: Destructive (<b>danger-red</b> background, white text).
+                        <br>Style: Destructive (<b>danger-bg</b> background, white text).
                         <br>Behavior: Removes this entire Grade Group card (requires confirmation).
                     </li>
                     <li><b>Trashcan Delete:</b>
@@ -669,7 +669,7 @@ window.PAGE_SPECS = {
                 Secondary (<b>status-inactive-bg</b> background, <b>status-inactive-text</b> text).
             `,
             defaults: "Always visible.",
-            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_Schools.html). No data is saved.",
+            interaction: "<b>Click:</b> Navigate back to Schools List (Admin_School_List.html). No data is saved.",
             offset: { top: "0px", right: "0px" },
             errors: []
         },
@@ -998,7 +998,7 @@ window.PAGE_SPECS = {
                 </ul>
             `,
             defaults: "Sortable.",
-            interaction: "<b>Click Link:</b> 'Edit' (if editable) or 'View' (if locked) navigates to <code>Invoice_Details.html</code>.",
+            interaction: "<b>Click Link:</b> 'Edit' (if editable) or 'View' (if locked) navigates to <code>Admin_Invoice_Detail.html</code>.",
             offset: { top: "7px", right: "-35px" },
             errors: []
         },
@@ -1029,7 +1029,7 @@ window.PAGE_SPECS = {
             logic: `
                 <b>Dynamic Title:</b> "Quarterly Invoice for [Student Name]".
                 <br>
-                <b>Back Link:</b> Returns to <code>Finances_Invoices.html</code> preserving filter state if possible.
+                <b>Back Link:</b> Returns to <code>Admin_Invoice_List.html</code> preserving filter state if possible.
             `,
             defaults: "",
             interaction: "",
@@ -1092,7 +1092,7 @@ window.PAGE_SPECS = {
                     <li><b>Student Info:</b> Pulls from Student Record (Name, DOB, Parent, Vendor #).</li>
                     <li><b>Location:</b> Pulls from School Record.</li>
                     <li><b>Reporting Period:</b> The specific Quarter (Q1-Q4) this invoice covers.</li>
-                    <li><b>Quarter Dates (From/To):</b> Sourced from <b>School Settings (Edit_School.html)</b> > Quarter Info.</li>
+                    <li><b>Quarter Dates (From/To):</b> Sourced from <b>School Settings (Admin_School_Edit.html)</b> > Quarter Info.</li>
                 </ul>
             `,
             defaults: "All fields Read-only.",

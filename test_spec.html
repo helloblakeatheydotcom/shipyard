@@ -3,132 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spec Panel Test</title>
+    <title>Batch Update - 10 Record Limit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f3f4f6; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
+        /* --- Base Variables --- */
+        :root {
+            --primary: #0B2E78;
+            --primary-hover: #1e40af;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --bg-page: #F3F4F6;
+            --bg-surface: #FFFFFF;
+        }
 
-        /* --- THE PANEL STYLES (Copy this to your main CSS) --- */
-        .spec-panel {
-            width: 380px;
-            background: white;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            margin: 0; padding: 0;
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .trigger-btn {
+            background-color: var(--primary); color: white; padding: 12px 24px;
+            border-radius: 6px; font-weight: 600; border: none; cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); font-size: 14px;
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(2px);
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-content {
+            background: var(--bg-surface);
+            width: 750px; 
+            max-width: 90%;
+            /* Removed fixed max-height here to let the body dictate height */
             border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex; flex-direction: column;
             overflow: hidden;
-            border: 1px solid #e5e7eb;
         }
 
-        .spec-header {
-            background: #f9fafb;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .spec-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: #111827; }
-        .spec-header span { font-size: 12px; color: #6b7280; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
-
-        .spec-body { padding: 20px; }
-
-        /* The individual sections */
-        .spec-section { margin-bottom: 16px; }
-        .spec-label { 
-            display: block; 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.05em; 
-            color: #6b7280; /* Gray-500 */
-            font-weight: 700; 
-            margin-bottom: 4px;
-        }
-        .spec-text { 
-            font-size: 14px; 
-            color: #374151; /* Gray-700 */
-            line-height: 1.5; 
+        .modal-header {
+            padding: 24px 32px 20px;
+            border-bottom: 1px solid var(--border);
         }
 
-        /* Technical Data Styling */
-        .spec-technical {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px dashed #e5e7eb;
+        .modal-title {
+            font-size: 24px; font-weight: 700; color: var(--text-main);
+            margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
         }
-        .code-snippet {
-            font-family: monospace;
-            background: #f3f4f6;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #d946ef; /* Pink-600 for contrast */
-            font-size: 12px;
+
+        .modal-instructions {
+            font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0; max-width: 90%;
         }
+
+        .close-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            cursor: pointer; padding: 4px; border-radius: 4px;
+        }
+        .close-btn:hover { background-color: #F3F4F6; color: var(--text-main); }
+
+        /* --- KEY CHANGE: Scrollable Body Limit --- */
+        .modal-body {
+            /* Approx 48px per row * 10 rows = 480px.
+               Any content beyond this height triggers the scrollbar.
+            */
+            max-height: 480px; 
+            overflow-y: auto;
+            padding: 24px 32px;
+            background-color: #F9FAFB;
+        }
+
+        .record-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            font-size: 13px; background: white;
+            border: 1px solid var(--border); border-radius: 6px;
+        }
+
+        .record-table th {
+            background-color: #F9FAFB; color: var(--text-muted); font-weight: 600;
+            text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 10; /* Sticky Headers */
+            text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;
+        }
+        .record-table th:first-child { border-top-left-radius: 6px; }
+        .record-table th:last-child { border-top-right-radius: 6px; }
+
+        .record-table td {
+            padding: 14px 16px; border-bottom: 1px solid var(--border);
+            color: var(--text-main); vertical-align: middle;
+        }
+        .record-table tr:last-child td { border-bottom: none; }
+        .record-table tr:hover { background-color: #F9FAFB; }
+
+        .pill { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 99px; font-size: 12px; font-weight: 500; }
+        .pill.approved { background: #ECFDF5; color: #047857; }
+        .pill.submitted { background: #F5F3FF; color: #7C3AED; }
+        .pill.returned { background: #FFFBEB; color: #B45309; }
+        .pill.not-started { background: #F3F4F6; color: #4B5563; }
+
+        .modal-footer {
+            padding: 20px 32px; border-top: 1px solid var(--border);
+            background-color: white; display: flex; align-items: center; justify-content: space-between;
+            z-index: 20;
+        }
+
+        .footer-actions { display: flex; align-items: center; gap: 12px; }
+        .btn { padding: 10px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+        .btn-cancel { background: white; border-color: var(--border); color: var(--text-main); }
+        .btn-cancel:hover { background: #F3F4F6; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .status-select { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 14px; color: var(--text-main); min-width: 200px; }
     </style>
 </head>
 <body>
 
-    <div id="panel-container"></div>
+    <button class="trigger-btn" onclick="openModal()">Update Status</button>
+
+    <div id="batchModal" class="modal-overlay">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                <div class="modal-title">
+                    Batch Update Statements
+                    <button class="close-btn" onclick="closeModal()"><i data-lucide="x" width="24"></i></button>
+                </div>
+                <p class="modal-instructions">
+                    You have selected <strong>20 statements</strong>. Select a new status below to apply it to all records in this list. This action cannot be undone for finalized statements.
+                </p>
+            </div>
+
+            <div class="modal-body">
+                <table class="record-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>School</th>
+                            <th style="text-align: right;">Total</th>
+                            <th>Current Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>John Doe</td><td>Antioch Christian</td><td style="text-align: right;">$1,245.32</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Sarah Connor</td><td>Cascia Hall</td><td style="text-align: right;">$1,600.44</td><td><span class="pill returned">Returned</span></td></tr>
+                        <tr><td>Robert Jones</td><td>Bishop Kelley</td><td style="text-align: right;">$1,523.15</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Alice Brown</td><td>All Saints</td><td style="text-align: right;">$1,210.99</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Emily Watson</td><td>Antioch Christian</td><td style="text-align: right;">$1,350.75</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Michael Scott</td><td>All Saints</td><td style="text-align: right;">$980.25</td><td><span class="pill not-started">Not Started</span></td></tr>
+                        <tr><td>Bruce Wayne</td><td>Bishop Kelley</td><td style="text-align: right;">$1,850.12</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Peter Parker</td><td>Artsy Academy</td><td style="text-align: right;">$1,245.32</td><td><span class="pill not-started">Not Started</span></td></tr>
+                        <tr><td>Clark Kent</td><td>Antioch Christian</td><td style="text-align: right;">$1,100.50</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Diana Prince</td><td>Bishop Kelley</td><td style="text-align: right;">$2,100.00</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        
+                        <tr><td>Barry Allen</td><td>Central High</td><td style="text-align: right;">$1,050.00</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Hal Jordan</td><td>Coast City High</td><td style="text-align: right;">$1,400.00</td><td><span class="pill returned">Returned</span></td></tr>
+                        <tr><td>Arthur Curry</td><td>Atlantis Prep</td><td style="text-align: right;">$1,900.50</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Victor Stone</td><td>Stone Academy</td><td style="text-align: right;">$1,320.00</td><td><span class="pill not-started">Not Started</span></td></tr>
+                        <tr><td>Oliver Queen</td><td>Star City High</td><td style="text-align: right;">$2,500.00</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Natasha Romanoff</td><td>Red Room</td><td style="text-align: right;">$1,150.00</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Tony Stark</td><td>MIT Prep</td><td style="text-align: right;">$5,000.00</td><td><span class="pill submitted">Submitted</span></td></tr>
+                        <tr><td>Steve Rogers</td><td>Brooklyn High</td><td style="text-align: right;">$950.00</td><td><span class="pill approved">Approved</span></td></tr>
+                        <tr><td>Thor Odinson</td><td>Asgard Academy</td><td style="text-align: right;">$1,000.00</td><td><span class="pill returned">Returned</span></td></tr>
+                        <tr><td>Bruce Banner</td><td>Gamma High</td><td style="text-align: right;">$1,200.00</td><td><span class="pill submitted">Submitted</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <label for="newStatus" style="font-size: 14px; font-weight: 600; color: var(--text-main);">New Status:</label>
+                    <select id="newStatus" class="status-select">
+                        <option value="" disabled selected>Select status...</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Denied">Denied</option>
+                        <option value="Returned">Returned</option>
+                        <option value="Paid">Paid</option>
+                    </select>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmUpdate()">Update Records</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <script>
-        // --- 1. THE DATA STRUCTURE ---
-        // This is how you will write your specs in specs.js
-        const sampleSpec = {
-            id: "input-check-amt",
-            title: "Check Amount Field",
-            type: "Currency Input", // Optional nice-to-have
-            
-            // The "Lean 4" Fields
-            logic: "Required. Must be > $0. Cannot exceed 'LNH Award' value ($7,863.53).",
-            
-            defaults: "Defaults to $0.00. Field is disabled if Invoice Status is 'Approved'.",
-            
-            interaction: "Recalculates 'Remaining Balance' on blur. If user types > Award, auto-corrects to Max Award.",
-            
-            technical: "db.invoices.check_amt"
-        };
+        lucide.createIcons();
+        const modal = document.getElementById('batchModal');
 
-        // --- 2. THE RENDERING LOGIC ---
-        // This function takes the data object and builds HTML
-        function renderPanel(data) {
-            const container = document.getElementById('panel-container');
-            
-            // Helper to generate HTML for a section ONLY if data exists
-            const createSection = (label, text, isCode = false) => {
-                if (!text) return ''; // If field is missing, don't render anything
-                const content = isCode ? `<span class="code-snippet">${text}</span>` : text;
-                return `
-                    <div class="spec-section">
-                        <span class="spec-label">${label}</span>
-                        <div class="spec-text">${content}</div>
-                    </div>
-                `;
-            };
+        function openModal() { modal.classList.add('open'); }
+        function closeModal() { modal.classList.remove('open'); }
 
-            const html = `
-                <div class="spec-panel">
-                    <div class="spec-header">
-                        <h3>${data.title}</h3>
-                        <span>${data.type}</span>
-                    </div>
-                    <div class="spec-body">
-                        ${createSection("Logic & Validation", data.logic)}
-                        ${createSection("Default State", data.defaults)}
-                        ${createSection("Interaction", data.interaction)}
-                        
-                        ${data.technical ? `
-                            <div class="spec-technical">
-                                <span class="spec-label">Data Mapping</span>
-                                <span class="code-snippet">${data.technical}</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-
-            container.innerHTML = html;
+        function confirmUpdate() {
+            const status = document.getElementById('newStatus').value;
+            if(!status) { alert("Please select a new status."); return; }
+            alert(`Updated 20 records to: ${status}`);
+            closeModal();
         }
 
-        // Run the render
-        renderPanel(sampleSpec);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
     </script>
+
 </body>
 </html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Finances - Annual Statements</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+         @view-transition {navigation: auto;}
+        /* Page Specific Styles (Adapted from Admin_Invoice_List.html) */
+        .page-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-header-flex h1 { margin-bottom: 0; }
+        
+        .filters-panel { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; background: white; padding: 20px; border: 1px solid #E5E7EB; border-radius: 8px; }
+        .filters-header { font-size: 0.95rem; font-weight: 600; color: var(--text-dark); }
+        .filters-row { display: flex; gap: 16px; flex-wrap: wrap; width: 100%; }
+        
+        /* Floating Label & Custom Select Styles */
+        .floating-group {
+            position: relative;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            height: 38px;
+            background: white;
+            min-width: 225px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .floating-group:hover { border-color: #9CA3AF; }
+        .floating-group.active { border-color: var(--primary-blue); box-shadow: 0 0 0 1px var(--primary-blue); }
+        
+        .floating-label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 4px;
+            color: #6B7280;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .floating-group.active .floating-label,
+        .floating-group.has-value .floating-label {
+            top: -2px;
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        /* Fix School Year label background to match page header */
+        #schoolYearFilter .floating-label { background-color: var(--bg-color); }
+
+        .custom-trigger {
+            width: 100%;
+            height: 100%;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            overflow: hidden;
+        }
+        .custom-trigger span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .custom-trigger i { margin-left: auto; color: #9CA3AF; flex-shrink: 0; }
+
+        /* Multi-Select Dropdown */
+        .multiselect-dropdown {
+            position: absolute; top: 105%; left: 0; width: max-content; min-width: 100%;
+            background: white; border: 1px solid #E5E7EB; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 50;
+            display: none; max-height: 250px; overflow-y: auto; padding: 4px;
+        }
+        .multiselect-dropdown.show { display: block; }
+        
+        .multiselect-option { padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: background 0.1s; white-space: nowrap; }
+        .multiselect-option:hover { background-color: #F3F4F6; }
+        .multiselect-option input[type="checkbox"] { accent-color: var(--primary-blue); width: 16px; height: 16px; cursor: pointer; }
+        
+        /* Single Select Option (for School Year) */
+        .single-option { padding: 10px 12px; cursor: pointer; border-radius: 4px; font-size: 0.9rem; }
+        .single-option:hover { background-color: #F3F4F6; color: var(--primary-blue); }
+        .single-option.selected { background-color: var(--hover-blue-bg); color: var(--primary-blue); font-weight: 600; }
+
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; padding: 24px; position: relative; }
+        
+        /* Status Cell Styling */
+        .status-cell-content { display: flex; align-items: center; white-space: nowrap; }
+        .search-box { width: 100%; max-width: 400px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0; }
+        .status-text { font-weight: 500; font-size: 0.85rem; }
+        
+        /* Taller rows to match index page */
+        #statementsTable td { padding: 12px 8px; height: 52px; }
+        .name-link { color: var(--primary-blue); font-weight: 600; text-decoration: none; }
+        .name-link:hover { text-decoration: underline; }
+        .separator { color: #D1D5DB; margin: 0 8px; }
+        .action-link { color: var(--primary-blue); font-weight: 600; text-decoration: none; font-size: 0.85rem; }
+        .action-link:hover { text-decoration: underline; }
+        .pagination-btn { background: none; border: none; padding: 4px; cursor: pointer; color: var(--text-light); display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.2s; }
+        .pagination-btn:hover { color: var(--primary-blue); background-color: #F3F4F6; }
+        .pagination-btn.disabled { opacity: 0.3; pointer-events: none; }
+
+        /* Status Colors */
+        .dot-not-started { background-color: var(--cool-gray); }
+        .dot-created { background-color: var(--status-blue-bright); }
+        .dot-submitted { background-color: var(--status-purple); }
+        .dot-approved { background-color: var(--status-green); }
+        .dot-not-eligible { background-color: var(--status-red); }
+
+        /* Bulk Action Bar */
+        .bulk-action-bar {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            background: var(--primary-blue); color: white; padding: 10px 24px; border-radius: 30px;
+            display: none; align-items: center; gap: 16px; z-index: 50;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2); font-size: 0.95rem; font-weight: 600;
+        }
+        .bulk-action-bar.visible { display: flex; animation: slideDown 0.2s ease-out; }
+        @keyframes slideDown { from { transform: translate(-50%, -10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        
+        .bulk-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+        .bulk-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.95rem; padding: 4px 8px; border-radius: 4px; }
+        .bulk-btn:hover { background: rgba(255,255,255,0.1); }
+        .close-bulk { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; padding: 2px; }
+        .close-bulk:hover { color: white; }
+        .selection-count { font-weight: 600; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s ease-in-out;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+
+        .modal-box {
+            background: white; width: 800px; max-width: 90%;
+            border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden; transform: scale(0.95); transition: transform 0.2s ease;
+            padding: 32px; display: flex; flex-direction: column; max-height: 85vh;
+        }
+        .modal-overlay.show .modal-box { transform: scale(1); }
+
+        .modal-header { margin-bottom: 0; }
+        .modal-header h2 { font-size: 1.5rem; color: var(--text-modal); margin-bottom: 12px; font-weight: 700; margin-top: 0; }
+        
+        .modal-body { 
+            display: flex; flex-direction: column; 
+            overflow: hidden; 
+            margin-bottom: 24px; 
+            font-size: 0.95rem; color: var(--text-modal);
+            flex: 1; min-height: 0;
+        }
+        
+        .modal-table-card { 
+            border: 1px solid #E5E7EB; border-radius: 8px; 
+            overflow-y: auto; 
+            margin-bottom: 16px; 
+            flex-shrink: 1;
+            max-height: 400px;
+        }
+        .selected-rows-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 0; }
+        .selected-rows-table th { 
+            text-align: left; padding: 8px 12px; background: #F9FAFB; 
+            border-bottom: 1px solid #E5E7EB; color: var(--text-modal); font-size: 0.75rem; 
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+            position: sticky; top: 0; z-index: 1;
+        }
+        .selected-rows-table td { padding: 8px 12px; border-bottom: 1px solid #E5E7EB; color: var(--text-modal); font-size: 0.85rem; }
+        .selected-rows-table tr:last-child td { border-bottom: none; }
+
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; flex-shrink: 0; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 8px; color: var(--text-modal); }
+        .modal-select { width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.9rem; color: var(--text-input); }
+
+        main { overflow: hidden; }
+        .card { min-height: 0; }
+        .table-wrapper { overflow-y: auto; min-height: 0; }
+    </style>
+</head>
+<body class="supports-dev-mode">
+    <aside>
+        <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
+        <a href="PS_Application_List.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Admin_Invoice_List.html" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
+        <a href="Admin_School_List.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
+        <div class="spacer"></div>
+        <div class="dev-mode-toggle">
+            <label class="switch"><input type="checkbox" id="specModeToggle" onchange="toggleSpecMode(this)"><span class="slider round"></span></label>
+            <span class="dev-label">Spec Mode</span>
+        </div>
+        <div class="ok-logo">OKLAHOMA STATE DEPT<br>OF EDUCATION</div>
+    </aside>
+
+    <main>
+        <div class="page-header-flex">
+            <h1>My <strong>Finances</strong></h1>
+            <span id="schoolYearSpan" style="display: block;"><div id="schoolYearFilter" style="width: 200px;"></div></span>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab" onclick="window.location.href='Admin_Invoice_List.html'">Invoices</div>
+            <div class="tab active">Annual Statements</div>
+        </div>
+
+        <!-- Filters Panel -->
+        <div class="filters-panel">
+            <div class="filters-header">Filter Statements</div>
+            <div class="filters-row" id="filtersContainer"></div>
+        </div>
+
+        <div class="card" style="position: relative;">
+            <!-- Floating Bulk Action Bar -->
+            <div id="bulkActionBar" class="bulk-action-bar">
+                <div class="selection-count" id="selectionCount">0 Selected</div>
+                <div class="bulk-divider"></div>
+                <button class="bulk-btn" onclick="openBulkUpdateModal()"><i data-lucide="refresh-cw" width="16" height="16"></i> Update Status</button>
+                <div class="bulk-divider"></div>
+                <button class="close-bulk" onclick="deselectAll()"><i data-lucide="x" width="16" height="16"></i></button>
+            </div>
+
+            <div class="card-header-row">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by student or school...">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="statementsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" id="selectAllCb"></th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Application Type</th>
+                            <th>School</th>
+                            <th>LNH Award</th>
+                            <th>Statement Total</th>
+                            <th>Tuition</th>
+                            <th>Fees</th>
+                            <th>Adjustment</th>
+                            <th>Date Submitted</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statementsTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span>Rows per page <select id="rowsPerPageSelect"><option value="10">10</option><option value="25">25</option></select></span>
+                <span style="margin-left: 20px;" id="paginationInfo">Showing 1-10 of 25 results</span>
+                <div class="page-controls" id="paginationControls">
+                    <button class="pagination-btn" id="btnFirst"><i data-lucide="chevrons-left" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnPrev"><i data-lucide="chevron-left" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnNext"><i data-lucide="chevron-right" width="18" height="18"></i></button>
+                    <button class="pagination-btn" id="btnLast"><i data-lucide="chevrons-right" width="18" height="18"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bulk Update Modal -->
+    <div class="modal-overlay" id="bulkUpdateModal">
+        <div class="modal-box">
+            <div class="modal-header"><h2>Batch Update Statements</h2></div>
+            <div class="modal-body">
+                <p style="margin-bottom: 24px;" id="bulkInstructionText">You have selected <strong>0 statements</strong>. Select a new status below to apply to all records in this list.</p>
+                <div class="modal-table-card">
+                    <table class="selected-rows-table">
+                        <thead><tr>
+                            <th style="width: 40%;">Last Name</th>
+                            <th style="width: 40%;">First Name</th>
+                            <th style="width: 20%; text-align: right;">Statement Total</th>
+                        </tr></thead>
+                        <tbody id="bulkUpdateList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <label class="form-label" style="margin-bottom: 0;">New Status</label>
+                    <select class="input-control" id="bulkStatusSelect" style="width: 200px;">
+                    <option value="Not Started">Not Started</option>
+                    <option value="Created">Created</option>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Not Eligible">Not Eligible</option>
+                </select>
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    <button class="btn btn-cancel" onclick="closeBulkModal()" style="background: #E5E7EB; color: #374151; border:none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmBulkUpdate()" style="background: var(--primary-blue); color: white; border:none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Update Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spec Slide-out Panel -->
+    <div id="specPanel" class="spec-slideout"></div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="specs.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // 25 Sample Records
+        const statementsData = [
+            { firstName: "John", lastName: "Doe", type: "Initial", school: "Antioch Christian Academy", total: "$12,500.00", tuition: "$10,000.00", fees: "$2,500.00", discount: "$0.00", lnh: "$6,500.00", date: "08/15/2025", status: "Approved" },
+            { firstName: "Jane", lastName: "Smith", type: "Renewal", school: "All Saints Catholic School", total: "$11,200.00", tuition: "$9,500.00", fees: "$1,700.00", discount: "$0.00", lnh: "$7,200.00", date: "-", status: "Not Started" },
+            { firstName: "Robert", lastName: "Jones", type: "Initial", school: "Cascia Hall Preparatory", total: "$15,000.00", tuition: "$13,000.00", fees: "$2,000.00", discount: "$500.00", lnh: "$8,000.00", date: "08/20/2025", status: "Submitted" },
+            { firstName: "Alice", lastName: "Brown", type: "Renewal", school: "Bishop Kelley High School", total: "$10,500.00", tuition: "$9,000.00", fees: "$1,500.00", discount: "$0.00", lnh: "$5,500.00", date: "-", status: "Not Eligible" },
+            { firstName: "Charlie", lastName: "Day", type: "Initial", school: "Artsy Learning Academy", total: "$13,200.00", tuition: "$11,000.00", fees: "$2,200.00", discount: "$0.00", lnh: "$7,000.00", date: "08/18/2025", status: "Created" },
+            { firstName: "Emily", lastName: "Watson", type: "Renewal", school: "Antioch Christian Academy", total: "$12,500.00", tuition: "$10,000.00", fees: "$2,500.00", discount: "$0.00", lnh: "$6,500.00", date: "08/22/2025", status: "Submitted" },
+            { firstName: "Michael", lastName: "Scott", type: "Initial", school: "All Saints Catholic School", total: "$11,200.00", tuition: "$9,500.00", fees: "$1,700.00", discount: "$0.00", lnh: "$7,200.00", date: "-", status: "Not Started" },
+            { firstName: "Sarah", lastName: "Connor", type: "Renewal", school: "Cascia Hall Preparatory", total: "$15,000.00", tuition: "$13,000.00", fees: "$2,000.00", discount: "$0.00", lnh: "$8,000.00", date: "08/25/2025", status: "Approved" },
+            { firstName: "Bruce", lastName: "Wayne", type: "Initial", school: "Bishop Kelley High School", total: "$10,500.00", tuition: "$9,000.00", fees: "$1,500.00", discount: "$0.00", lnh: "$5,500.00", date: "-", status: "Created" },
+            { firstName: "Peter", lastName: "Parker", type: "Renewal", school: "Artsy Learning Academy", total: "$13,200.00", tuition: "$11,000.00", fees: "$2,200.00", discount: "$1,000.00", lnh: "$7,000.00", date: "08/19/2025", status: "Submitted" },
+            { firstName: "Clark", lastName: "Kent", type: "Initial", school: "Antioch Christian Academy", total: "$12,500.00", tuition: "$10,000.00", fees: "$2,500.00", discount: "$0.00", lnh: "$6,500.00", date: "-", status: "Not Eligible" },
+            { firstName: "Diana", lastName: "Prince", type: "Renewal", school: "All Saints Catholic School", total: "$11,200.00", tuition: "$9,500.00", fees: "$1,700.00", discount: "$0.00", lnh: "$7,200.00", date: "08/21/2025", status: "Approved" },
+            { firstName: "Barry", lastName: "Allen", type: "Initial", school: "Cascia Hall Preparatory", total: "$15,000.00", tuition: "$13,000.00", fees: "$2,000.00", discount: "$0.00", lnh: "$8,000.00", date: "-", status: "Not Started" },
+            { firstName: "Hal", lastName: "Jordan", type: "Renewal", school: "Bishop Kelley High School", total: "$10,500.00", tuition: "$9,000.00", fees: "$1,500.00", discount: "$0.00", lnh: "$5,500.00", date: "08/23/2025", status: "Submitted" },
+            { firstName: "Arthur", lastName: "Curry", type: "Initial", school: "Artsy Learning Academy", total: "$13,200.00", tuition: "$11,000.00", fees: "$2,200.00", discount: "$0.00", lnh: "$7,000.00", date: "-", status: "Created" },
+            { firstName: "Victor", lastName: "Stone", type: "Renewal", school: "Antioch Christian Academy", total: "$12,500.00", tuition: "$10,000.00", fees: "$2,500.00", discount: "$0.00", lnh: "$6,500.00", date: "08/26/2025", status: "Approved" },
+            { firstName: "Oliver", lastName: "Queen", type: "Initial", school: "All Saints Catholic School", total: "$11,200.00", tuition: "$9,500.00", fees: "$1,700.00", discount: "$0.00", lnh: "$7,200.00", date: "-", status: "Not Started" },
+            { firstName: "Natasha", lastName: "Romanoff", type: "Renewal", school: "Cascia Hall Preparatory", total: "$15,000.00", tuition: "$13,000.00", fees: "$2,000.00", discount: "$0.00", lnh: "$8,000.00", date: "08/24/2025", status: "Submitted" },
+            { firstName: "Tony", lastName: "Stark", type: "Initial", school: "Bishop Kelley High School", total: "$10,500.00", tuition: "$9,000.00", fees: "$1,500.00", discount: "$0.00", lnh: "$5,500.00", date: "-", status: "Not Eligible" },
+            { firstName: "Steve", lastName: "Rogers", type: "Renewal", school: "Artsy Learning Academy", total: "$13,200.00", tuition: "$11,000.00", fees: "$2,200.00", discount: "$0.00", lnh: "$7,000.00", date: "08/27/2025", status: "Approved" },
+            { firstName: "Wanda", lastName: "Maximoff", type: "Initial", school: "Antioch Christian Academy", total: "$12,500.00", tuition: "$10,000.00", fees: "$2,500.00", discount: "$0.00", lnh: "$6,500.00", date: "-", status: "Not Started" },
+            { firstName: "Vision", lastName: "Android", type: "Renewal", school: "All Saints Catholic School", total: "$11,200.00", tuition: "$9,500.00", fees: "$1,700.00", discount: "$0.00", lnh: "$7,200.00", date: "08/28/2025", status: "Submitted" },
+            { firstName: "Sam", lastName: "Wilson", type: "Initial", school: "Cascia Hall Preparatory", total: "$15,000.00", tuition: "$13,000.00", fees: "$2,000.00", discount: "$0.00", lnh: "$8,000.00", date: "-", status: "Not Started" },
+            { firstName: "Bucky", lastName: "Barnes", type: "Renewal", school: "Bishop Kelley High School", total: "$10,500.00", tuition: "$9,000.00", fees: "$1,500.00", discount: "$0.00", lnh: "$5,500.00", date: "08/29/2025", status: "Approved" },
+            { firstName: "T'Challa", lastName: "King", type: "Initial", school: "Artsy Learning Academy", total: "$13,200.00", tuition: "$11,000.00", fees: "$2,200.00", discount: "$0.00", lnh: "$7,000.00", date: "-", status: "Not Started" }
+        ];
+
+        // Add Grade property randomly for filtering demo
+        const grades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', '10th Grade', '11th Grade', '12th Grade'];
+        statementsData.forEach(item => {
+            item.grade = grades[Math.floor(Math.random() * grades.length)];
+            item.schoolYear = "2025-2026"; // Default
+        });
+
+        function getStatusDotClass(status) {
+            switch(status) {
+                case 'Not Started': return 'dot-not-started';
+                case 'Created': return 'dot-created';
+                case 'Submitted': return 'dot-submitted';
+                case 'Approved': return 'dot-approved';
+                case 'Not Eligible': return 'dot-not-eligible';
+                default: return 'dot-not-started';
+            }
+        }
+
+        function renderTable(data = statementsData) {
+            const tbody = document.getElementById('statementsTableBody');
+            tbody.innerHTML = '';
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 32px; color: #6B7280;">No statements found matching your criteria.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                const dotClass = getStatusDotClass(item.status);
+                
+                // Zero out amounts if Not Started
+                const isNotStarted = item.status === 'Not Started';
+                
+                // Parse values for calculation
+                const tuitionVal = parseFloat(item.tuition.replace(/[^0-9.-]+/g,"")) || 0;
+                const feesVal = parseFloat(item.fees.replace(/[^0-9.-]+/g,"")) || 0;
+                const discountVal = parseFloat(item.discount.replace(/[^0-9.-]+/g,"")) || 0;
+                const totalVal = tuitionVal + feesVal - discountVal;
+                
+                const formatMoney = (num) => num.toLocaleString('en-US', {style:'currency', currency:'USD'});
+                
+                const displayTotal = isNotStarted ? '$0.00' : formatMoney(totalVal);
+                const displayTuition = isNotStarted ? '$0.00' : item.tuition;
+                const displayFees = isNotStarted ? '$0.00' : item.fees;
+                const displayDiscount = isNotStarted ? '$0.00' : (discountVal > 0 ? formatMoney(-discountVal) : item.discount);
+
+                let actionHtml = '';
+                if (['Approved', 'Submitted', 'Not Eligible'].includes(item.status)) {
+                    actionHtml = `<span class="separator">/</span><a href="#" class="action-link">Edit</a>`;
+                }
+                
+                tr.innerHTML = `
+                    <td><input type="checkbox" class="row-checkbox" onchange="updateBulkState()"></td>
+                    <td>${item.firstName}</td>
+                    <td>${item.lastName}</td>
+                    <td>${item.type}</td>
+                    <td>${item.school}</td>
+                    <td>${item.lnh}</td>
+                    <td>${displayTotal}</td>
+                    <td>${displayTuition}</td>
+                    <td>${displayFees}</td>
+                    <td>${displayDiscount}</td>
+                    <td>${item.date}</td>
+                    <td>
+                        <div class="status-cell-content">
+                            <span class="status-dot ${dotClass}"></span>
+                            <span class="status-text">${item.status}</span>
+                            ${actionHtml}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // --- FILTER & SEARCH STATE ---
+        let activeFilters = {
+            school: [],
+            grade: [],
+            status: [],
+            schoolYear: ['2025-2026'] // Default
+        };
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let currentFilteredData = [...statementsData];
+        let searchTerm = '';
+
+        function applyFilters() {
+            const term = searchTerm.toLowerCase();
+            
+            const filtered = statementsData.filter(item => {
+                // 1. Search (First Name, Last Name, School Name)
+                const matchesSearch = 
+                    item.firstName.toLowerCase().includes(term) ||
+                    item.lastName.toLowerCase().includes(term) ||
+                    item.school.toLowerCase().includes(term);
+
+                if(!matchesSearch) return false;
+
+                // 2. Filters
+                if(activeFilters.school.length > 0 && !activeFilters.school.includes(item.school)) return false;
+                if(activeFilters.grade.length > 0 && !activeFilters.grade.includes(item.grade)) return false;
+                if(activeFilters.status.length > 0 && !activeFilters.status.includes(item.status)) return false;
+                if(activeFilters.schoolYear.length > 0 && !activeFilters.schoolYear.includes(item.schoolYear)) return false;
+
+                return true;
+            });
+
+            currentFilteredData = filtered;
+            currentPage = 1;
+            updateTableDisplay();
+        }
+
+        function updateTableDisplay() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = currentFilteredData.slice(start, end);
+            
+            renderTable(paginatedData);
+            
+            // Update Info
+            const total = currentFilteredData.length;
+            const showStart = total === 0 ? 0 : start + 1;
+            const showEnd = Math.min(end, total);
+            document.getElementById('paginationInfo').innerText = `Showing ${showStart}-${showEnd} of ${total} results`;
+            
+            // Reset Select All
+            const selectAll = document.getElementById('selectAllCb');
+            if(selectAll) selectAll.checked = false;
+            updateBulkState();
+            
+            // Update Buttons
+            const totalPages = Math.ceil(total / rowsPerPage);
+            document.getElementById('btnFirst').classList.toggle('disabled', currentPage === 1);
+            document.getElementById('btnPrev').classList.toggle('disabled', currentPage === 1);
+            document.getElementById('btnNext').classList.toggle('disabled', currentPage >= totalPages || total === 0);
+            document.getElementById('btnLast').classList.toggle('disabled', currentPage >= totalPages || total === 0);
+        }
+
+        // --- FILTER COMPONENT LOGIC (Reused) ---
+        function createFloatingFilter(containerId, label, dataKey, options, isMulti = true, defaultVal = null) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'floating-group';
+            if(defaultVal) wrapper.classList.add('has-value');
+
+            const labelEl = document.createElement('label');
+            labelEl.className = 'floating-label';
+            labelEl.innerText = label;
+
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-trigger';
+            trigger.innerHTML = `<span>${defaultVal || ''}</span><i data-lucide="chevron-down" width="16" height="16"></i>`;
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'multiselect-dropdown';
+
+            options.forEach(opt => {
+                const optEl = document.createElement('div');
+                if(isMulti) {
+                    optEl.className = 'multiselect-option';
+                    optEl.innerHTML = `<input type="checkbox" value="${opt}"> ${opt}`;
+                    optEl.addEventListener('click', (e) => {
+                        if(e.target !== optEl.querySelector('input')) {
+                            const cb = optEl.querySelector('input');
+                            cb.checked = !cb.checked;
+                        }
+                        updateTriggerText();
+                        if(dataKey) {
+                            activeFilters[dataKey] = Array.from(dropdown.querySelectorAll('input:checked')).map(cb => cb.value);
+                            applyFilters();
+                        }
+                    });
+                } else {
+                    optEl.className = 'single-option';
+                    optEl.innerText = opt;
+                    if(opt === defaultVal) optEl.classList.add('selected');
+                    optEl.addEventListener('click', () => {
+                        dropdown.querySelectorAll('.single-option').forEach(o => o.classList.remove('selected'));
+                        optEl.classList.add('selected');
+                        trigger.querySelector('span').innerText = opt;
+                        wrapper.classList.add('has-value');
+                        wrapper.classList.remove('active');
+                        dropdown.classList.remove('show');
+                        if(dataKey) {
+                            activeFilters[dataKey] = [opt];
+                            applyFilters();
+                        }
+                    });
+                }
+                dropdown.appendChild(optEl);
+            });
+
+            function updateTriggerText() {
+                const checked = Array.from(dropdown.querySelectorAll('input:checked')).map(cb => cb.value);
+                const span = trigger.querySelector('span');
+                if(checked.length > 0) {
+                    wrapper.classList.add('has-value');
+                    if(checked.length === 1) span.innerText = checked[0];
+                    else span.innerText = `${checked.length} selected`;
+                } else {
+                    wrapper.classList.remove('has-value');
+                    span.innerText = '';
+                }
+            }
+
+            wrapper.addEventListener('click', (e) => {
+                if(e.target.closest('.multiselect-dropdown')) return;
+                document.querySelectorAll('.floating-group').forEach(g => {
+                    if(g !== wrapper) {
+                        g.classList.remove('active');
+                        g.querySelector('.multiselect-dropdown').classList.remove('show');
+                    }
+                });
+                wrapper.classList.toggle('active');
+                dropdown.classList.toggle('show');
+            });
+
+            wrapper.appendChild(labelEl);
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(dropdown);
+            container.appendChild(wrapper);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyFilters();
+            
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                applyFilters();
+            });
+
+            // Create Filters
+            createFloatingFilter('schoolYearFilter', 'School Year', 'schoolYear', ['2025-2026', '2024-2025', '2023-2024'], false, '2025-2026');
+            
+            createFloatingFilter('filtersContainer', 'Private School', 'school', ['Antioch Christian Academy', 'All Saints Catholic School', 'Cascia Hall Preparatory', 'Bishop Kelley High School', 'Artsy Learning Academy']);
+            createFloatingFilter('filtersContainer', 'Grade', 'grade', ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', '10th Grade', '11th Grade', '12th Grade']);
+            createFloatingFilter('filtersContainer', 'Status', 'status', ['Not Started', 'Created', 'Submitted', 'Approved', 'Not Eligible']);
+            
+            // Pagination
+            document.getElementById('rowsPerPageSelect').addEventListener('change', (e) => {
+                rowsPerPage = parseInt(e.target.value);
+                currentPage = 1;
+                updateTableDisplay();
+            });
+            
+            document.getElementById('btnFirst').addEventListener('click', () => { if(currentPage > 1) { currentPage = 1; updateTableDisplay(); }});
+            document.getElementById('btnPrev').addEventListener('click', () => { if(currentPage > 1) { currentPage--; updateTableDisplay(); }});
+            document.getElementById('btnNext').addEventListener('click', () => { 
+                const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+                if(currentPage < totalPages) { currentPage++; updateTableDisplay(); }
+            });
+            document.getElementById('btnLast').addEventListener('click', () => { 
+                const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+                if(currentPage < totalPages) { currentPage = totalPages; updateTableDisplay(); }
+            });
+
+            // Select All Listener
+            const selectAllCb = document.getElementById('selectAllCb');
+            if(selectAllCb) {
+                selectAllCb.addEventListener('change', (e) => {
+                    const isChecked = e.target.checked;
+                    document.querySelectorAll('#statementsTableBody input[type="checkbox"]').forEach(cb => cb.checked = isChecked);
+                    updateBulkState();
+                });
+            }
+
+            lucide.createIcons();
+
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.floating-group')) {
+                    document.querySelectorAll('.floating-group').forEach(g => {
+                        g.classList.remove('active');
+                        g.querySelector('.multiselect-dropdown').classList.remove('show');
+                    });
+                }
+            });
+        });
+
+        function updateBulkState() {
+            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+            const bar = document.getElementById('bulkActionBar');
+            const countLabel = document.getElementById('selectionCount');
+            
+            if (checkedCount > 1) {
+                bar.classList.add('visible');
+                countLabel.innerText = `${checkedCount} Selected`;
+            } else {
+                bar.classList.remove('visible');
+            }
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+            document.getElementById('selectAllCb').checked = false;
+            updateBulkState();
+        }
+
+        // --- BULK UPDATE LOGIC ---
+        function openBulkUpdateModal() {
+            const tbody = document.getElementById('bulkUpdateList');
+            tbody.innerHTML = '';
+            
+            const checkedRows = document.querySelectorAll('.row-checkbox:checked');
+            const count = checkedRows.length;
+            
+            // Update Instruction Text
+            const uniqueStatuses = [...new Set(Array.from(checkedRows).map(cb => cb.closest('tr').querySelector('.status-text').innerText))];
+            const displayStatus = uniqueStatuses.length === 1 ? uniqueStatuses[0].toUpperCase() : 'MIXED';
+            document.getElementById('bulkInstructionText').innerHTML = `You have selected <strong>${count} statements</strong> with a status of <strong>${displayStatus}</strong>. Select a new status below to apply to all records in this list.`;
+
+            checkedRows.forEach(cb => {
+                const tr = cb.closest('tr');
+                const firstName = tr.cells[1].innerText;
+                const lastName = tr.cells[2].innerText;
+                const total = tr.cells[6].innerText;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${lastName}</td><td>${firstName}</td><td style="text-align: right;">${total}</td>`;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('bulkUpdateModal').classList.add('show');
+        }
+
+        function closeBulkModal() {
+            document.getElementById('bulkUpdateModal').classList.remove('show');
+        }
+
+        function confirmBulkUpdate() {
+            const newStatus = document.getElementById('bulkStatusSelect').value;
+            const checkedRows = document.querySelectorAll('.row-checkbox:checked');
+            
+            checkedRows.forEach(cb => {
+                const tr = cb.closest('tr');
+                const firstName = tr.cells[1].innerText;
+                const lastName = tr.cells[2].innerText;
+                const school = tr.cells[4].innerText;
+                
+                // Update Data Model
+                const item = statementsData.find(d => d.firstName === firstName && d.lastName === lastName && d.school === school);
+                if(item) item.status = newStatus;
+            });
+            
+            applyFilters(); // Re-render table
+            closeBulkModal();
+            deselectAll();
+        }
+    </script>
+    
+    <!-- Spec Mode Scripts (Standard) -->
+    <script>
+        function toggleSpecMode(checkbox) {
+            const isSpec = checkbox.checked;
+            if (isSpec) {
+                document.body.classList.add('spec-mode');
+                // renderSpecMarkers(); // No specs defined for this page yet
+            } else {
+                document.body.classList.remove('spec-mode');
+                // removeSpecMarkers();
+            }
+            localStorage.setItem('specMode', isSpec);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const isSpec = localStorage.getItem('specMode') === 'true';
+            const toggle = document.getElementById('specModeToggle');
+            if(toggle) { toggle.checked = isSpec; if(isSpec) toggleSpecMode(toggle); }
+        });
+    </script>
+</body>
+</html>

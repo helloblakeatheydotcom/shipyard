@@ -127,10 +127,10 @@
 <body class="supports-dev-mode">
     <aside>
         <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
-        <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
-        <a href="Finances_Invoices.html" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="PS_Application_List.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Admin_Invoice_List.html" class="nav-item active"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
         <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
-        <a href="Admin_Schools.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="Admin_School_List.html" class="nav-item"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
@@ -142,7 +142,7 @@
 
     <main>
         <div class="header-area" id="pageTitle">
-            <a href="Finances_Invoices.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to Invoices</a>
+            <a href="Admin_Invoice_List.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to Invoices</a>
             <h1>Quarterly Invoice for <span>Blake Zimmerman</span></h1>
         </div>
 
@@ -236,7 +236,7 @@
             </button>
             <div class="action-dropdown-menu" id="actionMenu">
                 <div class="dropdown-item"><span class="menu-icon"></span> Edit Status</div>
-                <div class="dropdown-item" onclick="window.open('Invoice_PDF.html?stamp=false', '_blank')"><span class="menu-icon"></span> Print Invoice</div>
+                <div class="dropdown-item" onclick="window.open('Admin_Invoice_PDF.html?stamp=false', '_blank')"><span class="menu-icon"></span> Print Invoice</div>
                 <div style="border-top: 1px solid #E5E7EB; margin: 4px 0;"></div>
                 <div class="dropdown-item" onclick="printAndMarkProcessed()"><i data-lucide="printer-check" class="menu-icon"></i> Print & Mark Processed</div>
             </div>
@@ -292,7 +292,7 @@
         });
 
         function printAndMarkProcessed() {
-            window.open('Invoice_PDF.html?stamp=true', '_blank');
+            window.open('Admin_Invoice_PDF.html?stamp=true', '_blank');
             
             // Update Data in LocalStorage
             if (currentInvoice) {

@@ -13,10 +13,10 @@
     <div class="toast error" id="errorToast"><i data-lucide="circle-alert" width="20" height="20"></i>Please fix the errors below.</div>
     <aside>
         <div class="brand-logo" style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="graduation-cap" width="32" height="32"></i><span>PCG<br>SCHOLAR</span></div>
-        <a href="PS_Applications.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
-        <a href="Finances_Invoices.html" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
+        <a href="PS_Application_List.html" class="nav-item"><i data-lucide="file-text" width="20" height="20"></i>Applications</a>
+        <a href="Admin_Invoice_List.html" class="nav-item"><i data-lucide="dollar-sign" width="20" height="20"></i>Finances</a>
         <a href="#" class="nav-item"><i data-lucide="download-cloud" width="20" height="20"></i>Downloads</a>
-        <a href="Admin_Schools.html" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
+        <a href="Admin_School_List.html" class="nav-item active"><i data-lucide="settings" width="20" height="20"></i>Settings</a>
         <a href="index.html" class="nav-item" style="margin-top: 48px;"><i data-lucide="log-out" width="20" height="20"></i>Log out</a>
         <div class="spacer"></div>
         <div class="dev-mode-toggle">
@@ -28,7 +28,7 @@
 
     <main>
         <div class="header-area">
-            <a href="Admin_Schools.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to all Schools</a>
+            <a href="Admin_School_List.html" class="back-link"><i data-lucide="arrow-left" width="16" height="16"></i>Back to all Schools</a>
             <h1 id="pageTitle">Add <span>School</span></h1>
         </div>
 
@@ -151,7 +151,7 @@
     </main>
 
     <div class="footer">
-        <button class="btn btn-cancel" id="cancelBtn" onclick="window.location.href='Admin_Schools.html'" style="margin-right: 12px;">Cancel</button>
+        <button class="btn btn-cancel" id="cancelBtn" onclick="window.location.href='Admin_School_List.html'" style="margin-right: 12px;">Cancel</button>
         <button class="btn btn-primary" id="saveBtn" onclick="saveSchool()">
             <span class="spinner" id="btnSpinner"></span>
             <span id="btnText">Add School</span>
@@ -309,7 +309,7 @@
                 toast.classList.add('show');
                 
                 setTimeout(() => {
-                    window.location.href = 'Edit_School.html';
+                    window.location.href = 'Admin_School_Edit.html';
                 }, 1500);
             }, 1000);
         }

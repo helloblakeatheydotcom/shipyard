@@ -551,6 +551,7 @@
         function toggleStamp(checkbox) {
             const stamp = document.getElementById('approvalStamp');
             stamp.style.display = checkbox.checked ? 'inline-block' : 'none';
+            if (document.body.classList.contains('spec-mode')) renderSpecMarkers();
         }
     </script>
 
@@ -586,6 +587,9 @@
             specs.forEach((spec, index) => {
                 const target = document.getElementById(spec.targetId);
                 if (target) {
+                    // Skip hidden elements
+                    if (window.getComputedStyle(target).display === 'none') return;
+
                     const rect = target.getBoundingClientRect();
                     const paperRect = container.getBoundingClientRect();
                     const marker = document.createElement('div');
