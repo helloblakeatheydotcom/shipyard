@@ -36,8 +36,8 @@
             <div class="tab active" id="tabSchools">Schools</div>
         </div>
 
-        <div>
-            <button class="btn btn-primary" style="margin-bottom: 24px;" id="addSchoolBtn" onclick="window.location.href='Admin_School_Create.html'">Add School</button>
+        <div class="page-mb-24">
+            <button class="btn btn-primary" id="addSchoolBtn">Add School</button>
         </div>
 
         <div class="card" id="schoolsCard">
@@ -79,7 +79,7 @@
                 <h2>Users at <span id="usersSchoolName"></span></h2>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 24px; color: #64748B;">Below are the Active user accounts at <span id="usersSchoolNameSub"></span></p>
+                <p class="modal-mb">Below are the Active user accounts at <span id="usersSchoolNameSub"></span></p>
                 <ul class="user-list" id="usersListContainer"></ul>
             </div>
             <div class="modal-footer">
@@ -98,10 +98,12 @@
                     <div class="warning-grid"><div>• 7 Invoices (2 pending LNH action)</div><div>• 2 Applications (1 pending LNH action)</div><div>• 2 Annual Statements</div></div>
                 </div>
                 <div class="impact-grid" id="deactivateImpactGrid">
-                    <div class="impact-col"><h3>What stops</h3><ul class="impact-list"><li><strong>New applications</strong> (school cannot be selected)</li><li><strong>New annual statements and invoices</strong></li></ul></div>
+                    <div class="impact-col">
+                        <h3>What stops</h3><ul class="impact-list"><li><strong>New applications</strong> (school cannot be selected)</li><li><strong>New annual statements and invoices</strong></li></ul>
+                        <h3 class="modal-mt">What continues</h3><ul class="impact-list"><li>Existing items remain visible</li><li>Draft/Returned items can be edited and resubmitted</li><li>Submitted items can be processed</li></ul>
+                    </div>
                     <div class="impact-col"><h3>Users</h3><ul class="impact-list"><li>School users keep access to records</li><li>You must manually deactivate users</li></ul></div>
                 </div>
-                <div class="impact-col"><h3>What continues</h3><ul class="impact-list"><li>Existing items remain visible</li><li>Draft/Returned items can be edited and resubmitted</li><li>Submitted items can be processed</li></ul></div>
             </div>
             <div class="modal-footer"><button class="btn btn-cancel" id="btnDeactivateCancel" onclick="closeModals()">Cancel</button><button class="btn btn-danger" id="btnDeactivateConfirm" onclick="confirmAction()">Deactivate</button></div>
         </div>
@@ -112,11 +114,13 @@
             <div class="modal-header" id="reactivateModalHeader"><h2>Reactivate <span id="reactivateSchoolName"></span></h2></div>
             <div class="modal-body">
                 <p id="reactivateModalSubtitle">This will mark the school <strong>ACTIVE</strong> (as of <span id="reactivateDate"></span>).</p>
-                <div class="impact-grid" id="reactivateImpactGrid" style="margin-top: 24px;">
-                    <div class="impact-col"><h3>What starts</h3><ul class="impact-list"><li><strong>New applications</strong> (school can be selected)</li><li><strong>New annual statements and invoices</strong></li></ul></div>
+                <div class="impact-grid modal-mt" id="reactivateImpactGrid">
+                    <div class="impact-col">
+                        <h3>What starts</h3><ul class="impact-list"><li><strong>New applications</strong> (school can be selected)</li><li><strong>New annual statements and invoices</strong></li></ul>
+                        <h3 class="modal-mt">What continues</h3><ul class="impact-list"><li>Existing items remain available</li><li>Draft/Returned items can be edited and submitted</li><li>Submitted items can be processed</li></ul>
+                    </div>
                     <div class="impact-col"><h3>Users</h3><ul class="impact-list"><li>School users keep existing access</li><li>You can enable additional users from the Users page</li></ul></div>
                 </div>
-                <div class="impact-col"><h3>What continues</h3><ul class="impact-list"><li>Existing items remain available</li><li>Draft/Returned items can be edited and submitted</li><li>Submitted items can be processed</li></ul></div>
             </div>
             <div class="modal-footer"><button class="btn btn-cancel" id="btnReactivateCancel" onclick="closeModals()">Cancel</button><button class="btn btn-primary" id="btnReactivateConfirm" onclick="confirmAction()">Reactivate</button></div>
         </div>
@@ -132,6 +136,8 @@
         lucide.createIcons();
         
         let currentSchoolId = null;
+
+
         
         // Full Data Object with Correct Names
         const schoolsData = [
@@ -259,6 +265,11 @@
                 ]
             }
         ];
+
+        /* Open Create School Page */
+        document.getElementById('addSchoolBtn')
+            .addEventListener('click', () => {window.location.href = 'Admin_School_Create.html';
+        });
 
         // --- RENDER TABLE ---
         function renderTable(data = schoolsData) {

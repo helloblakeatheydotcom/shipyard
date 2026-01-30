@@ -32,46 +32,6 @@
             margin-top: 38px; /* Aligns label with the top of the table in the adjacent column */
         }
 
-        /* Custom Action Dropdown Button */
-        .action-dropdown-wrapper {
-            position: relative;
-            margin-right: 12px;
-        }
-        .action-dropdown-btn {
-            display: inline-flex;
-            align-items: center;
-            height: 38px;
-            padding: 0;
-            border: 2px solid var(--primary-blue);
-            background-color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            color: var(--primary-blue);
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-        .action-dropdown-btn:hover { background-color: var(--hover-blue-bg); }
-        .action-label { padding: 0 16px; }
-        .action-divider { width: 2px; height: 20px; background-color: var(--primary-blue); opacity: 0.3; }
-        .action-arrow-wrapper { padding: 0 10px; display: flex; align-items: center; }
-        .action-arrow { transition: transform 0.2s ease; }
-        .action-dropdown-btn.active .action-arrow { transform: rotate(180deg); }
-
-        .action-dropdown-menu {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            margin-bottom: 8px;
-            background: white;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            box-shadow: 0 -4px 15px -3px rgba(0, 0, 0, 0.1);
-            width: 240px; z-index: 100; padding: 6px;
-        }
-        .action-dropdown-menu.show { display: block; }
-
         /* Dev Callout Styles */
         .dev-marker {
             position: absolute;

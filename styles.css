@@ -5,12 +5,14 @@
     --active-blue: #023b6d;
     --hover-blue-bg: #F8FAFF;
     --focus-blue: #2563EB;
+    --hover-action-btn-bg: #EFF6FF;
     
     /* --- Layout & Text --- */
     --bg-color: #F4F7FA;
     --card-bg: #FFFFFF;
     --inset-card-bg: #F8FAFC;
     --border-color: #F1F1F1;
+    --separator-color: #F1F1F1;
     --text-dark: #231C32;
     --text-modal: #172B4D;
     --text-light: #6B7280;
@@ -21,6 +23,8 @@
     /* --- Forms --- */
     --input-border: #D1D5DB;
     --add-group-bg: #F0F9FF;
+    --btn-cancel-outline-border: #D1D5DB;
+    --btn-cancel-outline-bg: #F3F4F6;
 
     /* --- Semantic Colors (Alerts/Messages) --- */
     --danger-red: #DC2626;
@@ -60,7 +64,7 @@
     --btn-padding-y: 8px;
     --btn-padding-x: 24px;
     --btn-font-size: 0.875rem; /* 14px */
-    --btn-radius: 6px;
+    --btn-radius: 8px;
     --btn-font-weight: 600;
 }
 
@@ -105,11 +109,14 @@ h1 span { color: #111; font-weight: 400; }
 .btn-primary:hover { background-color: var(--active-blue); }
 .btn-cancel { background-color: var(--status-inactive-bg); color: var(--status-inactive-text); border-color: transparent; }
 .btn-cancel:hover { background-color: var(--status-inactive-hover); }
+.btn-outline-cancel { background-color: white; color: var(--status-inactive-text); border: 1px solid var(--btn-cancel-outline-border); }
+.btn-outline-cancel:hover { background-color: var(--btn-cancel-outline-bg); border-color: var(--status-inactive-hover); }
 .btn-danger { background-color: var(--danger-red); color: white; }
 .btn-danger:hover { background-color: #B91C1C; }
 .btn-success { background-color: var(--success-green); color: white; }
 .btn-success:hover { background-color: #047857; }
 
+.page-mb-24 {margin-bottom: 24px;}
 
 .tabs { display: flex; gap: 32px; border-bottom: 1px solid #E5E7EB; margin-bottom: 24px; }
 .tab { padding-bottom: 12px; cursor: pointer; font-weight: 500; color: var(--text-light); position: relative; font-size: 1rem; }
@@ -166,6 +173,57 @@ tbody tr:hover td { background-color: #F9FAFB; }
 .dropdown-item.disabled { color: #CBD5E1; cursor: not-allowed; pointer-events: none; }
 .dropdown-item.disabled .menu-icon { color: #CBD5E1; stroke: #CBD5E1; }
 
+/* Action Dropdown Button (Split Button Style) */
+.action-dropdown-wrapper { position: relative; margin-right: 12px; }
+.action-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(var(--btn-padding-y) - 1px) 0;
+    border: 2px solid var(--primary-blue);
+    background-color: white;
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    line-height: 1.5;
+}
+.action-dropdown-btn:hover { background-color: var(--hover-action-btn-bg); }
+.action-label { padding: 0 16px; }
+.action-divider { width: 2px; height: 20px; background-color: var(--primary-blue); opacity: 0.3; }
+.action-arrow-wrapper { padding: 0 10px; display: flex; align-items: center; }
+.action-arrow { transition: transform 0.2s ease; }
+.action-dropdown-btn.active .action-arrow { transform: rotate(180deg); }
+
+.action-dropdown-menu {
+    display: none; position: absolute; bottom: 100%; right: 0;
+    margin-bottom: 8px;
+    background: white; border: 1px solid #E5E7EB; border-radius: 8px;
+    box-shadow: 0 -4px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 240px; z-index: 100; padding: 6px;
+}
+.action-dropdown-menu.show { display: block; }
+
+/* Bulk Action Bar (In-Flow) */
+.bulk-action-bar {
+    position: relative;
+    margin: -12px auto 4px auto;
+    width: fit-content;
+    background: var(--primary-blue); color: white; padding: 6px 20px; border-radius: 30px;
+    display: none; align-items: center; gap: 16px; z-index: 50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.875rem; font-weight: 600;
+}
+.bulk-action-bar.visible { display: flex; animation: slideDownFade 0.2s ease-out; }
+@keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.bulk-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+.bulk-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.95rem; padding: 4px 8px; border-radius: 4px; }
+.bulk-btn:hover { background: rgba(255,255,255,0.1); }
+.close-bulk { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; padding: 2px; }
+.close-bulk:hover { color: white; }
+.selection-count { font-weight: 600; }
+
 /* Pagination */
 .pagination { display: flex; justify-content: center; align-items: center; padding: 16px 24px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-dark); margin-top: auto; }
 .pagination select { margin-right: 20px; margin-left: 8px; padding: 4px 8px; border: 1px solid #E5E7EB; border-radius: 4px; background: white; }
@@ -187,16 +245,26 @@ tbody tr:hover td { background-color: #F9FAFB; }
     width: 768px; 
     max-width: 90%;
     border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    overflow: hidden; transform: scale(0.95); transition: transform 0.2s ease;
-    padding: 32px; 
+    transform: scale(0.95); transition: transform 0.2s ease;
+    padding: 24px;
+    display: flex; flex-direction: column; max-height: 85vh; 
 }
 .modal-overlay.show .modal-box { transform: scale(1); }
 
-.modal-header h2 {
-    font-size: 1.5rem; color: var(--text-modal); margin-bottom: 12px; font-weight: 700;
-}
+/* Modal Variants */
+.modal-lg { width: 800px; }
+.modal-sm { width: 480px; }
 
-.modal-body { font-size: 0.95rem; line-height: 1.5; color: var(--text-modal); }
+.modal-header { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--separator-color); flex-shrink: 0; }
+.modal-header h2 { font-size: 1.5rem; color: var(--text-modal); margin: 0; font-weight: 700; }
+
+.modal-mt { margin-top: 24px; }
+.modal-mb { margin-bottom: 24px; }
+
+.modal-body { 
+    font-size: 0.95rem; line-height: 1.5; color: var(--text-modal); 
+    overflow-y: auto; flex: 1; min-height: 0; margin-bottom: 24px;
+}
 .modal-body strong { font-weight: 700; }
 
 /* Warning Card */
@@ -229,7 +297,8 @@ tbody tr:hover td { background-color: #F9FAFB; }
 .user-login strong { color: var(--text-modal); font-weight: 600; }
 
 /* Modal Footer */
-.modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+.modal-footer { display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding-top: 16px; border-top: 1px solid var(--separator-color); margin-bottom: -8px; flex-shrink: 0; }
+.modal-footer--split { justify-content: space-between; }
 
 /* --- Form Pages (Add/Edit School) --- */
 

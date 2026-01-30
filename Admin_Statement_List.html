@@ -113,57 +113,13 @@
         .dot-approved { background-color: var(--status-green); }
         .dot-not-eligible { background-color: var(--status-red); }
 
-        /* Bulk Action Bar */
-        .bulk-action-bar {
-            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-            background: var(--primary-blue); color: white; padding: 10px 24px; border-radius: 30px;
-            display: none; align-items: center; gap: 16px; z-index: 50;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2); font-size: 0.95rem; font-weight: 600;
-        }
-        .bulk-action-bar.visible { display: flex; animation: slideDown 0.2s ease-out; }
-        @keyframes slideDown { from { transform: translate(-50%, -10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-        
-        .bulk-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
-        .bulk-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.95rem; padding: 4px 8px; border-radius: 4px; }
-        .bulk-btn:hover { background: rgba(255,255,255,0.1); }
-        .close-bulk { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; padding: 2px; }
-        .close-bulk:hover { color: white; }
-        .selection-count { font-weight: 600; }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            display: none; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.2s ease-in-out;
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-
-        .modal-box {
-            background: white; width: 800px; max-width: 90%;
-            border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            overflow: hidden; transform: scale(0.95); transition: transform 0.2s ease;
-            padding: 32px; display: flex; flex-direction: column; max-height: 85vh;
-        }
-        .modal-overlay.show .modal-box { transform: scale(1); }
-
-        .modal-header { margin-bottom: 0; }
-        .modal-header h2 { font-size: 1.5rem; color: var(--text-modal); margin-bottom: 12px; font-weight: 700; margin-top: 0; }
-        
-        .modal-body { 
-            display: flex; flex-direction: column; 
-            overflow: hidden; 
-            margin-bottom: 24px; 
-            font-size: 0.95rem; color: var(--text-modal);
-            flex: 1; min-height: 0;
-        }
-        
+        /* Modal Table Specifics */
         .modal-table-card { 
             border: 1px solid #E5E7EB; border-radius: 8px; 
             overflow-y: auto; 
             margin-bottom: 16px; 
             flex-shrink: 1;
-            max-height: 400px;
+            max-height: 500px;
         }
         .selected-rows-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 0; }
         .selected-rows-table th { 
@@ -174,10 +130,11 @@
         }
         .selected-rows-table td { padding: 8px 12px; border-bottom: 1px solid #E5E7EB; color: var(--text-modal); font-size: 0.85rem; }
         .selected-rows-table tr:last-child td { border-bottom: none; }
-
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; flex-shrink: 0; }
+        
         .form-label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 8px; color: var(--text-modal); }
-        .modal-select { width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.9rem; color: var(--text-input); }
+        
+        /* Fix dropdown height to match buttons */
+        #bulkStatusSelect { padding-top: 8px; padding-bottom: 8px; }
 
         main { overflow: hidden; }
         .card { min-height: 0; }
@@ -218,6 +175,13 @@
         </div>
 
         <div class="card" style="position: relative;">
+            <div class="card-header-row">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by student or school...">
+                </div>
+            </div>
+
             <!-- Floating Bulk Action Bar -->
             <div id="bulkActionBar" class="bulk-action-bar">
                 <div class="selection-count" id="selectionCount">0 Selected</div>
@@ -225,13 +189,6 @@
                 <button class="bulk-btn" onclick="openBulkUpdateModal()"><i data-lucide="refresh-cw" width="16" height="16"></i> Update Status</button>
                 <div class="bulk-divider"></div>
                 <button class="close-bulk" onclick="deselectAll()"><i data-lucide="x" width="16" height="16"></i></button>
-            </div>
-
-            <div class="card-header-row">
-                <div class="search-box">
-                    <i data-lucide="search" class="search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Search by student or school...">
-                </div>
             </div>
 
             <div class="table-wrapper">
@@ -273,22 +230,23 @@
 
     <!-- Bulk Update Modal -->
     <div class="modal-overlay" id="bulkUpdateModal">
-        <div class="modal-box">
+        <div class="modal-box modal-lg">
             <div class="modal-header"><h2>Batch Update Statements</h2></div>
             <div class="modal-body">
                 <p style="margin-bottom: 24px;" id="bulkInstructionText">You have selected <strong>0 statements</strong>. Select a new status below to apply to all records in this list.</p>
                 <div class="modal-table-card">
                     <table class="selected-rows-table">
                         <thead><tr>
-                            <th style="width: 40%;">Last Name</th>
-                            <th style="width: 40%;">First Name</th>
-                            <th style="width: 20%; text-align: right;">Statement Total</th>
+                            <th style="width: 25%;">First Name</th>
+                            <th style="width: 25%;">Last Name</th>
+                            <th style="width: 35%;">School</th>
+                            <th style="width: 15%; text-align: right;">Total</th>
                         </tr></thead>
                         <tbody id="bulkUpdateList"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer modal-footer--split">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <label class="form-label" style="margin-bottom: 0;">New Status</label>
                     <select class="input-control" id="bulkStatusSelect" style="width: 200px;">
@@ -300,8 +258,8 @@
                 </select>
                 </div>
                 <div style="display: flex; gap: 16px;">
-                    <button class="btn btn-cancel" onclick="closeBulkModal()" style="background: #E5E7EB; color: #374151; border:none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
-                    <button class="btn btn-primary" onclick="confirmBulkUpdate()" style="background: var(--primary-blue); color: white; border:none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Update Status</button>
+                    <button class="btn btn-outline-cancel" onclick="closeBulkModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmBulkUpdate()">Update Status</button>
                 </div>
             </div>
         </div>
@@ -665,9 +623,10 @@
                 const firstName = tr.cells[1].innerText;
                 const lastName = tr.cells[2].innerText;
                 const total = tr.cells[6].innerText;
+                const school = tr.cells[4].innerText;
                 
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${lastName}</td><td>${firstName}</td><td style="text-align: right;">${total}</td>`;
+                row.innerHTML = `<td>${firstName}</td><td>${lastName}</td><td>${school}</td><td style="text-align: right;">${total}</td>`;
                 tbody.appendChild(row);
             });
             

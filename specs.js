@@ -103,7 +103,7 @@ window.PAGE_SPECS = {
             description: "Kebab menu for administrative actions.",
             logic: "Menu Items: 'Edit School', 'View Users'. Conditional: If Status is 'Active', show 'Deactivate School'. If Status is 'Inactive', show 'Reactivate School'. ",
             defaults: "Always visible.",
-            interaction: "<b>Click:</b>Click: Toggles the visibility of the dropdown menu. Clicking outside closes it.",
+            interaction: "<b>Click:</b> Toggles the visibility of the dropdown menu. Clicking outside closes it.",
             offset: { top: "-3px", left: "70px" },
             errors: []
         }
